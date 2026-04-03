@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "blog",
   "version": "0.0.1",
   "type": "module",
   "private": true,
@@ -14,13 +14,18 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
+    "@sanity/astro": "^3.3.1",
+    "@sanity/client": "^7.20.0",
+    "@sanity/vision": "^5.19.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@workspace/ui": "workspace:*",
     "astro": "^5.17.1",
     "lucide-react": "^1.7.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "sanity": "^5.19.0",
+    "styled-components": "^6.3.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

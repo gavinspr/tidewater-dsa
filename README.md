@@ -4,7 +4,7 @@ This is a monorepo template for Astro with React, TypeScript, and shadcn/ui.
 
 ## Structure
 
-- `apps/web` - Astro application
+- `apps/blog` - Astro application
 - `packages/ui` - Shared UI components (shadcn/ui)
 
 ## Adding components
@@ -12,7 +12,7 @@ This is a monorepo template for Astro with React, TypeScript, and shadcn/ui.
 To add components, run the following command from the root:
 
 ```bash
-npx shadcn@latest add button -c apps/web
+npx shadcn@latest add button -c apps/blog
 ```
 
 ## Using components
