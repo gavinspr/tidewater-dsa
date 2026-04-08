@@ -1,25 +1,217 @@
 ---
-import "@workspace/ui/globals.css"
-import { Button } from "@workspace/ui/components/button"
+import { sanityClient } from "sanity:client"
+import imageUrlBuilder from "@sanity/image-url"
+import { PortableText as PortableTextInternal } from "astro-portabletext"
+import { Button } from "@tidewater-dsa/ui/components/button"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@tidewater-dsa/ui/components/card"
+import Layout from "@/layouts/main.astro"
+import { Input } from "@tidewater-dsa/ui/components/input"
+import { Link as LinkIcon, Mail } from "lucide-react"
+import {
+  Instagram,
+  Facebook,
+  Twitter,
+} from "@tidewater-dsa/ui/components/icons"
+
+const getIcon = (platform: string) => {
+  const name = platform.toLowerCase()
+  if (name.includes("instagram")) return Instagram
+  if (name.includes("facebook")) return Facebook
+  if (name.includes("x") || name.includes("twitter")) return Twitter
+  return LinkIcon
+}
+
+const QUERY = `{
+  "events": *[_type == "event" && date >= now()] | order(date asc) {
+    _id,
+    title,
+    date,
+    location,
+    description,
+    rsvpLink
+  },
+  "settings": *[_type == "siteSettings"][0]
+}`
+const { events, settings } = await sanityClient.fetch(QUERY)
+
+const builder = imageUrlBuilder(sanityClient)
+function urlFor(source: any) {
+  return builder.image(source)
+}
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  })
+}
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Astro App</title>
-  </head>
-  <body>
-    <div class="flex min-h-svh p-6">
-      <div class="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 class="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We've already added the button component for you.</p>
-          <Button client:load className="mt-2">Button</Button>
-        </div>
+<Layout title="Home | Tidewater DSA">
+  <header
+    class="relative flex min-h-125 flex-col items-center justify-center space-y-4 overflow-hidden border-b py-32 text-center"
+  >
+    {
+      settings?.heroImage && (
+        <img
+          src={urlFor(settings.heroImage).width(1920).url()}
+          alt="Tidewater DSA organizing"
+          class="absolute inset-0 z-0 h-full w-full object-cover opacity-30 mix-blend-multiply grayscale"
+        />
+      )
+    }
+
+    <div class="relative z-10 space-y-6 px-4">
+      <h1 class="text-5xl font-extrabold tracking-tight md:text-7xl">
+        A Better World is Possible
+      </h1>
+      <p class="mx-auto max-w-2xl text-xl font-medium text-foreground/80">
+        Tidewater DSA is a local chapter of the Democratic Socialists of
+        America. We are a grassroots group that aims to improve workers'
+        conditions in the 757.
+      </p>
+      <div class="pt-4">
+        <Button
+          size="lg"
+          className="h-12 bg-[#ff0101] px-8 text-lg font-bold text-white hover:bg-red-700"
+        >
+          START ORGANIZING!
+        </Button>
       </div>
     </div>
-  </body>
-</html>
+  </header>
+
+  <div class="mx-auto max-w-5xl space-y-12 p-6 py-16">
+    <section class="space-y-8">
+      <h2 class="text-3xl font-bold tracking-tight">Upcoming Events</h2>
+
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {
+          events.length === 0 ? (
+            <div class="col-span-full rounded-xl border border-dashed p-8 text-center">
+              <p class="text-muted-foreground">
+                No upcoming events scheduled right now. Check back soon!
+              </p>
+            </div>
+          ) : (
+            events.map((event: any) => (
+              <Card
+                key={event._id}
+                className="flex flex-col border-border/50 shadow-sm transition-shadow hover:shadow-md"
+              >
+                <CardHeader>
+                  <CardTitle className="text-xl">{event.title}</CardTitle>
+                  <CardDescription className="font-semibold text-red-600 dark:text-red-400">
+                    {formatDate(event.date)}
+                    {event.location && ` • ${event.location}`}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="prose prose-sm grow max-w-none dark:prose-invert">
+                  {event.description && (
+                    <PortableTextInternal value={event.description} />
+                  )}
+                </CardContent>
+                {event.rsvpLink && (
+                  <CardFooter className="pt-4 border-t border-border/50">
+                    <a
+                      href={event.rsvpLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="w-full"
+                    >
+                      <Button
+                        variant="outline"
+                        className="w-full border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-900/50"
+                      >
+                        RSVP Here
+                      </Button>
+                    </a>
+                  </CardFooter>
+                )}
+              </Card>
+            ))
+          )
+        }
+      </div>
+    </section>
+    <section
+      class="mt-16 rounded-2xl border border-border/50 bg-muted/40 p-8 md:p-12"
+    >
+      <div class="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
+        <div class="space-y-4">
+          <h3 class="flex items-center gap-2 text-2xl font-bold">
+            <Mail className="h-6 w-6 text-red-600" />
+            Stay Updated
+          </h3>
+          <p class="text-muted-foreground">
+            Join our mailing list to hear about meetings, events, and actions
+            going on in the 757.
+          </p>
+          <form
+            action={settings?.newsletterUrl}
+            method="POST"
+            class="flex gap-3 pt-2"
+            target="_blank"
+          >
+            <Input
+              type="email"
+              placeholder="Email address"
+              required
+              className="max-w-sm bg-background"
+            />
+            <Button
+              type="submit"
+              className="bg-red-600 font-semibold text-white hover:bg-red-700"
+            >
+              Subscribe
+            </Button>
+          </form>
+        </div>
+
+        <div class="space-y-5 md:border-l md:border-border/50 md:pl-12">
+          <h3
+            class="text-lg font-semibold tracking-wider text-foreground uppercase"
+          >
+            Connect With Us
+          </h3>
+          <div class="flex flex-wrap gap-4">
+            {
+              settings?.socialLinks?.map((social: any) => {
+                const IconComponent = getIcon(social.platform)
+                return (
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    class="flex h-12 w-12 items-center justify-center rounded-full border bg-background text-muted-foreground shadow-sm transition-all hover:scale-105 hover:border-red-200 hover:text-red-600"
+                    aria-label={social.platform}
+                  >
+                    <IconComponent className="h-5 w-5" />
+                  </a>
+                )
+              })
+            }
+          </div>
+          <div class="pt-2">
+            <Button
+              variant="outline"
+              className="w-full max-w-50 border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-900/50"
+            >
+              Donate to TDSA
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>

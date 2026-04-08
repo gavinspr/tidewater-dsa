@@ -12,8 +12,8 @@ export default defineConfig({
     sanity({
       projectId: "r8316tsu",
       dataset: "production",
-      useCdn: false, // Keep false for SSG
-      studioBasePath: "/admin", // This automatically generates the route
+      useCdn: false,
+      studioBasePath: "/admin",
     }),
   ],
 })

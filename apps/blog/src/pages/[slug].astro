@@ -1,0 +1,160 @@
+---
+import "@tidewater-dsa/ui/globals.css"
+import { sanityClient } from "sanity:client"
+import { PortableText as PortableTextInternal } from "astro-portabletext"
+import Layout from "@/layouts/main.astro"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@tidewater-dsa/ui/components/card"
+import { Button } from "@tidewater-dsa/ui/components/button"
+import { Input } from "@tidewater-dsa/ui/components/input"
+import { Link as LinkIcon, Mail } from "lucide-react"
+import {
+  Instagram,
+  Facebook,
+  Twitter,
+} from "@tidewater-dsa/ui/components/icons"
+
+export async function getStaticPaths() {
+  const query = `*[_type == "page" && defined(slug.current)] {
+    "slug": slug.current
+  }`
+  const pages = await sanityClient.fetch(query)
+
+  return pages.map((page: any) => {
+    return { params: { slug: page.slug } }
+  })
+}
+
+const { slug } = Astro.params
+
+const QUERY = `{
+  "page": *[_type == "page" && slug.current == $slug][0],
+  "settings": *[_type == "siteSettings"][0]
+}`
+const { page, settings } = await sanityClient.fetch(QUERY, { slug })
+
+// Helper to render the right icon based on the platform name from Sanity
+const getIcon = (platform: string) => {
+  const name = platform.toLowerCase()
+  if (name.includes("instagram")) return Instagram
+  if (name.includes("facebook")) return Facebook
+  if (name.includes("x") || name.includes("twitter")) return Twitter
+  return LinkIcon
+}
+---
+
+<Layout title={`${page.title} | ${settings?.siteTitle || "Tidewater DSA"}`}>
+  <header class="border-b bg-muted/50 py-16 md:py-24">
+    <div class="mx-auto max-w-6xl px-6">
+      <h1
+        class="text-4xl font-extrabold tracking-tight text-foreground md:text-5xl"
+      >
+        {page.title}
+      </h1>
+    </div>
+  </header>
+
+  <div class="mx-auto max-w-6xl px-6 py-12 md:py-16">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
+      <main class="lg:col-span-8">
+        <article
+          class="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-a:text-red-600 hover:prose-a:text-red-700"
+        >
+          <PortableTextInternal value={page.body} />
+        </article>
+      </main>
+
+      <aside class="space-y-6 lg:col-span-4">
+        <div class="sticky top-8 space-y-6">
+          <Card className="border-border/50 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Mail className="h-5 w-5 text-red-600" />
+                Stay Updated
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="mb-4 text-sm text-muted-foreground">
+                Join our mailing list to hear about meetings, events, and
+                actions going on in the 757.
+              </p>
+              <form
+                action={settings?.newsletterUrl}
+                method="POST"
+                class="space-y-3"
+                target="_blank"
+              >
+                <Input
+                  type="email"
+                  placeholder="Email address"
+                  required
+                  className="bg-background"
+                />
+                <Button
+                  type="submit"
+                  className="w-full bg-red-600 font-semibold text-white hover:bg-red-700"
+                >
+                  Subscribe
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {
+            settings?.socialLinks && settings.socialLinks.length > 0 && (
+              <Card className="border-border/50 shadow-sm bg-muted/30">
+                <CardContent className="pt-6">
+                  <h3 class="mb-4 text-sm font-semibold tracking-wider text-foreground uppercase">
+                    Connect With Us
+                  </h3>
+                  <div class="flex flex-wrap gap-3">
+                    {settings.socialLinks.map((social: any) => {
+                      const IconComponent = getIcon(social.platform)
+                      return (
+                        <a
+                          href={social.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          class="rounded-full border bg-background p-2.5 text-muted-foreground shadow-sm transition-colors hover:border-red-200 hover:text-red-600"
+                          aria-label={social.platform}
+                        >
+                          <IconComponent className="h-5 w-5" />
+                        </a>
+                      )
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          }
+
+          <Card
+            className="border-red-100 bg-red-50/50 dark:border-red-900/30 dark:bg-red-950/20"
+          >
+            <CardContent
+              className="flex flex-col items-center space-y-3 pt-6 text-center"
+            >
+              <h3 class="font-semibold text-red-700 dark:text-red-400">
+                Support the Chapter
+              </h3>
+              <p class="text-xs text-muted-foreground">
+                Financial support funds our mutual aid and local organizing
+                efforts.
+              </p>
+              <Button
+                variant="outline"
+                className="w-full border-red-200 text-red-700 hover:bg-red-100 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-900/50"
+              >
+                Donate to TDSA
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </aside>
+    </div>
+  </div>
+</Layout>

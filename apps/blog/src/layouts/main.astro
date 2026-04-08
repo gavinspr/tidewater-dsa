@@ -1,5 +1,32 @@
 ---
-import "@workspace/ui/globals.css"
+import "@tidewater-dsa/ui/globals.css"
+import { sanityClient } from "sanity:client"
+import imageUrlBuilder from "@sanity/image-url"
+import { MobileNav } from "@/components/MobileNav"
+
+interface Props {
+  title?: string
+}
+
+const { title = "Tidewater DSA" } = Astro.props
+
+const SETTINGS_QUERY = `*[_type == "siteSettings"][0] {
+  siteTitle,
+  logo,
+  newsletterUrl,
+  "navLinks": mainNav[]->{ title, "slug": slug.current },
+  socialLinks
+}`
+const settings = await sanityClient.fetch(SETTINGS_QUERY) // todo: type
+
+const builder = imageUrlBuilder(sanityClient)
+function urlFor(source: any) {
+  return builder.image(source)
+}
+
+const logoUrl = settings?.logo?.asset
+  ? urlFor(settings.logo).height(400).url()
+  : null
 ---
 
 <html lang="en">
@@ -7,9 +34,72 @@ import "@workspace/ui/globals.css"
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Astro App</title>
+    <title>{title}</title>
   </head>
-  <body>
-    <slot />
+  <body class="flex min-h-screen flex-col bg-background text-foreground">
+    <header class="sticky top-0 z-50 border-b bg-card shadow-sm">
+      <div class="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <a
+          href="/"
+          class="flex max-w-[80%] items-center gap-3 transition-opacity hover:opacity-80 sm:max-w-none sm:gap-4"
+        >
+          {
+            logoUrl && (
+              <img
+                src={logoUrl}
+                alt={title || "Site Logo"}
+                class="h-16 w-auto shrink-0 object-contain sm:h-20"
+              />
+            )
+          }
+        </a>
+
+        <nav class="hidden shrink-0 items-center gap-10 pl-8 lg:flex">
+          {
+            settings?.navLinks?.map((link: any) => (
+              <a
+                href={`/${link.slug}`}
+                class="text-sm font-semibold tracking-wide uppercase transition-colors hover:text-primary"
+              >
+                {link.title}
+              </a>
+            ))
+          }
+        </nav>
+
+        <div class="ml-auto shrink-0 lg:hidden">
+          <MobileNav client:load navLinks={settings?.navLinks || []} />
+        </div>
+      </div>
+    </header>
+    <main class="grow">
+      <slot />
+    </main>
+
+    <footer class="mt-12 border-t bg-muted py-8">
+      <div
+        class="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-4 md:flex-row"
+      >
+        <p class="text-sm text-muted-foreground">
+          © {new Date().getFullYear()}
+          {settings?.siteTitle || "Tidewater DSA"}
+        </p>
+
+        <div class="flex gap-4">
+          {
+            settings?.socialLinks?.map((social: any) => (
+              <a
+                href={social.url}
+                target="_blank"
+                rel="noreferrer"
+                class="text-sm hover:underline"
+              >
+                {social.platform}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

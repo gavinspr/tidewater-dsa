@@ -8,9 +8,8 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
-    "baseUrl": ".",
     "paths": {
-      "@workspace/ui/*": ["./src/*"]
+      "@tidewater-dsa/ui/*": ["./src/*"]
     }
   },
   "include": ["."],
