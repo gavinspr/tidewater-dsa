@@ -1,15 +1,13 @@
-import {defineCliConfig} from 'sanity/cli'
+import { defineCliConfig } from "sanity/cli"
 
 export default defineCliConfig({
   api: {
-    projectId: 'r8316tsu',
-    dataset: 'production'
+    projectId: "r8316tsu",
+    dataset: "production",
   },
-  deployment: {
-    /**
-     * Enable auto-updates for studios.
-     * Learn more at https://www.sanity.io/docs/studio/latest-version-of-sanity#k47faf43faf56
-     */
-    autoUpdates: true,
-  }
+  typegen: {
+    path: "./sanity/queries/**/*.ts",
+    generates: "./sanity/types.ts",
+    schema: "./sanity/schema.json",
+  },
 })

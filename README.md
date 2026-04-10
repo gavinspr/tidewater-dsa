@@ -1,39 +1,123 @@
-# Astro + React + TypeScript + shadcn/ui (Monorepo)
+# Tidewater DSA Monorepo
 
-This is a monorepo template for Astro with React, TypeScript, and shadcn/ui.
+A Turborepo monorepo housing web applications and shared packages built by
+and for Tidewater DSA, the Hampton Roads chapter of the Democratic Socialists
+of America.
 
-## Structure
+This repo is set up to grow. New chapter tools, internal dashboards, campaign
+microsites, and other apps can be added alongside the existing packages
+without restructuring. Each app gets its own folder under `apps/`, shares UI
+components and utilities from `packages/`, and benefits from Turborepo's
+cached builds and unified tooling.
 
-- `apps/blog` - Astro application
-- `packages/ui` - Shared UI components (shadcn/ui)
+## Repository structure
 
-## Adding components
+```
+tidewater-dsa/
+├── apps/
+│   └── blog/            # Public-facing chapter website — see apps/blog/README.md
+└── packages/
+    └── ui/              # Shared shadcn/ui components — see packages/ui/README.md
+```
 
-To add components, run the following command from the root:
+Apps are free to use whatever framework makes sense for the job. The current
+`blog` app is built with Astro, but future apps aren't locked into that
+choice — an admin dashboard could be Next.js, an API service could be a
+plain Node worker, and so on. The shared `packages/ui` library is
+framework-agnostic React, so any app that renders React (which includes
+Astro via islands) can use it.
+
+## Prerequisites
+
+- Node.js 20 or later
+- npm 10 or later
+
+## Getting started
+
+Clone the repo and install dependencies from the root. npm workspaces will
+install dependencies for every app and package in a single pass.
 
 ```bash
-npx shadcn@latest add button -c apps/blog
+npm install
 ```
 
-## Using components
+Start all dev servers:
 
-To use the components in your app, import them in an `.astro` file:
-
-```astro
----
-import { Button } from "@workspace/ui/components/button"
----
-
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Astro App</title>
-  </head>
-  <body>
-    <div class="grid h-screen place-items-center content-center">
-      <Button>Button</Button>
-    </div>
-  </body>
-</html>
+```bash
+npm run dev
 ```
+
+For app-specific setup — environment variables, external service
+configuration, etc. — see the README inside each app's folder.
+
+## Common tasks
+
+All commands run from the repo root and are orchestrated by Turborepo. They
+execute across every package in the monorepo in dependency order, with
+output cached between runs for fast incremental builds.
+
+```bash
+npm run dev          # Start all dev servers
+npm run build        # Production build
+npm run lint         # Lint all packages
+npm run typecheck    # Type check all packages
+npm run format       # Format with Prettier
+```
+
+To run a command for a single package, use the npm workspace flag:
+
+```bash
+npm run dev --workspace=blog
+```
+
+## Adding apps and packages
+
+New apps go in `apps/`, new shared libraries go in `packages/`. Each package
+needs its own `package.json` with a unique name (by convention,
+`@tidewater-dsa/<name>` for shared packages). Turborepo and npm workspaces
+pick up new packages automatically — no root config changes required.
+
+A new package can depend on any other package in the monorepo by adding it
+to its `dependencies` with the version `"*"`:
+
+```json
+{
+  "dependencies": {
+    "@tidewater-dsa/ui": "*"
+  }
+}
+```
+
+## Architecture notes
+
+### Why a monorepo
+
+Chapter projects tend to accumulate over time — a public site, an event
+calendar, an internal organizer directory, a mutual aid tracker, a campaign
+microsite for a specific initiative. Keeping them in one repo means shared
+design tokens, shared components, shared auth helpers, and shared tooling
+all get reused instead of reinvented. Turborepo caches build output across
+packages so adding more apps doesn't slow down development.
+
+### Why npm instead of pnpm
+
+The repo originally used pnpm, but several dependencies in the Sanity visual
+editing chain (`react-is`, `react-compiler-runtime`, `lodash`, and others)
+ship as CommonJS modules. Vite's dev server pre-bundles CJS dependencies into
+ESM so the browser can import them, but pnpm's strict symlink-based
+`node_modules` layout puts these packages deep inside the `.pnpm` content
+store where Vite's optimizer can't reach them through the symlinks. The
+result was a cascade of "does not provide an export named 'default'" errors
+in the browser whenever the visual editing component tried to hydrate.
+
+npm's flat `node_modules` layout sidesteps the entire problem — Vite can
+find and pre-bundle every CJS dependency, and the visual editing component
+hydrates cleanly. Turborepo is package-manager agnostic, so the migration
+was just a matter of deleting the pnpm lockfile and workspace config,
+adding a `workspaces` array to the root `package.json`, and running
+`npm install`. No code changes were required.
+
+If pnpm's disk efficiency or strict isolation matters for a future app in
+this monorepo, it's possible to switch back — but only for apps that don't
+depend on `@sanity/visual-editing` or anything else with similar CJS
+interop issues.

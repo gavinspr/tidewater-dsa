@@ -10,9 +10,11 @@
     "astro": "astro",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx,astro}\"",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "typegen": "sanity schema extract --path ./sanity/schema.json && sanity typegen generate"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.0.0",
     "@astrojs/react": "^4.4.2",
     "@sanity/astro": "^3.3.1",
     "@sanity/client": "^7.20.0",

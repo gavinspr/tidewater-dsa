@@ -1,6 +1,5 @@
 ---
 import "@tidewater-dsa/ui/globals.css"
-import { sanityClient } from "sanity:client"
 import { PortableText as PortableTextInternal } from "astro-portabletext"
 import Layout from "@/layouts/main.astro"
 import {
@@ -11,40 +10,23 @@ import {
 } from "@tidewater-dsa/ui/components/card"
 import { Button } from "@tidewater-dsa/ui/components/button"
 import { Input } from "@tidewater-dsa/ui/components/input"
-import { Link as LinkIcon, Mail } from "lucide-react"
-import {
-  Instagram,
-  Facebook,
-  Twitter,
-} from "@tidewater-dsa/ui/components/icons"
-
-export async function getStaticPaths() {
-  const query = `*[_type == "page" && defined(slug.current)] {
-    "slug": slug.current
-  }`
-  const pages = await sanityClient.fetch(query)
-
-  return pages.map((page: any) => {
-    return { params: { slug: page.slug } }
-  })
-}
+import { loadQuery } from "@/lib/load-query"
+import { getSocialIcon } from "@/lib/icons"
+import { PAGE_BY_SLUG_QUERY } from "@/sanity/queries"
+import type { PAGE_BY_SLUG_QUERY_RESULT } from "@/sanity/types"
+import { Mail } from "lucide-react"
 
 const { slug } = Astro.params
+if (!slug) return new Response(null, { status: 404 })
 
-const QUERY = `{
-  "page": *[_type == "page" && slug.current == $slug][0],
-  "settings": *[_type == "siteSettings"][0]
-}`
-const { page, settings } = await sanityClient.fetch(QUERY, { slug })
+const { data } = await loadQuery<PAGE_BY_SLUG_QUERY_RESULT>({
+  query: PAGE_BY_SLUG_QUERY,
+  params: { slug },
+})
 
-// Helper to render the right icon based on the platform name from Sanity
-const getIcon = (platform: string) => {
-  const name = platform.toLowerCase()
-  if (name.includes("instagram")) return Instagram
-  if (name.includes("facebook")) return Facebook
-  if (name.includes("x") || name.includes("twitter")) return Twitter
-  return LinkIcon
-}
+if (!data.page) return new Response(null, { status: 404 })
+
+const { page, settings } = data
 ---
 
 <Layout title={`${page.title} | ${settings?.siteTitle || "Tidewater DSA"}`}>
@@ -64,7 +46,7 @@ const getIcon = (platform: string) => {
         <article
           class="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-a:text-red-600 hover:prose-a:text-red-700"
         >
-          <PortableTextInternal value={page.body} />
+          <PortableTextInternal value={page.body ?? []} />
         </article>
       </main>
 
@@ -113,7 +95,7 @@ const getIcon = (platform: string) => {
                   </h3>
                   <div class="flex flex-wrap gap-3">
                     {settings.socialLinks.map((social: any) => {
-                      const IconComponent = getIcon(social.platform)
+                      const IconComponent = getSocialIcon(social.platform)
                       return (
                         <a
                           href={social.url}

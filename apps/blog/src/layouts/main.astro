@@ -1,8 +1,12 @@
 ---
 import "@tidewater-dsa/ui/globals.css"
-import { sanityClient } from "sanity:client"
 import imageUrlBuilder from "@sanity/image-url"
+import { sanityClient } from "sanity:client"
 import { MobileNav } from "@/components/MobileNav"
+import { VisualEditing } from "@sanity/astro/visual-editing"
+import { loadQuery } from "@/lib/load-query"
+import { SETTINGS_QUERY } from "@/sanity/queries"
+import type { SETTINGS_QUERY_RESULT } from "@/sanity/types"
 
 interface Props {
   title?: string
@@ -10,14 +14,9 @@ interface Props {
 
 const { title = "Tidewater DSA" } = Astro.props
 
-const SETTINGS_QUERY = `*[_type == "siteSettings"][0] {
-  siteTitle,
-  logo,
-  newsletterUrl,
-  "navLinks": mainNav[]->{ title, "slug": slug.current },
-  socialLinks
-}`
-const settings = await sanityClient.fetch(SETTINGS_QUERY) // todo: type
+const { data: settings } = await loadQuery<SETTINGS_QUERY_RESULT>({
+  query: SETTINGS_QUERY,
+})
 
 const builder = imageUrlBuilder(sanityClient)
 function urlFor(source: any) {
@@ -27,6 +26,9 @@ function urlFor(source: any) {
 const logoUrl = settings?.logo?.asset
   ? urlFor(settings.logo).height(400).url()
   : null
+
+const visualEditingEnabled =
+  import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === "true"
 ---
 
 <html lang="en">
@@ -66,9 +68,16 @@ const logoUrl = settings?.logo?.asset
             ))
           }
         </nav>
-
         <div class="ml-auto shrink-0 lg:hidden">
-          <MobileNav client:load navLinks={settings?.navLinks || []} />
+          <MobileNav
+          client:load
+          navLinks={
+            settings?.navLinks
+              ?.filter((link): link is { title: string; slug: string } =>
+                Boolean(link.title && link.slug)
+              ) ?? []
+          }
+        />
         </div>
       </div>
     </header>
@@ -101,5 +110,6 @@ const logoUrl = settings?.logo?.asset
         </div>
       </div>
     </footer>
+    <VisualEditing enabled={visualEditingEnabled} zIndex={1000} />
   </body>
 </html>

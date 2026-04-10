@@ -13,47 +13,21 @@ import {
 } from "@tidewater-dsa/ui/components/card"
 import Layout from "@/layouts/main.astro"
 import { Input } from "@tidewater-dsa/ui/components/input"
-import { Link as LinkIcon, Mail } from "lucide-react"
-import {
-  Instagram,
-  Facebook,
-  Twitter,
-} from "@tidewater-dsa/ui/components/icons"
+import { Mail } from "lucide-react"
+import { loadQuery } from "@/lib/load-query"
+import { getSocialIcon } from "@/lib/icons"
+import { formatEventDate } from "@/lib/format"
+import { HOME_PAGE_QUERY } from "@/sanity/queries"
+import type { HOME_PAGE_QUERY_RESULT } from "@/sanity/types"
 
-const getIcon = (platform: string) => {
-  const name = platform.toLowerCase()
-  if (name.includes("instagram")) return Instagram
-  if (name.includes("facebook")) return Facebook
-  if (name.includes("x") || name.includes("twitter")) return Twitter
-  return LinkIcon
-}
-
-const QUERY = `{
-  "events": *[_type == "event" && date >= now()] | order(date asc) {
-    _id,
-    title,
-    date,
-    location,
-    description,
-    rsvpLink
-  },
-  "settings": *[_type == "siteSettings"][0]
-}`
-const { events, settings } = await sanityClient.fetch(QUERY)
+const { data } = await loadQuery<HOME_PAGE_QUERY_RESULT>({
+  query: HOME_PAGE_QUERY,
+})
+const { events, settings, home } = data
 
 const builder = imageUrlBuilder(sanityClient)
 function urlFor(source: any) {
   return builder.image(source)
-}
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  })
 }
 ---
 
@@ -62,10 +36,10 @@ const formatDate = (dateString: string) => {
     class="relative flex min-h-125 flex-col items-center justify-center space-y-4 overflow-hidden border-b py-32 text-center"
   >
     {
-      settings?.heroImage && (
+      home?.heroImage && (
         <img
-          src={urlFor(settings.heroImage).width(1920).url()}
-          alt="Tidewater DSA organizing"
+          src={urlFor(home.heroImage).width(1920).url()}
+          alt={home?.heroHeadline || "Tidewater DSA"}
           class="absolute inset-0 z-0 h-full w-full object-cover opacity-30 mix-blend-multiply grayscale"
         />
       )
@@ -73,34 +47,45 @@ const formatDate = (dateString: string) => {
 
     <div class="relative z-10 space-y-6 px-4">
       <h1 class="text-5xl font-extrabold tracking-tight md:text-7xl">
-        A Better World is Possible
+        {home?.heroHeadline || "A Better World is Possible"}
       </h1>
-      <p class="mx-auto max-w-2xl text-xl font-medium text-foreground/80">
-        Tidewater DSA is a local chapter of the Democratic Socialists of
-        America. We are a grassroots group that aims to improve workers'
-        conditions in the 757.
-      </p>
-      <div class="pt-4">
-        <Button
-          size="lg"
-          className="h-12 bg-[#ff0101] px-8 text-lg font-bold text-white hover:bg-red-700"
-        >
-          START ORGANIZING!
-        </Button>
-      </div>
+      {
+        home?.heroSubheadline && (
+          <p class="mx-auto max-w-2xl text-xl font-medium text-foreground/80">
+            {home.heroSubheadline}
+          </p>
+        )
+      }
+      {
+        home?.heroCtaText && (
+          <div class="pt-4">
+            <a href={home.heroCtaLink || "#"}>
+              <Button
+                size="lg"
+                className="h-12 bg-[#ff0101] px-8 text-lg font-bold text-white hover:bg-red-700"
+              >
+                {home.heroCtaText}
+              </Button>
+            </a>
+          </div>
+        )
+      }
     </div>
   </header>
 
   <div class="mx-auto max-w-5xl space-y-12 p-6 py-16">
     <section class="space-y-8">
-      <h2 class="text-3xl font-bold tracking-tight">Upcoming Events</h2>
+      <h2 class="text-3xl font-bold tracking-tight">
+        {home?.eventsSectionTitle || "Upcoming Events"}
+      </h2>
 
       <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
         {
           events.length === 0 ? (
             <div class="col-span-full rounded-xl border border-dashed p-8 text-center">
               <p class="text-muted-foreground">
-                No upcoming events scheduled right now. Check back soon!
+                {home?.noEventsMessage ||
+                  "No upcoming events scheduled right now. Check back soon!"}
               </p>
             </div>
           ) : (
@@ -112,7 +97,7 @@ const formatDate = (dateString: string) => {
                 <CardHeader>
                   <CardTitle className="text-xl">{event.title}</CardTitle>
                   <CardDescription className="font-semibold text-red-600 dark:text-red-400">
-                    {formatDate(event.date)}
+                    {formatEventDate(event.date)}
                     {event.location && ` • ${event.location}`}
                   </CardDescription>
                 </CardHeader>
@@ -144,6 +129,7 @@ const formatDate = (dateString: string) => {
         }
       </div>
     </section>
+
     <section
       class="mt-16 rounded-2xl border border-border/50 bg-muted/40 p-8 md:p-12"
     >
@@ -151,11 +137,13 @@ const formatDate = (dateString: string) => {
         <div class="space-y-4">
           <h3 class="flex items-center gap-2 text-2xl font-bold">
             <Mail className="h-6 w-6 text-red-600" />
-            Stay Updated
+            {home?.newsletterHeadline || "Stay Updated"}
           </h3>
           <p class="text-muted-foreground">
-            Join our mailing list to hear about meetings, events, and actions
-            going on in the 757.
+            {
+              home?.newsletterBody ||
+                "Join our mailing list to hear about meetings, events, and actions going on in the 757."
+            }
           </p>
           <form
             action={settings?.newsletterUrl}
@@ -187,7 +175,7 @@ const formatDate = (dateString: string) => {
           <div class="flex flex-wrap gap-4">
             {
               settings?.socialLinks?.map((social: any) => {
-                const IconComponent = getIcon(social.platform)
+                const IconComponent = getSocialIcon(social.platform)
                 return (
                   <a
                     href={social.url}
@@ -203,12 +191,14 @@ const formatDate = (dateString: string) => {
             }
           </div>
           <div class="pt-2">
-            <Button
-              variant="outline"
-              className="w-full max-w-50 border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-900/50"
-            >
-              Donate to TDSA
-            </Button>
+            <a href={home?.donateButtonLink || "#"}>
+              <Button
+                variant="outline"
+                className="w-full max-w-50 border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-900/50"
+              >
+                {home?.donateButtonText || "Donate to TDSA"}
+              </Button>
+            </a>
           </div>
         </div>
       </div>
