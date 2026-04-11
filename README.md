@@ -29,7 +29,7 @@ Astro via islands) can use it.
 
 ## Prerequisites
 
-- Node.js 20 or later
+- Node.js 22
 - npm 10 or later
 
 ## Getting started
@@ -38,7 +38,7 @@ Clone the repo and install dependencies from the root. npm workspaces will
 install dependencies for every app and package in a single pass.
 
 ```bash
-npm install
+npm ci
 ```
 
 Start all dev servers:
