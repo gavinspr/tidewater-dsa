@@ -5,11 +5,14 @@ import { presentationTool } from "sanity/presentation"
 import { defineLocations } from "sanity/presentation"
 import { schemaTypes } from "./sanity/schemas"
 
+const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID
+const dataset = import.meta.env.PUBLIC_SANITY_DATASET
+
 export default defineConfig({
   name: "tidewater-dsa",
   title: "Tidewater DSA",
-  projectId: "r8316tsu",
-  dataset: "production",
+  projectId,
+  dataset,
   plugins: [
     structureTool({
       structure: (S) =>

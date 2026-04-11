@@ -39,14 +39,24 @@ Create a `.env` file in this directory:
 PUBLIC_SANITY_VISUAL_EDITING_ENABLED=true
 PUBLIC_SITE_URL=http://localhost:4321
 SANITY_API_READ_TOKEN=your-token-here
+PUBLIC_SANITY_PROJECT_ID=project-id-here
+PUBLIC_SANITY_DATASET=dataset-here
 ```
 
 To generate a read token, go to `sanity.io/manage` → your project → API →
 Tokens → Add API Token → set permissions to **Viewer**.
 
-The Sanity project ID and dataset are currently hardcoded in
-`sanity.config.ts` and `astro.config.mjs`. If you need to switch projects,
-update both files.
+### Environment variable prefixes
+
+Astro only exposes environment variables to client-side code if they are
+prefixed with PUBLIC_. Variables without the prefix are server-only — they
+exist during SSR but are never sent to the browser.
+
+The Sanity project ID, dataset, and visual editing flag all need the PUBLIC_
+prefix because the embedded Studio runs as a client-side React app in the
+browser and needs access to these values. The SANITY_API_READ_TOKEN does
+NOT have the prefix because it's a secret that should only be used
+server-side in loadQuery — it must never be exposed to the client.
 
 ### CORS
 

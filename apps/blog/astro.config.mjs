@@ -3,7 +3,13 @@ import { defineConfig } from "astro/config"
 import react from "@astrojs/react"
 import sanity from "@sanity/astro"
 import cloudflare from "@astrojs/cloudflare"
+import { loadEnv } from "vite"
 
+const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET } = loadEnv(
+  process.env.NODE_ENV,
+  process.cwd(),
+  ""
+)
 
 export default defineConfig({
   adapter: cloudflare(),
@@ -24,8 +30,8 @@ export default defineConfig({
   integrations: [
     react(),
     sanity({
-      projectId: "r8316tsu",
-      dataset: "production",
+      projectId: PUBLIC_SANITY_PROJECT_ID,
+      dataset: PUBLIC_SANITY_DATASET,
       useCdn: false,
       apiVersion: "2026-04-10",
       studioBasePath: "/admin",
