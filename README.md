@@ -29,7 +29,7 @@ Astro via islands) can use it.
 
 ## Prerequisites
 
-- Node.js 22
+- Node.js 22 (see `.node-version`)
 - npm 10 or later
 
 ## Getting started
