@@ -17,7 +17,7 @@ interface MobileNavProps {
   navLinks: NavLink[]
 }
 
-export function MobileNav({ navLinks = [] }: MobileNavProps) {
+export const MobileNav = ({ navLinks = [] }: MobileNavProps) => {
   const [open, setOpen] = useState(false)
 
   return (

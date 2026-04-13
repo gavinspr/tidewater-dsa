@@ -11,7 +11,6 @@ import {
 import { Button } from "@tidewater-dsa/ui/components/button"
 import { Input } from "@tidewater-dsa/ui/components/input"
 import { loadQuery } from "@/lib/load-query"
-import { getSocialIcon } from "@/lib/icons"
 import { PAGE_BY_SLUG_QUERY } from "@/sanity/queries"
 import type { PAGE_BY_SLUG_QUERY_RESULT } from "@/sanity/types"
 import { Mail } from "lucide-react"
@@ -85,34 +84,6 @@ const { page, settings } = data
               </form>
             </CardContent>
           </Card>
-
-          {
-            settings?.socialLinks && settings.socialLinks.length > 0 && (
-              <Card className="border-border/50 shadow-sm bg-muted/30">
-                <CardContent className="pt-6">
-                  <h3 class="mb-4 text-sm font-semibold tracking-wider text-foreground uppercase">
-                    Connect With Us
-                  </h3>
-                  <div class="flex flex-wrap gap-3">
-                    {settings.socialLinks.map((social: any) => {
-                      const IconComponent = getSocialIcon(social.platform)
-                      return (
-                        <a
-                          href={social.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          class="rounded-full border bg-background p-2.5 text-muted-foreground shadow-sm transition-colors hover:border-red-200 hover:text-red-600"
-                          aria-label={social.platform}
-                        >
-                          <IconComponent className="h-5 w-5" />
-                        </a>
-                      )
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          }
 
           <Card
             className="border-red-100 bg-red-50/50 dark:border-red-900/30 dark:bg-red-950/20"

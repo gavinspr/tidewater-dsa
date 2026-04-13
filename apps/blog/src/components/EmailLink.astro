@@ -1,0 +1,20 @@
+---
+interface Props {
+  email?: string
+  subject?: string | null
+}
+
+const { email, subject = "Email Us" } = Astro.props
+
+const href = subject
+  ? `mailto:${email}?subject=${encodeURIComponent(subject)}`
+  : `mailto:${email}`
+---
+
+{
+  email && (
+    <a href={href} class="font-semibold hover:text-primary">
+      {email}
+    </a>
+  )
+}

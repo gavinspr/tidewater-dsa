@@ -97,13 +97,11 @@ export type SiteSettings = {
     url?: string
     _key: string
   }>
-  heroImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: "image"
-  }
+  socialIconStyle?: "outline" | "filled"
+  callToActionText?: string
+  callToActionLink?: string
+  contactEmail?: string
+  contactEmailSubject?: string
 }
 
 export type Page = {
@@ -321,13 +319,11 @@ export type HOME_PAGE_QUERY_RESULT = {
       url?: string
       _key: string
     }>
-    heroImage?: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: "image"
-    }
+    socialIconStyle?: "filled" | "outline"
+    callToActionText?: string
+    callToActionLink?: string
+    contactEmail?: string
+    contactEmailSubject?: string
   } | null
   home: {
     _id: "homePage"
@@ -413,19 +409,17 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
       url?: string
       _key: string
     }>
-    heroImage?: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: "image"
-    }
+    socialIconStyle?: "filled" | "outline"
+    callToActionText?: string
+    callToActionLink?: string
+    contactEmail?: string
+    contactEmailSubject?: string
   } | null
 }
 
 // Source: sanity/queries/settings.ts
 // Variable: SETTINGS_QUERY
-// Query: *[_type == "siteSettings"][0] {  siteTitle,  logo,  newsletterUrl,  "navLinks": mainNav[]->{ title, "slug": slug.current },  socialLinks,  heroImage}
+// Query: *[_type == "siteSettings"][0] {  siteTitle,  logo,  newsletterUrl,  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },  socialLinks,  socialIconStyle,  "cta": {    "text": callToActionText,    "link": callToActionLink  },  contactEmail,  contactEmailSubject}
 export type SETTINGS_QUERY_RESULT = {
   siteTitle: string | null
   logo: {
@@ -437,6 +431,7 @@ export type SETTINGS_QUERY_RESULT = {
   } | null
   newsletterUrl: string | null
   navLinks: Array<{
+    _key: string
     title: string | null
     slug: string | null
   }> | null
@@ -445,13 +440,13 @@ export type SETTINGS_QUERY_RESULT = {
     url?: string
     _key: string
   }> | null
-  heroImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: "image"
-  } | null
+  socialIconStyle: "filled" | "outline" | null
+  cta: {
+    text: string | null
+    link: string | null
+  }
+  contactEmail: string | null
+  contactEmailSubject: string | null
 } | null
 
 // Query TypeMap
@@ -460,6 +455,6 @@ declare module "@sanity/client" {
   interface SanityQueries {
     '{\n  "events": *[_type == "event" && date >= now()] | order(date asc) {\n    _id,\n    title,\n    date,\n    location,\n    description,\n    rsvpLink\n  },\n  "settings": *[_type == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0]\n}': HOME_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0],\n  "settings": *[_type == "siteSettings"][0]\n}': PAGE_BY_SLUG_QUERY_RESULT
-    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  newsletterUrl,\n  "navLinks": mainNav[]->{ title, "slug": slug.current },\n  socialLinks,\n  heroImage\n}': SETTINGS_QUERY_RESULT
+    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  newsletterUrl,\n  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },\n  socialLinks,\n  socialIconStyle,\n  "cta": {\n    "text": callToActionText,\n    "link": callToActionLink\n  },\n  contactEmail,\n  contactEmailSubject\n}': SETTINGS_QUERY_RESULT
   }
 }

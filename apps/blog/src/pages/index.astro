@@ -15,7 +15,6 @@ import Layout from "@/layouts/main.astro"
 import { Input } from "@tidewater-dsa/ui/components/input"
 import { Mail } from "lucide-react"
 import { loadQuery } from "@/lib/load-query"
-import { getSocialIcon } from "@/lib/icons"
 import { formatEventDate } from "@/lib/format"
 import { HOME_PAGE_QUERY } from "@/sanity/queries"
 import type { HOME_PAGE_QUERY_RESULT } from "@/sanity/types"
@@ -172,24 +171,6 @@ function urlFor(source: any) {
           >
             Connect With Us
           </h3>
-          <div class="flex flex-wrap gap-4">
-            {
-              settings?.socialLinks?.map((social: any) => {
-                const IconComponent = getSocialIcon(social.platform)
-                return (
-                  <a
-                    href={social.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    class="flex h-12 w-12 items-center justify-center rounded-full border bg-background text-muted-foreground shadow-sm transition-all hover:scale-105 hover:border-red-200 hover:text-red-600"
-                    aria-label={social.platform}
-                  >
-                    <IconComponent className="h-5 w-5" />
-                  </a>
-                )
-              })
-            }
-          </div>
           <div class="pt-2">
             <a href={home?.donateButtonLink || "#"}>
               <Button

@@ -4,7 +4,13 @@ export const SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0] {
   siteTitle,
   logo,
   newsletterUrl,
-  "navLinks": mainNav[]->{ title, "slug": slug.current },
+  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },
   socialLinks,
-  heroImage
+  socialIconStyle,
+  "cta": {
+    "text": callToActionText,
+    "link": callToActionLink
+  },
+  contactEmail,
+  contactEmailSubject
 }`)

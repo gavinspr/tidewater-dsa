@@ -1,0 +1,64 @@
+---
+import { getSocialIcon, type IconVariant } from "@/lib/icons"
+import type { Settings } from "@/lib/types"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
+import EmailLink from "./EmailLink.astro"
+
+interface Props {
+  socialLinks: Settings["socialLinks"]
+  iconVariant: IconVariant
+  contactEmail?: string | null
+  contactEmailSubject?: string | null
+}
+
+const { socialLinks, iconVariant, contactEmail, contactEmailSubject } =
+  Astro.props
+
+const validLinks =
+  socialLinks?.filter(
+    (social): social is { platform: string; url: string; _key: string } =>
+      Boolean(social.platform && social.url)
+  ) ?? []
+---
+
+<footer class="mt-12 border-t bg-muted py-4">
+  <div class="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4">
+    {
+      contactEmail && (
+        <EmailLink email={contactEmail} subject={contactEmailSubject} />
+      )
+    }
+    <div class="flex flex-wrap gap-4">
+      {
+        validLinks.map((social) => {
+          const {
+            icon: IconComponent,
+            color,
+            bg,
+          } = getSocialIcon(social.platform)
+
+          const isFilled = iconVariant === "filled"
+
+          return (
+            <a
+              href={social.url}
+              target="_blank"
+              rel="noreferrer"
+              class={cn(
+                "flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all hover:scale-105",
+                isFilled
+                  ? cn(bg, "border-transparent text-white")
+                  : "border bg-background text-muted-foreground hover:border-primary hover:text-primary"
+              )}
+              aria-label={social.platform}
+            >
+              <IconComponent
+                className={cn("h-5 w-5", isFilled ? "text-white" : color)}
+              />
+            </a>
+          )
+        })
+      }
+    </div>
+  </div>
+</footer>

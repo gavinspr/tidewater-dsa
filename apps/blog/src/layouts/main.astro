@@ -7,6 +7,8 @@ import { VisualEditing } from "@sanity/astro/visual-editing"
 import { loadQuery } from "@/lib/load-query"
 import { SETTINGS_QUERY } from "@/sanity/queries"
 import type { SETTINGS_QUERY_RESULT } from "@/sanity/types"
+import type { IconVariant } from "@/lib/icons"
+import Footer from "@/components/Footer.astro"
 
 interface Props {
   title?: string
@@ -29,6 +31,12 @@ const logoUrl = settings?.logo?.asset
 
 const visualEditingEnabled =
   import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === "true"
+
+// Sanity stega encoding embeds invisible characters in strings,
+// so strict equality (===) fails — use includes() instead.
+const iconVariant: IconVariant = settings?.socialIconStyle?.includes("filled")
+  ? "filled"
+  : "outline"
 ---
 
 <html lang="en">
@@ -70,46 +78,24 @@ const visualEditingEnabled =
         </nav>
         <div class="ml-auto shrink-0 lg:hidden">
           <MobileNav
-          client:load
-          navLinks={
-            settings?.navLinks
-              ?.filter((link): link is { title: string; slug: string } =>
+            client:load
+            navLinks={settings?.navLinks?.filter(
+              (link): link is { title: string; slug: string } =>
                 Boolean(link.title && link.slug)
-              ) ?? []
-          }
-        />
+            ) ?? []}
+          />
         </div>
       </div>
     </header>
     <main class="grow">
       <slot />
     </main>
-
-    <footer class="mt-12 border-t bg-muted py-8">
-      <div
-        class="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-4 md:flex-row"
-      >
-        <p class="text-sm text-muted-foreground">
-          © {new Date().getFullYear()}
-          {settings?.siteTitle || "Tidewater DSA"}
-        </p>
-
-        <div class="flex gap-4">
-          {
-            settings?.socialLinks?.map((social: any) => (
-              <a
-                href={social.url}
-                target="_blank"
-                rel="noreferrer"
-                class="text-sm hover:underline"
-              >
-                {social.platform}
-              </a>
-            ))
-          }
-        </div>
-      </div>
-    </footer>
+    <Footer
+      socialLinks={settings?.socialLinks ?? []}
+      iconVariant={iconVariant}
+      contactEmail={settings?.contactEmail}
+      contactEmailSubject={settings?.contactEmailSubject}
+    />
     <VisualEditing enabled={visualEditingEnabled} zIndex={1000} />
   </body>
 </html>
