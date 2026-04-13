@@ -7,10 +7,8 @@ export const SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0] {
   "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },
   socialLinks,
   socialIconStyle,
-  "cta": {
-    "text": callToActionText,
-    "link": callToActionLink
-  },
+  callToActionText,
+  callToActionLink,
   contactEmail,
   contactEmailSubject
 }`)

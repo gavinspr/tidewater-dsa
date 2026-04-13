@@ -2,13 +2,13 @@
 import "@tidewater-dsa/ui/globals.css"
 import imageUrlBuilder from "@sanity/image-url"
 import { sanityClient } from "sanity:client"
-import { MobileNav } from "@/components/MobileNav"
 import { VisualEditing } from "@sanity/astro/visual-editing"
 import { loadQuery } from "@/lib/load-query"
 import { SETTINGS_QUERY } from "@/sanity/queries"
 import type { SETTINGS_QUERY_RESULT } from "@/sanity/types"
 import type { IconVariant } from "@/lib/icons"
 import Footer from "@/components/Footer.astro"
+import Header from "@/components/Header.astro"
 
 interface Props {
   title?: string
@@ -47,46 +47,13 @@ const iconVariant: IconVariant = settings?.socialIconStyle?.includes("filled")
     <title>{title}</title>
   </head>
   <body class="flex min-h-screen flex-col bg-background text-foreground">
-    <header class="sticky top-0 z-50 border-b bg-card shadow-sm">
-      <div class="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <a
-          href="/"
-          class="flex max-w-[80%] items-center gap-3 transition-opacity hover:opacity-80 sm:max-w-none sm:gap-4"
-        >
-          {
-            logoUrl && (
-              <img
-                src={logoUrl}
-                alt={title || "Site Logo"}
-                class="h-16 w-auto shrink-0 object-contain sm:h-20"
-              />
-            )
-          }
-        </a>
-
-        <nav class="hidden shrink-0 items-center gap-10 pl-8 lg:flex">
-          {
-            settings?.navLinks?.map((link: any) => (
-              <a
-                href={`/${link.slug}`}
-                class="text-sm font-semibold tracking-wide uppercase transition-colors hover:text-primary"
-              >
-                {link.title}
-              </a>
-            ))
-          }
-        </nav>
-        <div class="ml-auto shrink-0 lg:hidden">
-          <MobileNav
-            client:load
-            navLinks={settings?.navLinks?.filter(
-              (link): link is { title: string; slug: string } =>
-                Boolean(link.title && link.slug)
-            ) ?? []}
-          />
-        </div>
-      </div>
-    </header>
+    <Header
+      logoUrl={logoUrl}
+      title={title}
+      navLinks={settings?.navLinks ?? []}
+      callToActionText={settings?.callToActionText ?? null}
+      callToActionLink={settings?.callToActionLink ?? null}
+    />
     <main class="grow">
       <slot />
     </main>

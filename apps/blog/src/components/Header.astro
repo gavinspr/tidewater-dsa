@@ -1,0 +1,70 @@
+---
+import { MobileNav } from "./MobileNav"
+import { Button } from "@tidewater-dsa/ui/components/button"
+import { Heart } from "lucide-react"
+import type { Settings } from "@/lib/types"
+
+interface Props {
+  logoUrl: string | null
+  title: string
+  navLinks: Settings["navLinks"]
+  callToActionText: Settings["callToActionText"]
+  callToActionLink: Settings["callToActionLink"]
+}
+
+const { logoUrl, title, navLinks, callToActionText, callToActionLink } =
+  Astro.props
+
+const validNavLinks =
+  navLinks?.filter(
+    (link): link is { title: string; slug: string; _key: string } =>
+      Boolean(link.title && link.slug)
+  ) ?? []
+---
+
+<header class="sticky top-0 z-50 border-b bg-card shadow-sm">
+  <div class="flex items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
+    <a
+      href="/"
+      class="flex max-w-[80%] items-center gap-3 transition-opacity hover:opacity-80 sm:max-w-none sm:gap-4"
+    >
+      {
+        logoUrl && (
+          <img
+            src={logoUrl}
+            alt={title || "Site Logo"}
+            class="h-14 sm:h-18 w-auto shrink-0 rounded-lg object-contain"
+          />
+        )
+      }
+    </a>
+
+    <nav class="hidden lg:flex shrink-0 items-center gap-10 pl-8 ">
+      {
+        validNavLinks.map((link) => (
+          <a
+            href={`/${link.slug}`}
+            class="text-sm font-semibold tracking-wide uppercase transition-colors hover:text-primary"
+          >
+            {link.title}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="ml-auto shrink-0 lg:hidden">
+      <MobileNav client:load navLinks={validNavLinks} />
+    </div>
+
+    {
+      callToActionLink && callToActionText && (
+        <a href={callToActionLink} target="_blank" rel="noreferrer">
+          <Button size="lg" className="cursor-pointer items-center">
+            <Heart fill="white" />
+            <p class="font-bold">{callToActionText}</p>
+          </Button>
+        </a>
+      )
+    }
+  </div>
+</header>
