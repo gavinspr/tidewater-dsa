@@ -3,26 +3,16 @@ import { sanityClient } from "sanity:client"
 import imageUrlBuilder from "@sanity/image-url"
 import { PortableText as PortableTextInternal } from "astro-portabletext"
 import { Button } from "@tidewater-dsa/ui/components/button"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@tidewater-dsa/ui/components/card"
 import Layout from "@/layouts/main.astro"
-import { Input } from "@tidewater-dsa/ui/components/input"
-import { Mail } from "lucide-react"
 import { loadQuery } from "@/lib/load-query"
-import { formatEventDate } from "@/lib/format"
 import { HOME_PAGE_QUERY } from "@/sanity/queries"
 import type { HOME_PAGE_QUERY_RESULT } from "@/sanity/types"
+import PortableTextLink from "@/components/PortableTextLink.astro"
 
 const { data } = await loadQuery<HOME_PAGE_QUERY_RESULT>({
   query: HOME_PAGE_QUERY,
 })
-const { events, settings, home } = data
+const { home } = data
 
 const builder = imageUrlBuilder(sanityClient)
 function urlFor(source: any) {
@@ -31,37 +21,27 @@ function urlFor(source: any) {
 ---
 
 <Layout title="Home | Tidewater DSA">
-  <header
-    class="relative flex min-h-125 flex-col items-center justify-center space-y-4 overflow-hidden border-b py-32 text-center"
-  >
-    {
-      home?.heroImage && (
-        <img
-          src={urlFor(home.heroImage).width(1920).url()}
-          alt={home?.heroHeadline || "Tidewater DSA"}
-          class="absolute inset-0 z-0 h-full w-full object-cover opacity-30 mix-blend-multiply grayscale"
-        />
-      )
-    }
-
-    <div class="relative z-10 space-y-6 px-4">
-      <h1 class="text-5xl font-extrabold tracking-tight md:text-7xl">
-        {home?.heroHeadline || "A Better World is Possible"}
+  <section class="mx-auto max-w-5xl px-6 pt-10 pb-4">
+    <div class="mx-auto max-w-3xl space-y-3 text-center">
+      <h1
+        class="text-4xl font-extrabold tracking-tight text-foreground md:text-5xl lg:text-6xl"
+      >
+        {home?.heroHeadline}
       </h1>
       {
         home?.heroSubheadline && (
-          <p class="mx-auto max-w-2xl text-xl font-medium text-foreground/80">
+          <p class="mx-auto max-w-xl text-lg text-muted-foreground">
             {home.heroSubheadline}
           </p>
         )
       }
       {
         home?.heroCtaText && (
-          <div class="pt-4">
+          <div class="pt-2">
             <a href={home.heroCtaLink || "#"}>
               <Button
                 size="lg"
-                className="h-12 bg-[#ff0101] px-8 text-lg font-bold text-white hover:bg-red-700"
+                className="h-11 cursor-pointer px-8 font-semibold"
               >
                 {home.heroCtaText}
               </Button>
@@ -70,119 +50,36 @@ function urlFor(source: any) {
         )
       }
     </div>
-  </header>
+  </section>
 
-  <div class="mx-auto max-w-5xl space-y-12 p-6 py-16">
-    <section class="space-y-8">
-      <h2 class="text-3xl font-bold tracking-tight">
-        {home?.eventsSectionTitle || "Upcoming Events"}
-      </h2>
-
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {
-          events.length === 0 ? (
-            <div class="col-span-full rounded-xl border border-dashed p-8 text-center">
-              <p class="text-muted-foreground">
-                {home?.noEventsMessage ||
-                  "No upcoming events scheduled right now. Check back soon!"}
-              </p>
-            </div>
-          ) : (
-            events.map((event: any) => (
-              <Card
-                key={event._id}
-                className="flex flex-col border-border/50 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <CardHeader>
-                  <CardTitle className="text-xl">{event.title}</CardTitle>
-                  <CardDescription className="font-semibold text-red-600 dark:text-red-400">
-                    {formatEventDate(event.date)}
-                    {event.location && ` • ${event.location}`}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="prose prose-sm grow max-w-none dark:prose-invert">
-                  {event.description && (
-                    <PortableTextInternal value={event.description} />
-                  )}
-                </CardContent>
-                {event.rsvpLink && (
-                  <CardFooter className="pt-4 border-t border-border/50">
-                    <a
-                      href={event.rsvpLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="w-full"
-                    >
-                      <Button
-                        variant="outline"
-                        className="w-full border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-900/50"
-                      >
-                        RSVP Here
-                      </Button>
-                    </a>
-                  </CardFooter>
-                )}
-              </Card>
-            ))
-          )
-        }
-      </div>
-    </section>
-
-    <section
-      class="mt-16 rounded-2xl border border-border/50 bg-muted/40 p-8 md:p-12"
-    >
-      <div class="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
-        <div class="space-y-4">
-          <h3 class="flex items-center gap-2 text-2xl font-bold">
-            <Mail className="h-6 w-6 text-red-600" />
-            {home?.newsletterHeadline || "Stay Updated"}
-          </h3>
-          <p class="text-muted-foreground">
-            {
-              home?.newsletterBody ||
-                "Join our mailing list to hear about meetings, events, and actions going on in the 757."
-            }
-          </p>
-          <form
-            action={settings?.newsletterUrl}
-            method="POST"
-            class="flex gap-3 pt-2"
-            target="_blank"
-          >
-            <Input
-              type="email"
-              placeholder="Email address"
-              required
-              className="max-w-sm bg-background"
-            />
-            <Button
-              type="submit"
-              className="bg-red-600 font-semibold text-white hover:bg-red-700"
-            >
-              Subscribe
-            </Button>
-          </form>
+  {
+    home?.heroImage && (
+      <section class="mx-auto max-w-5xl px-6 pb-8">
+        <div class="overflow-hidden rounded-2xl shadow-lg">
+          <img
+            src={urlFor(home.heroImage).width(1200).quality(80).url()}
+            alt={home?.heroHeadline || "Tidewater DSA"}
+            class="w-full object-cover"
+          />
         </div>
+      </section>
+    )
+  }
 
-        <div class="space-y-5 md:border-l md:border-border/50 md:pl-12">
-          <h3
-            class="text-lg font-semibold tracking-wider text-foreground uppercase"
-          >
-            Connect With Us
-          </h3>
-          <div class="pt-2">
-            <a href={home?.donateButtonLink || "#"}>
-              <Button
-                variant="outline"
-                className="w-full max-w-50 border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-900/50"
-              >
-                {home?.donateButtonText || "Donate to TDSA"}
-              </Button>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+  {
+    home?.body && (
+      <section class="mx-auto max-w-3xl px-6 py-12">
+        <article class="mx-auto prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl">
+          <PortableTextInternal
+            value={home.body}
+            components={{
+              mark: {
+                link: PortableTextLink,
+              },
+            }}
+          />
+        </article>
+      </section>
+    )
+  }
 </Layout>

@@ -39,14 +39,37 @@ export type HomePage = {
   }
   heroCtaText?: string
   heroCtaLink?: string
-  eventsSectionTitle?: string
-  noEventsMessage?: string
-  newsletterHeadline?: string
-  newsletterBody?: string
-  donateHeadline?: string
-  donateBody?: string
-  donateButtonText?: string
-  donateButtonLink?: string
+  body?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: "span"
+          _key: string
+        }>
+        style?: "normal" | "h2" | "h3" | "blockquote"
+        listItem?: "bullet" | "number"
+        markDefs?: Array<{
+          href?: string
+          blank?: boolean
+          _type: "link"
+          _key: string
+        }>
+        level?: number
+        _type: "block"
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        _type: "image"
+        _key: string
+      }
+  >
 }
 
 export type SanityImageCrop = {
@@ -291,9 +314,8 @@ export type AllSanitySchemaTypes =
 
 // Source: sanity/queries/homePage.ts
 // Variable: HOME_PAGE_QUERY
-// Query: {  "events": *[_type == "event" && date >= now()] | order(date asc) {    _id,    title,    date,    location,    description,    rsvpLink  },  "settings": *[_type == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0]}
+// Query: {  "settings": *[_type == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0] {    heroHeadline,    heroSubheadline,    heroImage,    heroCtaText,    heroCtaLink,    body  }}
 export type HOME_PAGE_QUERY_RESULT = {
-  events: Array<never>
   settings: {
     _id: string
     _type: "siteSettings"
@@ -326,30 +348,48 @@ export type HOME_PAGE_QUERY_RESULT = {
     contactEmailSubject?: string
   } | null
   home: {
-    _id: "homePage"
-    _type: "homePage"
-    _createdAt: string
-    _updatedAt: string
-    _rev: string
-    heroHeadline?: string
-    heroSubheadline?: string
-    heroImage?: {
+    heroHeadline: string | null
+    heroSubheadline: string | null
+    heroImage: {
       asset?: SanityImageAssetReference
       media?: unknown
       hotspot?: SanityImageHotspot
       crop?: SanityImageCrop
       _type: "image"
-    }
-    heroCtaText?: string
-    heroCtaLink?: string
-    eventsSectionTitle?: string
-    noEventsMessage?: string
-    newsletterHeadline?: string
-    newsletterBody?: string
-    donateHeadline?: string
-    donateBody?: string
-    donateButtonText?: string
-    donateButtonLink?: string
+    } | null
+    heroCtaText: string | null
+    heroCtaLink: string | null
+    body: Array<
+      | {
+          children?: Array<{
+            marks?: Array<string>
+            text?: string
+            _type: "span"
+            _key: string
+          }>
+          style?: "blockquote" | "h2" | "h3" | "normal"
+          listItem?: "bullet" | "number"
+          markDefs?: Array<{
+            href?: string
+            blank?: boolean
+            _type: "link"
+            _key: string
+          }>
+          level?: number
+          _type: "block"
+          _key: string
+        }
+      | {
+          asset?: SanityImageAssetReference
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          alt?: string
+          caption?: string
+          _type: "image"
+          _key: string
+        }
+    > | null
   } | null
 }
 
@@ -451,7 +491,7 @@ export type SETTINGS_QUERY_RESULT = {
 import "@sanity/client"
 declare module "@sanity/client" {
   interface SanityQueries {
-    '{\n  "events": *[_type == "event" && date >= now()] | order(date asc) {\n    _id,\n    title,\n    date,\n    location,\n    description,\n    rsvpLink\n  },\n  "settings": *[_type == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0]\n}': HOME_PAGE_QUERY_RESULT
+    '{\n  "settings": *[_type == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    body\n  }\n}': HOME_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0],\n  "settings": *[_type == "siteSettings"][0]\n}': PAGE_BY_SLUG_QUERY_RESULT
     '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  newsletterUrl,\n  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },\n  socialLinks,\n  socialIconStyle,\n  callToActionText,\n  callToActionLink,\n  contactEmail,\n  contactEmailSubject\n}': SETTINGS_QUERY_RESULT
   }

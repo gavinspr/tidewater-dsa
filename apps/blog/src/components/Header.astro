@@ -22,49 +22,71 @@ const validNavLinks =
   ) ?? []
 ---
 
-<header class="sticky top-0 z-50 border-b bg-card shadow-sm">
-  <div class="flex items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
+<header
+  class="sticky top-0 z-50 border-b border-border/50 bg-card/95 backdrop-blur-sm"
+>
+  <div
+    class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
+  >
     <a
       href="/"
-      class="flex max-w-[80%] items-center gap-3 transition-opacity hover:opacity-80 sm:max-w-none sm:gap-4"
+      class="flex items-center gap-3 transition-opacity hover:opacity-80"
     >
       {
         logoUrl && (
           <img
             src={logoUrl}
             alt={title || "Site Logo"}
-            class="h-14 sm:h-18 w-auto shrink-0 rounded-lg object-contain"
+            class="h-14 w-auto shrink-0 rounded-lg object-contain sm:h-16"
           />
         )
       }
     </a>
 
-    <nav class="hidden lg:flex shrink-0 items-center gap-10 pl-8 ">
+    <nav class="hidden shrink-0 items-center gap-8 lg:flex">
       {
         validNavLinks.map((link) => (
           <a
             href={`/${link.slug}`}
-            class="text-sm font-semibold tracking-wide uppercase transition-colors hover:text-primary"
+            class="font-semibold text-foreground/80 transition-colors hover:text-primary"
           >
             {link.title}
           </a>
         ))
       }
+
+      {
+        callToActionLink && callToActionText && (
+          <a
+            href={callToActionLink}
+            target="_blank"
+            rel="noreferrer"
+            class="mb-0.5 ml-2"
+          >
+            <Button size="sm" className="cursor-pointer gap-1.5 font-bold">
+              <Heart fill="currentColor" />
+              {callToActionText}
+            </Button>
+          </a>
+        )
+      }
     </nav>
 
-    <div class="ml-auto shrink-0 lg:hidden">
+    <div class="flex items-center gap-3 lg:hidden">
+      {
+        callToActionLink && callToActionText && (
+          <a href={callToActionLink} target="_blank" rel="noreferrer">
+            <Button
+              size="sm"
+              className="cursor-pointer gap-1.5 text-xs font-semibold"
+            >
+              <Heart className="size-3" fill="currentColor" />
+              {callToActionText}
+            </Button>
+          </a>
+        )
+      }
       <MobileNav client:load navLinks={validNavLinks} />
     </div>
-
-    {
-      callToActionLink && callToActionText && (
-        <a href={callToActionLink} target="_blank" rel="noreferrer">
-          <Button size="lg" className="cursor-pointer items-center">
-            <Heart fill="white" />
-            <p class="font-bold">{callToActionText}</p>
-          </Button>
-        </a>
-      )
-    }
   </div>
 </header>

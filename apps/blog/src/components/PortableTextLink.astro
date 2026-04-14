@@ -1,0 +1,12 @@
+---
+const { node } = Astro.props
+const { href, blank } = node.markDef || {}
+---
+
+<a
+  href={href}
+  target={blank ? "_blank" : undefined}
+  rel={blank ? "noopener noreferrer" : undefined}
+>
+  <slot />
+</a>

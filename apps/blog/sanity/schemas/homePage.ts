@@ -6,112 +6,122 @@ export const homePageType = defineType({
   type: "document",
   groups: [
     { name: "hero", title: "Hero Section" },
-    { name: "newsletter", title: "Newsletter Section" },
-    { name: "donate", title: "Donate Section" },
+    { name: "content", title: "Page Content" },
   ],
   fields: [
     // ── Hero Section ──
     defineField({
       name: "heroHeadline",
-      title: "Hero Headline",
+      title: "Headline",
       type: "string",
+      description: "The main heading displayed above the hero image",
       group: "hero",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "heroSubheadline",
-      title: "Hero Subheadline",
+      title: "Subheadline",
       type: "text",
-      rows: 3,
+      rows: 2,
+      description: "A short supporting line below the headline",
       group: "hero",
     }),
     defineField({
       name: "heroImage",
-      title: "Hero Background Image",
+      title: "Hero Image",
       type: "image",
+      description:
+        "Wide image displayed below the headline (recommended 1200×600 or wider)",
       options: { hotspot: true },
       group: "hero",
     }),
     defineField({
       name: "heroCtaText",
-      title: "Call-to-Action Button Text",
+      title: "Button Text",
       type: "string",
+      description:
+        "Text for the call-to-action button below the headline (leave empty to hide)",
       group: "hero",
     }),
     defineField({
       name: "heroCtaLink",
-      title: "Call-to-Action Button Link",
+      title: "Button Link",
       type: "url",
-      description: "Where the button links to (e.g. a signup form)",
+      description: "Where the button links to (e.g. a signup form, event page)",
       group: "hero",
       validation: (Rule) =>
         Rule.uri({ allowRelative: true, scheme: ["http", "https", "mailto"] }),
     }),
 
-    // ── Events Section ──
+    // ── Content ──
     defineField({
-      name: "eventsSectionTitle",
-      title: "Events Section Title",
-      type: "string",
-      initialValue: "Upcoming Events",
-    }),
-    defineField({
-      name: "noEventsMessage",
-      title: "No Events Message",
-      type: "string",
-      description: "Shown when there are no upcoming events",
-      initialValue: "No upcoming events scheduled right now. Check back soon!",
-    }),
-
-    // ── Newsletter Section ──
-    defineField({
-      name: "newsletterHeadline",
-      title: "Newsletter Headline",
-      type: "string",
-      group: "newsletter",
-      initialValue: "Stay Updated",
-    }),
-    defineField({
-      name: "newsletterBody",
-      title: "Newsletter Description",
-      type: "text",
-      rows: 2,
-      group: "newsletter",
-      initialValue:
-        "Join our mailing list to hear about meetings, events, and actions going on in the 757.",
-    }),
-
-    // ── Donate Section ──
-    defineField({
-      name: "donateHeadline",
-      title: "Donate Headline",
-      type: "string",
-      group: "donate",
-      initialValue: "Support the Chapter",
-    }),
-    defineField({
-      name: "donateBody",
-      title: "Donate Description",
-      type: "text",
-      rows: 2,
-      group: "donate",
-      initialValue:
-        "Financial support funds our mutual aid and local organizing efforts.",
-    }),
-    defineField({
-      name: "donateButtonText",
-      title: "Donate Button Text",
-      type: "string",
-      group: "donate",
-      initialValue: "Donate to TDSA",
-    }),
-    defineField({
-      name: "donateButtonLink",
-      title: "Donate Button Link",
-      type: "url",
-      group: "donate",
-      validation: (Rule) =>
-        Rule.uri({ allowRelative: true, scheme: ["http", "https"] }),
+      name: "body",
+      title: "Page Content",
+      type: "array",
+      group: "content",
+      description:
+        "Main content below the hero image — chapter info, priorities, calls to action, etc.",
+      of: [
+        {
+          type: "block",
+          styles: [
+            { title: "Normal", value: "normal" },
+            { title: "H2", value: "h2" },
+            { title: "H3", value: "h3" },
+            { title: "Quote", value: "blockquote" },
+          ],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+            ],
+            annotations: [
+              {
+                name: "link",
+                type: "object",
+                title: "Link",
+                fields: [
+                  {
+                    name: "href",
+                    type: "url",
+                    title: "URL",
+                    validation: (Rule) =>
+                      Rule.uri({
+                        allowRelative: true,
+                        scheme: ["http", "https", "mailto"],
+                      }),
+                  },
+                  {
+                    name: "blank",
+                    type: "boolean",
+                    title: "Open in new tab",
+                    initialValue: true,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            {
+              name: "alt",
+              type: "string",
+              title: "Alt text",
+              description: "Describe the image for accessibility",
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "caption",
+              type: "string",
+              title: "Caption",
+              description: "Optional text displayed below the image",
+            },
+          ],
+        },
+      ],
     }),
   ],
 })

@@ -1,5 +1,6 @@
 ---
 import "@tidewater-dsa/ui/globals.css"
+
 import imageUrlBuilder from "@sanity/image-url"
 import { sanityClient } from "sanity:client"
 import { VisualEditing } from "@sanity/astro/visual-editing"
@@ -9,12 +10,14 @@ import type { SETTINGS_QUERY_RESULT } from "@/sanity/types"
 import type { IconVariant } from "@/lib/icons"
 import Footer from "@/components/Footer.astro"
 import Header from "@/components/Header.astro"
+import SubscribeBanner from "@/components/SubscribeBanner.astro"
 
 interface Props {
   title?: string
+  hideSubscribe?: boolean
 }
 
-const { title = "Tidewater DSA" } = Astro.props
+const { title = "Tidewater DSA", hideSubscribe = false } = Astro.props
 
 const { data: settings } = await loadQuery<SETTINGS_QUERY_RESULT>({
   query: SETTINGS_QUERY,
@@ -54,9 +57,13 @@ const iconVariant: IconVariant = settings?.socialIconStyle?.includes("filled")
       callToActionText={settings?.callToActionText ?? null}
       callToActionLink={settings?.callToActionLink ?? null}
     />
+
     <main class="grow">
       <slot />
     </main>
+
+    {!hideSubscribe && <SubscribeBanner />}
+
     <Footer
       socialLinks={settings?.socialLinks ?? []}
       iconVariant={iconVariant}
