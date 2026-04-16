@@ -1,48 +1,45 @@
 ---
 import "@tidewater-dsa/ui/globals.css"
+import "@/styles/action-network.css"
 
-import imageUrlBuilder from "@sanity/image-url"
-import { sanityClient } from "sanity:client"
 import { VisualEditing } from "@sanity/astro/visual-editing"
 import { loadQuery } from "@/lib/load-query"
 import { SETTINGS_QUERY } from "@/sanity/queries"
 import type { SETTINGS_QUERY_RESULT } from "@/sanity/types"
-import type { IconVariant } from "@/lib/icons"
 import Footer from "@/components/Footer.astro"
 import Header from "@/components/Header.astro"
-import SubscribeBanner from "@/components/SubscribeBanner.astro"
+import { urlFor } from "@/lib/sanity-image"
+import type { IconVariant } from "@/lib/types"
 
 interface Props {
   title?: string
-  hideSubscribe?: boolean
 }
 
-const { title = "Tidewater DSA", hideSubscribe = false } = Astro.props
+const { title = "Tidewater DSA" } = Astro.props
 
 const { data: settings } = await loadQuery<SETTINGS_QUERY_RESULT>({
   query: SETTINGS_QUERY,
 })
 
-const builder = imageUrlBuilder(sanityClient)
-function urlFor(source: any) {
-  return builder.image(source)
-}
-
 const logoUrl = settings?.logo?.asset
   ? urlFor(settings.logo).height(400).url()
+  : null
+
+const signupImageUrl = settings?.signupImage?.asset
+  ? urlFor(settings.signupImage).width(800).quality(80).url()
   : null
 
 const visualEditingEnabled =
   import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === "true"
 
 // Sanity stega encoding embeds invisible characters in strings,
-// so strict equality (===) fails — use includes() instead.
+// so strict equality (===) fails, use includes() instead.
 const iconVariant: IconVariant = settings?.socialIconStyle?.includes("filled")
   ? "filled"
   : "outline"
 ---
 
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -62,7 +59,64 @@ const iconVariant: IconVariant = settings?.socialIconStyle?.includes("filled")
       <slot />
     </main>
 
-    {!hideSubscribe && <SubscribeBanner />}
+    <!-- Newsletter Signup  -->
+    <section
+      id="signup"
+      class="border-t border-primary/20 bg-muted/20 py-16 md:py-24"
+    >
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="mb-8">
+          <div class="mb-1 h-1 w-16 bg-primary"></div>
+          <h2
+            class="text-3xl font-extrabold tracking-tight text-primary uppercase"
+          >
+            {settings?.signupHeadline || "Get Involved"}
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+          <div class="an-embed an-signup space-y-4 py-2">
+            <p class="text-lg text-muted-foreground">
+              {
+                settings?.signupDescription ||
+                  "Get the latest on meetings, events, and actions in the 757 — straight to your inbox."
+              }
+            </p>
+            <div
+              id="can-form-area-join-tidewater-dsas-email-list"
+              style="width: 100%"
+            >
+            </div>
+            <link
+              rel="stylesheet"
+              href="https://actionnetwork.org/css/style-embed-whitelabel-v3.css"
+            />
+            <script is:inline src={settings?.signupLink}></script>
+          </div>
+
+          <div
+            class="mt-8 aspect-square w-full overflow-hidden rounded-xl bg-muted shadow-lg lg:mt-0 lg:aspect-[4/5]"
+          >
+            {
+              settings?.signupImage ? (
+                <img
+                  src={signupImageUrl}
+                  alt="Join our community"
+                  class="h-full w-full bg-muted object-cover object-center"
+                />
+              ) : (
+                <div class="flex h-full w-full flex-col items-center justify-center bg-primary/5 p-6 text-center text-primary/40">
+                  <span class="font-medium">Signup Image Space</span>
+                  <span class="mt-1 text-sm">
+                    Add a 'signupImage' in Sanity settings
+                  </span>
+                </div>
+              )
+            }
+          </div>
+        </div>
+      </div>
+    </section>
 
     <Footer
       socialLinks={settings?.socialLinks ?? []}

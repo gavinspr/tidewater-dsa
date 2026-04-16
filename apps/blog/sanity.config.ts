@@ -61,7 +61,9 @@ export default defineConfig({
           siteSettings: defineLocations({
             message: "These settings are used on every page",
             tone: "caution",
-            locations: [{ title: "Homepage", href: "/" }],
+            locations: [
+              { title: "View global changes (via Homepage)", href: "/" },
+            ],
           }),
           page: defineLocations({
             select: {

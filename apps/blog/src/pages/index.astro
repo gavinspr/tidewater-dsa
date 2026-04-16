@@ -1,6 +1,4 @@
 ---
-import { sanityClient } from "sanity:client"
-import imageUrlBuilder from "@sanity/image-url"
 import { PortableText as PortableTextInternal } from "astro-portabletext"
 import { Button } from "@tidewater-dsa/ui/components/button"
 import Layout from "@/layouts/main.astro"
@@ -8,78 +6,187 @@ import { loadQuery } from "@/lib/load-query"
 import { HOME_PAGE_QUERY } from "@/sanity/queries"
 import type { HOME_PAGE_QUERY_RESULT } from "@/sanity/types"
 import PortableTextLink from "@/components/PortableTextLink.astro"
+import { UpcomingEvents } from "@/components/UpcomingEvents"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
+import { Calendar } from "lucide-react"
+import { Card, CardContent } from "@tidewater-dsa/ui/components/card"
+import { urlFor } from "@/lib/sanity-image"
 
 const { data } = await loadQuery<HOME_PAGE_QUERY_RESULT>({
   query: HOME_PAGE_QUERY,
 })
-const { home } = data
+const { home, events } = data
 
-const builder = imageUrlBuilder(sanityClient)
-function urlFor(source: any) {
-  return builder.image(source)
+// Sanity stega encoding embeds invisible characters in strings,
+// so strict equality (===) fails, use includes() instead.
+const ctaPosition = home?.heroCtaPosition?.includes("bottom-left")
+  ? "bottom-left"
+  : home?.heroCtaPosition?.includes("bottom-right")
+    ? "bottom-right"
+    : "center"
+
+const ctaPositionClasses = {
+  center: "items-center justify-center text-center",
+  "bottom-left": "items-end justify-start text-left",
+  "bottom-right": "items-end justify-end text-right",
 }
+
+const bodyImageUrl = home?.bodyImage?.asset
+  ? urlFor(home.bodyImage).width(800).quality(80).url()
+  : null
+
+const eventsImageUrl = home?.eventsImage?.asset
+  ? urlFor(home.eventsImage).width(800).quality(80).url()
+  : null
+
+const heroImageUrl = home?.heroImage
+  ? urlFor(home.heroImage).width(1920).quality(80).url()
+  : null
 ---
 
 <Layout title="Home | Tidewater DSA">
-  <section class="mx-auto max-w-5xl px-6 pt-10 pb-4">
-    <div class="mx-auto max-w-3xl space-y-3 text-center">
-      <h1
-        class="text-4xl font-extrabold tracking-tight text-foreground md:text-5xl lg:text-6xl"
+  <!-- Hero -->
+  <section class="relative h-100 w-full overflow-hidden bg-black md:h-125">
+    {
+      home?.heroImage && (
+        <img
+          src={heroImageUrl}
+          alt={home?.heroHeadline || "Tidewater DSA"}
+          class="absolute inset-0 h-full w-full object-cover object-[center_30%]"
+        />
+      )
+    }
+    <div
+      class="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-black/10"
+    >
+    </div>
+
+    <div
+      class={cn(
+        "absolute inset-0 z-10 flex flex-col gap-4 px-6 py-12 md:px-12 md:py-16 lg:px-20",
+        ctaPositionClasses[ctaPosition]
+      )}
+    >
+      <div
+        class={cn(
+          "max-w-3xl space-y-4",
+          ctaPosition === "center" && "text-center"
+        )}
       >
-        {home?.heroHeadline}
-      </h1>
-      {
-        home?.heroSubheadline && (
-          <p class="mx-auto max-w-xl text-lg text-muted-foreground">
-            {home.heroSubheadline}
-          </p>
-        )
-      }
-      {
-        home?.heroCtaText && (
-          <div class="pt-2">
-            <a href={home.heroCtaLink || "#"}>
-              <Button
-                size="lg"
-                className="h-11 cursor-pointer px-8 font-semibold"
-              >
-                {home.heroCtaText}
-              </Button>
-            </a>
-          </div>
-        )
-      }
+        <h1
+          class="text-4xl font-extrabold tracking-tight text-white drop-shadow-lg md:text-5xl lg:text-6xl"
+        >
+          {home?.heroHeadline}
+        </h1>
+        {
+          home?.heroSubheadline && (
+            <p class="text-lg font-medium text-white/90 drop-shadow md:text-xl">
+              {home.heroSubheadline}
+            </p>
+          )
+        }
+        {
+          home?.heroCtaText && (
+            <div class="pt-2">
+              <a href={home.heroCtaLink || "#"}>
+                <Button
+                  size="lg"
+                  className="h-12 cursor-pointer px-8 text-lg font-bold shadow-lg"
+                >
+                  {home.heroCtaText}
+                </Button>
+              </a>
+            </div>
+          )
+        }
+      </div>
     </div>
   </section>
 
+  <!--Body: Rich text -->
   {
-    home?.heroImage && (
-      <section class="mx-auto max-w-5xl px-6 pb-8">
-        <div class="overflow-hidden rounded-2xl shadow-lg">
-          <img
-            src={urlFor(home.heroImage).width(1200).quality(80).url()}
-            alt={home?.heroHeadline || "Tidewater DSA"}
-            class="w-full object-cover"
-          />
+    home?.body && (
+      <section class="py-16 md:py-24">
+        <div class="mx-auto max-w-6xl px-6">
+          <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            <div>
+              <article class="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl">
+                <PortableTextInternal
+                  value={home.body}
+                  components={{
+                    mark: {
+                      link: PortableTextLink,
+                    },
+                  }}
+                />
+              </article>
+            </div>
+
+            <div class="mt-8 aspect-4/3 w-full overflow-hidden rounded-xl bg-muted shadow-lg lg:mt-0 lg:aspect-square">
+              {bodyImageUrl ? (
+                <img
+                  src={bodyImageUrl}
+                  alt="About Tidewater DSA"
+                  class="h-full w-full bg-muted object-cover object-center"
+                />
+              ) : (
+                <div class="flex h-full w-full flex-col items-center justify-center bg-primary/5 p-6 text-center text-primary/40">
+                  <span class="font-medium">Body Image Space</span>
+                  <span class="mt-1 text-sm">Add a 'bodyImage' in Sanity</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
     )
   }
 
-  {
-    home?.body && (
-      <section class="mx-auto max-w-3xl px-6 py-12">
-        <article class="mx-auto prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl">
-          <PortableTextInternal
-            value={home.body}
-            components={{
-              mark: {
-                link: PortableTextLink,
-              },
-            }}
+  <!-- Upcoming Events -->
+  <section class="border-y border-primary/20 bg-muted/20 py-16 md:py-24">
+    <div class="mx-auto max-w-6xl px-6">
+      <div class="mb-8 text-center">
+        <div class="mx-auto mb-1 h-1 w-16 bg-primary"></div>
+        <h2
+          class="text-3xl font-extrabold tracking-tight text-primary uppercase"
+        >
+          Upcoming Events
+        </h2>
+      </div>
+
+      {
+        events && events.length > 0 ? (
+          <UpcomingEvents
+            client:visible
+            events={events}
+            sideImageUrl={eventsImageUrl}
+            noRsvpMessage={home?.noRsvpMessage}
           />
-        </article>
-      </section>
-    )
-  }
+        ) : (
+          <Card className="border-0 bg-linear-to-br from-muted/50 to-muted/80 shadow-none">
+            <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
+              <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <Calendar className="h-8 w-8 text-primary" />
+              </div>
+              <div class="space-y-2">
+                <p class="text-xl font-semibold text-foreground">
+                  {home?.noEventsHeadline || "We're planning our next move."}
+                </p>
+                <p class="mx-auto max-w-md text-muted-foreground">
+                  {home?.noEventsBody ||
+                    "No events are scheduled right now, but we're always organizing. Join our mailing list below to be the first to know when something's coming up."}
+                </p>
+              </div>
+              <a href="#signup" class="mt-2">
+                <Button variant="outline" className="cursor-pointer gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Get notified about events
+                </Button>
+              </a>
+            </CardContent>
+          </Card>
+        )
+      }
+    </div>
+  </section>
 </Layout>

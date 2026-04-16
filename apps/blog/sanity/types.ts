@@ -15,6 +15,22 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: sanity/schema.json
+export type Event = {
+  _id: string
+  _type: "event"
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  rsvpLink?: string
+  title?: string
+  summary?: string
+  date?: string
+  endDate?: string
+  address?: string
+  location?: string
+  isVirtual?: boolean
+}
+
 export type SanityImageAssetReference = {
   _ref: string
   _type: "reference"
@@ -39,6 +55,7 @@ export type HomePage = {
   }
   heroCtaText?: string
   heroCtaLink?: string
+  heroCtaPosition?: "center" | "bottom-left" | "bottom-right"
   body?: Array<
     | {
         children?: Array<{
@@ -70,6 +87,23 @@ export type HomePage = {
         _key: string
       }
   >
+  bodyImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: "image"
+  }
+  eventsImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: "image"
+  }
+  noEventsHeadline?: string
+  noEventsBody?: string
+  noRsvpMessage?: string
 }
 
 export type SanityImageCrop = {
@@ -114,17 +148,26 @@ export type SiteSettings = {
       _key: string
     } & PageReference
   >
-  newsletterUrl?: string
+  callToActionText?: string
+  callToActionLink?: string
   socialLinks?: Array<{
     platform?: string
     url?: string
     _key: string
   }>
   socialIconStyle?: "outline" | "filled"
-  callToActionText?: string
-  callToActionLink?: string
   contactEmail?: string
   contactEmailSubject?: string
+  signupLink?: string
+  signupHeadline?: string
+  signupDescription?: string
+  signupImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: "image"
+  }
 }
 
 export type Page = {
@@ -294,6 +337,7 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | Event
   | SanityImageAssetReference
   | HomePage
   | SanityImageCrop
@@ -314,39 +358,8 @@ export type AllSanitySchemaTypes =
 
 // Source: sanity/queries/homePage.ts
 // Variable: HOME_PAGE_QUERY
-// Query: {  "settings": *[_type == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0] {    heroHeadline,    heroSubheadline,    heroImage,    heroCtaText,    heroCtaLink,    body  }}
+// Query: {"home": *[_type == "homePage" && _id == "homePage"][0] {    heroHeadline,    heroSubheadline,    heroImage,    heroCtaText,    heroCtaLink,    heroCtaPosition,    body,    bodyImage,    eventsImage,    noEventsHeadline,    noEventsBody,    noRsvpMessage,  }, "events": *[_type == "event" && date >= now()] | order(date asc) [0...5] {    _id,    title,    date,    endDate,    location,    address,    isVirtual,    summary,    rsvpLink  }}
 export type HOME_PAGE_QUERY_RESULT = {
-  settings: {
-    _id: string
-    _type: "siteSettings"
-    _createdAt: string
-    _updatedAt: string
-    _rev: string
-    siteTitle?: string
-    logo?: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: "image"
-    }
-    mainNav?: Array<
-      {
-        _key: string
-      } & PageReference
-    >
-    newsletterUrl?: string
-    socialLinks?: Array<{
-      platform?: string
-      url?: string
-      _key: string
-    }>
-    socialIconStyle?: "filled" | "outline"
-    callToActionText?: string
-    callToActionLink?: string
-    contactEmail?: string
-    contactEmailSubject?: string
-  } | null
   home: {
     heroHeadline: string | null
     heroSubheadline: string | null
@@ -359,6 +372,7 @@ export type HOME_PAGE_QUERY_RESULT = {
     } | null
     heroCtaText: string | null
     heroCtaLink: string | null
+    heroCtaPosition: "bottom-left" | "bottom-right" | "center" | null
     body: Array<
       | {
           children?: Array<{
@@ -390,7 +404,35 @@ export type HOME_PAGE_QUERY_RESULT = {
           _key: string
         }
     > | null
+    bodyImage: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: "image"
+    } | null
+    eventsImage: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: "image"
+    } | null
+    noEventsHeadline: string | null
+    noEventsBody: string | null
+    noRsvpMessage: string | null
   } | null
+  events: Array<{
+    _id: string
+    title: string | null
+    date: string | null
+    endDate: string | null
+    location: string | null
+    address: string | null
+    isVirtual: boolean | null
+    summary: string | null
+    rsvpLink: string | null
+  }>
 }
 
 // Source: sanity/queries/page.ts
@@ -443,23 +485,32 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
         _key: string
       } & PageReference
     >
-    newsletterUrl?: string
+    callToActionText?: string
+    callToActionLink?: string
     socialLinks?: Array<{
       platform?: string
       url?: string
       _key: string
     }>
     socialIconStyle?: "filled" | "outline"
-    callToActionText?: string
-    callToActionLink?: string
     contactEmail?: string
     contactEmailSubject?: string
+    signupLink?: string
+    signupHeadline?: string
+    signupDescription?: string
+    signupImage?: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: "image"
+    }
   } | null
 }
 
 // Source: sanity/queries/settings.ts
 // Variable: SETTINGS_QUERY
-// Query: *[_type == "siteSettings"][0] {  siteTitle,  logo,  newsletterUrl,  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },  socialLinks,  socialIconStyle,  callToActionText,  callToActionLink,  contactEmail,  contactEmailSubject}
+// Query: *[_type == "siteSettings"][0] {  siteTitle,  logo,  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },  socialLinks,  socialIconStyle,  callToActionText,  callToActionLink,  contactEmail,  contactEmailSubject,  signupLink,  signupHeadline,  signupDescription,  signupImage}
 export type SETTINGS_QUERY_RESULT = {
   siteTitle: string | null
   logo: {
@@ -469,7 +520,6 @@ export type SETTINGS_QUERY_RESULT = {
     crop?: SanityImageCrop
     _type: "image"
   } | null
-  newsletterUrl: string | null
   navLinks: Array<{
     _key: string
     title: string | null
@@ -485,14 +535,24 @@ export type SETTINGS_QUERY_RESULT = {
   callToActionLink: string | null
   contactEmail: string | null
   contactEmailSubject: string | null
+  signupLink: string | null
+  signupHeadline: string | null
+  signupDescription: string | null
+  signupImage: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: "image"
+  } | null
 } | null
 
 // Query TypeMap
 import "@sanity/client"
 declare module "@sanity/client" {
   interface SanityQueries {
-    '{\n  "settings": *[_type == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    body\n  }\n}': HOME_PAGE_QUERY_RESULT
+    '{\n"home": *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCtaPosition,\n    body,\n    bodyImage,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage,\n  },\n "events": *[_type == "event" && date >= now()] | order(date asc) [0...5] {\n    _id,\n    title,\n    date,\n    endDate,\n    location,\n    address,\n    isVirtual,\n    summary,\n    rsvpLink\n  }\n}': HOME_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0],\n  "settings": *[_type == "siteSettings"][0]\n}': PAGE_BY_SLUG_QUERY_RESULT
-    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  newsletterUrl,\n  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },\n  socialLinks,\n  socialIconStyle,\n  callToActionText,\n  callToActionLink,\n  contactEmail,\n  contactEmailSubject\n}': SETTINGS_QUERY_RESULT
+    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },\n  socialLinks,\n  socialIconStyle,\n  callToActionText,\n  callToActionLink,\n  contactEmail,\n  contactEmailSubject,\n  signupLink,\n  signupHeadline,\n  signupDescription,\n  signupImage\n}': SETTINGS_QUERY_RESULT
   }
 }

@@ -1,0 +1,271 @@
+/* Hide Sponsored By */
+.an-embed #action_info {
+  display: none !important;
+}
+
+/* Force single column */
+.an-embed #form_col1,
+.an-embed #form_col2 {
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* Strip all default list formatting */
+.an-embed #can_embed_form ul,
+.an-embed #can_embed_form li,
+.an-embed #d_sharing ul {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+.an-embed #can_embed_form li {
+  margin-bottom: 0.625rem !important;
+}
+
+/* Typography & headings */
+.an-embed .can_embed h2 {
+  font-size: 1.5rem !important;
+}
+
+.an-embed .last_line {
+  padding-bottom: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.an-embed #can_embed_form_inner > h4,
+.an-embed .last_line + h4 {
+  font-family: inherit !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1em !important;
+  color: var(--foreground) !important;
+}
+
+.an-embed #can_embed_form_inner h4.first_line {
+  text-align: left !important;
+  border-bottom: none !important;
+  font-size: 0.85rem !important;
+  text-transform: capitalize !important;
+  padding: 0.25rem 0 !important;
+  margin-bottom: 0 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  box-sizing: content-box !important;
+
+  /* Lock the container height to exactly one line of text */
+  line-height: 1.5em !important;
+  max-height: 1.5em !important;
+  overflow: hidden !important;
+}
+
+/* Force the first bullet to break to a new line, dragging the time/timezone out of view */
+.an-embed #can_embed_form_inner h4.first_line .bullet:last-of-type {
+  flex-basis: 100% !important;
+  height: 0 !important;
+  margin: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Hide the Host Contact Info line */
+.an-embed .last_line h4:not(.first_line) {
+  display: none !important;
+}
+
+.an-embed .graytext {
+  color: var(--muted-foreground) !important;
+  font-weight: 500 !important;
+  margin-right: 0.25rem !important;
+}
+
+/* Text inputs & dropdowns */
+.an-embed
+  #can_embed_form
+  :is(
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    .floatlabel-input,
+    select
+  ) {
+  display: flex !important;
+  width: 100% !important;
+  height: 2.5rem !important;
+  padding: 0.5rem 0.75rem !important;
+  border: 2px solid var(--muted-foreground) !important;
+  border-radius: calc(var(--radius) - 2px) !important;
+  background: transparent !important;
+  font-size: 0.875rem !important;
+  font-family: inherit !important;
+  color: var(--foreground) !important;
+  outline: none !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Placeholders */
+.an-embed
+  #can_embed_form
+  :is(input::placeholder, .floatlabel-input::placeholder) {
+  color: var(--muted-foreground) !important;
+}
+
+/* Focus states */
+.an-embed #can_embed_form :is(input:focus, .floatlabel-input:focus) {
+  border-color: var(--foreground) !important;
+}
+
+/* Checkboxes & radio buttons */
+.an-embed .check_radio_label {
+  display: block !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: var(--foreground) !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.an-embed .check_radio_field {
+  display: flex !important;
+  gap: 1rem !important;
+}
+
+.an-embed .check_radio_field.clearfix {
+  margin-left: -1rem !important;
+}
+
+/* Shared flex layout for checkboxes and radio labels */
+.an-embed .check_radio_field label.radio,
+.an-embed #d_sharing label {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Specifics for radio labels */
+.an-embed .check_radio_field label.radio {
+  font-size: 0.875rem !important;
+  color: var(--foreground) !important;
+  gap: 0.35rem !important;
+  cursor: pointer !important;
+}
+
+/* Specifics for opt-In labels */
+.an-embed #d_sharing label {
+  font-size: 0.75rem !important;
+  color: var(--muted-foreground) !important;
+  letter-spacing: 0.03em !important;
+  text-transform: uppercase !important;
+  gap: 0.5rem !important;
+}
+
+/* Checkboxes */
+.an-embed :is(.check_radio_field input[type="checkbox"], #d_sharing input) {
+  margin-top: 2px !important;
+  accent-color: var(--primary) !important;
+  cursor: pointer !important;
+}
+
+/* Submit button */
+.an-embed #can_embed_form input[type="submit"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 2.75rem !important;
+  padding: 0.5rem 1.5rem !important;
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  font-weight: 700 !important;
+  font-size: 1.25rem !important;
+  font-family: inherit !important;
+  letter-spacing: 0.075em !important;
+  border-radius: calc(var(--radius) - 2px) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease-in-out !important;
+  margin-top: 0.75rem !important;
+}
+
+.an-embed #can_embed_form input[type="submit"]:hover {
+  opacity: 0.8 !important;
+}
+
+/* Opt-in block */
+.an-embed #d_sharing {
+  margin-top: 1rem !important;
+  padding-top: 1rem !important;
+}
+
+/* "Not in the US" link */
+.an-embed .international_link {
+  display: inline-block !important;
+  font-size: 0.8rem !important;
+  color: var(--foreground) !important;
+  cursor: pointer !important;
+  margin-bottom: 0.5rem !important;
+  margin-left: 2px !important;
+}
+
+.an-embed .international_link:hover {
+  color: var(--primary) !important;
+}
+
+/* Hide the fake custom select span overlay */
+.an-embed #can_embed_form .country_drop_wrap span.can_select.js-form-country {
+  display: none !important;
+}
+
+/* Make the wrapper flow properly */
+.an-embed #can_embed_form .country_drop_wrap {
+  width: 100% !important;
+}
+
+.an-embed #can_embed_form .country_drop_wrap span.block.relative {
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Override the inline styles that hide/shrink the real select */
+.an-embed #can_embed_form #form-country {
+  position: relative !important;
+  opacity: 1 !important;
+  height: 2.5rem !important;
+  min-height: 2.5rem !important;
+  max-height: 2.5rem !important;
+  cursor: pointer !important;
+  line-height: normal !important;
+  padding-right: 2.25rem !important;
+
+  /* Chevron */
+  background: transparent
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 0.75rem center !important;
+}
+
+/* Signup form specific styles */
+
+/* Hide redundant "Join" message */
+.an-signup #can_embed_form_inner > h4 {
+  display: none !important;
+}
+
+/* Preferred contact */
+.an-signup .check_radio_field {
+  gap: 0 !important;
+}
+
+.an-signup .check_radio_field label.radio input[type="radio"] {
+  margin: 0 !important;
+  padding: 0 !important;
+  position: relative !important;
+  top: 0 !important;
+  margin-left: -1.5rem !important;
+  margin-bottom: 1px !important;
+  margin-right: 2px !important;
+}

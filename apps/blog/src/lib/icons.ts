@@ -8,8 +8,6 @@ import {
 import { Link as LinkIcon } from "lucide-react"
 import type { Settings } from "@/lib/types"
 
-export type IconVariant = NonNullable<Settings["socialIconStyle"]>
-
 export const getSocialIcon = (platform: string) => {
   const name = platform.toLowerCase()
 
