@@ -6,7 +6,6 @@ import {
   Linktree,
 } from "@tidewater-dsa/ui/components/icons"
 import { Link as LinkIcon } from "lucide-react"
-import type { Settings } from "@/lib/types"
 
 export const getSocialIcon = (platform: string) => {
   const name = platform.toLowerCase()

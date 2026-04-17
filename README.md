@@ -15,9 +15,9 @@ cached builds and unified tooling.
 ```
 tidewater-dsa/
 ├── apps/
-│   └── blog/            # Public-facing chapter website — see apps/blog/README.md
+│   └── blog/   # Public-facing chapter website — see apps/blog/README.md
 └── packages/
-    └── ui/              # Shared shadcn/ui components — see packages/ui/README.md
+    └── ui/     # Shared shadcn/ui components — see packages/ui/README.md
 ```
 
 Apps are free to use whatever framework makes sense for the job. The current
@@ -31,6 +31,30 @@ Astro via islands) can use it.
 
 - Node.js 22 (see `.node-version`)
 - npm 10 or later
+
+## Development standards
+
+The monorepo enforces a few quality guardrails so things stay clean as more
+people and packages get added.
+
+**Editor setup.**
+If you use VS Code, you should be prompted to install  the
+recommended workspace extensions when you open the project. If you missed
+the prompt, search `@recommended` in the Extensions panel. These include
+ESLint, Tailwind, and Astro plugins that surface errors inline as you type.
+
+**Strict typing.**
+This project relies on strict TypeScript rules to keep the codebase healthy.
+The `any` and `unknown` types will cause the linter to fail, so please use
+proper TypeScript interfaces or Sanity's generated types instead.
+
+**Pre-commit hooks**
+Husky is set up to help catch code quality and type safety issues before they are committed. 
+Running `git commit` automatically triggers two checks:
+
+* **Type generation:** It runs the Sanity type generator (`npm run typegen`).
+If this generates new types that haven't been staged, the commit is rejected so outdated types don't slip into the codebase.
+* **Linting:** It runs a global `npm run lint` across the monorepo. Turborepo's caching keeps this fast, only changed packages get re-evaluated. Commits with lint errors are rejected before they land.
 
 ## Getting started
 

@@ -66,11 +66,7 @@ const ActionNetworkEvent = ({ rsvpLink }: ActionNetworkEventProps) => {
     }, 150)
 
     return () => clearInterval(interval)
-  }, [anInfo?.type, anInfo?.slug])
-
-  useEffect(() => {
-    setReady(false)
-  }, [rsvpLink])
+  }, [anInfo])
 
   if (!anInfo) {
     const cleanedUrl = clean(rsvpLink)
@@ -176,7 +172,10 @@ export const UpcomingEvents = ({
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
           <div className="space-y-6 py-2">
             {hasAnLink ? (
-              <ActionNetworkEvent rsvpLink={selectedEvent.rsvpLink!} />
+              <ActionNetworkEvent
+                key={selectedEvent._id}
+                rsvpLink={selectedEvent.rsvpLink!}
+              />
             ) : (
               // Non-AN event
               <>

@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "astro-build.astro-vscode",
+    "bradlc.vscode-tailwindcss",
+    "sanity-io.vscode-sanity",
+    "ms-vscode.vscode-typescript-next",
+    "esbenp.prettier-vscode",
+    "usernamehw.errorlens",
+    "yoavbls.pretty-ts-errors",
+    "aaron-bond.better-comments"
+  ]
+}
