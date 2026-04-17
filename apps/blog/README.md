@@ -139,7 +139,7 @@ automatically using Sanity TypeGen. The generated file lives at
 Regenerate types after changing any schema or query:
 
 ```bash
-npm run typegen --workspace=blog
+npm run typegen
 ```
 
 This runs two steps under the hood: `sanity schema extract` (writes a

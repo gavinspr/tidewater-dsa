@@ -450,17 +450,13 @@ export type HOME_PAGE_QUERY_RESULT = {
 
 // Source: sanity/queries/page.ts
 // Variable: PAGE_BY_SLUG_QUERY
-// Query: {  "page": *[_type == "page" && slug.current == $slug][0],  _id,  title,  "slug": slug.current,  body  }
+// Query: {  "page": *[_type == "page" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    body  },  "settings": *[_type == "siteSettings"][0] {    siteTitle  }}
 export type PAGE_BY_SLUG_QUERY_RESULT = {
   page: {
     _id: string
-    _type: "page"
-    _createdAt: string
-    _updatedAt: string
-    _rev: string
-    title?: string
-    slug?: Slug
-    body?: Array<
+    title: string | null
+    slug: string | null
+    body: Array<
       | {
           children?: Array<{
             marks?: Array<string>
@@ -490,12 +486,11 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
           _type: "image"
           _key: string
         }
-    >
+    > | null
   } | null
-  _id: never
-  title: never
-  slug: never
-  body: never
+  settings: {
+    siteTitle: string | null
+  } | null
 }
 
 // Source: sanity/queries/settings.ts
@@ -542,7 +537,7 @@ import "@sanity/client"
 declare module "@sanity/client" {
   interface SanityQueries {
     '{\n"home": *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCtaPosition,\n    body,\n    bodyImage,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage,\n  },\n "events": *[_type == "event" && date >= now()] | order(date asc) [0...5] {\n    _id,\n    title,\n    date,\n    endDate,\n    location,\n    address,\n    isVirtual,\n    summary,\n    rsvpLink\n  }\n}': HOME_PAGE_QUERY_RESULT
-    '{\n  "page": *[_type == "page" && slug.current == $slug][0],\n  _id,\n  title,\n  "slug": slug.current,\n  body\n  }': PAGE_BY_SLUG_QUERY_RESULT
+    '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n  "settings": *[_type == "siteSettings"][0] {\n    siteTitle\n  }\n}': PAGE_BY_SLUG_QUERY_RESULT
     '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },\n  socialLinks,\n  socialIconStyle,\n  callToActionText,\n  callToActionLink,\n  contactEmail,\n  contactEmailSubject,\n  signupLink,\n  signupHeadline,\n  signupDescription,\n  signupImage\n}': SETTINGS_QUERY_RESULT
   }
 }
