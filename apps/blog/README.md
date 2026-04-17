@@ -31,17 +31,17 @@ apps/blog/
 └── sanity.config.ts       # Embedded Studio config with Presentation tool
 ```
 
-## Setup
+## Environmental Setup
 
-Create a `.env` file in this directory:
+Copy `.env.example` to `.env` and fill in the values:
 
-```
-PUBLIC_SANITY_VISUAL_EDITING_ENABLED=true
-PUBLIC_SITE_URL=http://localhost:4321
-SANITY_API_READ_TOKEN=your-token-here
-PUBLIC_SANITY_PROJECT_ID=project-id-here
-PUBLIC_SANITY_DATASET=dataset-here
-```
+```bash
+cp .env.example .env
+
+See the comments in `.env.example` for where to get each value. You'll need:
+
+- A Sanity viewer token (each dev generates their own)
+- An Action Network API key (shared across the team — ask an admin)
 
 To generate a read token, go to `sanity.io/manage` → your project → API →
 Tokens → Add API Token → set permissions to **Viewer**.
