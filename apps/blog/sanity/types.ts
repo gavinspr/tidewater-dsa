@@ -205,6 +205,7 @@ export type Page = {
         crop?: SanityImageCrop
         alt?: string
         caption?: string
+        displaySize?: "sm" | "md" | "lg" | "full"
         _type: "image"
         _key: string
       }
@@ -483,6 +484,7 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
           crop?: SanityImageCrop
           alt?: string
           caption?: string
+          displaySize?: "full" | "lg" | "md" | "sm"
           _type: "image"
           _key: string
         }

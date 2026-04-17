@@ -1,20 +1,44 @@
 ---
 import { urlFor } from "@/lib/sanity-image"
+import type { SanityImageBlock, ImageDisplaySize } from "@/lib/types"
+
+interface Props {
+  node: SanityImageBlock
+}
 
 const { node } = Astro.props
 
-const { asset, alt, caption } = node
+const { asset, alt, caption, displaySize } = node
 
 if (!asset) return null
 
 const imageUrl = urlFor(asset).width(800).quality(80).url()
+
+const sizeClasses: Record<ImageDisplaySize, string> = {
+  sm: "max-w-xs md:max-w-sm",
+  md: "max-w-sm md:max-w-md",
+  lg: "max-w-md md:max-w-2xl",
+  full: "max-w-full",
+}
+
+// Stega encoding embeds invisible characters, so pull out the plain value with includes()
+// before indexing into sizeClasses, otherwise the lookup silently returns undefined
+let cleanSize: ImageDisplaySize = "md"
+
+if (displaySize) {
+  if (displaySize.includes("sm")) cleanSize = "sm"
+  else if (displaySize.includes("lg")) cleanSize = "lg"
+  else if (displaySize.includes("full")) cleanSize = "full"
+}
+
+const currentSizeClass = sizeClasses[cleanSize]
 ---
 
 <figure class="my-8 flex w-full flex-col items-center">
   <img
     src={imageUrl}
     alt={alt || "Page graphic"}
-    class="w-full rounded-xl bg-muted object-cover shadow-lg"
+    class={`h-auto w-full rounded-xl bg-muted object-cover shadow-lg ${currentSizeClass}`}
     loading="lazy"
   />
   {

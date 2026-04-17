@@ -1,4 +1,13 @@
 ---
+import type { SanityLinkMarkDef } from "@/lib/types"
+
+interface Props {
+  node: {
+    // Keep optional to handle gracefully in the event of a bad link being passed
+    markDef?: SanityLinkMarkDef
+  }
+}
+
 const { node } = Astro.props
 const { href, blank } = node.markDef || {}
 ---

@@ -33,7 +33,7 @@ const visualEditingEnabled =
   import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === "true"
 
 // Sanity stega encoding embeds invisible characters in strings,
-// so strict equality (===) fails, use includes() instead.
+// so strict equality (===) fails, use includes() instead
 const iconVariant: IconVariant = settings?.socialIconStyle?.includes("filled")
   ? "filled"
   : "outline"

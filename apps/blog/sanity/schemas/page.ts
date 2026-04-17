@@ -31,8 +31,7 @@ export const pageType = defineType({
       name: "body",
       title: "Page Content",
       type: "array",
-      description:
-        "Main page content.",
+      description: "Page content.",
       of: [
         {
           type: "block",
@@ -90,6 +89,21 @@ export const pageType = defineType({
               type: "string",
               title: "Caption",
               description: "Optional text displayed below the image",
+            },
+            {
+              name: "displaySize",
+              title: "Display Size",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Small", value: "sm" },
+                  { title: "Medium", value: "md" },
+                  { title: "Large", value: "lg" },
+                  { title: "Full Width", value: "full" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "md",
             },
           ],
         },
