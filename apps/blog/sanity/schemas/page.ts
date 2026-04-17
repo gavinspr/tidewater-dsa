@@ -31,7 +31,69 @@ export const pageType = defineType({
       name: "body",
       title: "Page Content",
       type: "array",
-      of: [{ type: "block" }],
+      description:
+        "Main page content.",
+      of: [
+        {
+          type: "block",
+          styles: [
+            { title: "Normal", value: "normal" },
+            { title: "H2", value: "h2" },
+            { title: "H3", value: "h3" },
+            { title: "Quote", value: "blockquote" },
+          ],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+            ],
+            annotations: [
+              {
+                name: "link",
+                type: "object",
+                title: "Link",
+                fields: [
+                  {
+                    name: "href",
+                    type: "url",
+                    title: "URL",
+                    validation: (Rule) =>
+                      Rule.uri({
+                        allowRelative: true,
+                        scheme: ["http", "https", "mailto"],
+                      }),
+                  },
+                  {
+                    name: "blank",
+                    type: "boolean",
+                    title: "Open in new tab",
+                    initialValue: true,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            {
+              name: "alt",
+              type: "string",
+              title: "Alt text",
+              description: "Describe the image for accessibility",
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "caption",
+              type: "string",
+              title: "Caption",
+              description: "Optional text displayed below the image",
+            },
+          ],
+        },
+      ],
     }),
   ],
 })

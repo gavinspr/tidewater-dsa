@@ -1,0 +1,27 @@
+---
+import { urlFor } from "@/lib/sanity-image"
+
+const { node } = Astro.props
+
+const { asset, alt, caption } = node
+
+if (!asset) return null
+
+const imageUrl = urlFor(asset).width(800).quality(80).url()
+---
+
+<figure class="my-8 flex w-full flex-col items-center">
+  <img
+    src={imageUrl}
+    alt={alt || "Page graphic"}
+    class="w-full rounded-xl bg-muted object-cover shadow-lg"
+    loading="lazy"
+  />
+  {
+    caption && (
+      <figcaption class="mt-3 text-center text-sm text-muted-foreground">
+        {caption}
+      </figcaption>
+    )
+  }
+</figure>

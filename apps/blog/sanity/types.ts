@@ -178,24 +178,37 @@ export type Page = {
   _rev: string
   title?: string
   slug?: Slug
-  body?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: "span"
-      _key: string
-    }>
-    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote"
-    listItem?: "bullet" | "number"
-    markDefs?: Array<{
-      href?: string
-      _type: "link"
-      _key: string
-    }>
-    level?: number
-    _type: "block"
-    _key: string
-  }>
+  body?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: "span"
+          _key: string
+        }>
+        style?: "normal" | "h2" | "h3" | "blockquote"
+        listItem?: "bullet" | "number"
+        markDefs?: Array<{
+          href?: string
+          blank?: boolean
+          _type: "link"
+          _key: string
+        }>
+        level?: number
+        _type: "block"
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        _type: "image"
+        _key: string
+      }
+  >
 }
 
 export type Slug = {
@@ -437,7 +450,7 @@ export type HOME_PAGE_QUERY_RESULT = {
 
 // Source: sanity/queries/page.ts
 // Variable: PAGE_BY_SLUG_QUERY
-// Query: {  "page": *[_type == "page" && slug.current == $slug][0],  "settings": *[_type == "siteSettings"][0]}
+// Query: {  "page": *[_type == "page" && slug.current == $slug][0],  _id,  title,  "slug": slug.current,  body  }
 export type PAGE_BY_SLUG_QUERY_RESULT = {
   page: {
     _id: string
@@ -447,65 +460,42 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
     _rev: string
     title?: string
     slug?: Slug
-    body?: Array<{
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: "span"
-        _key: string
-      }>
-      style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
-      listItem?: "bullet" | "number"
-      markDefs?: Array<{
-        href?: string
-        _type: "link"
-        _key: string
-      }>
-      level?: number
-      _type: "block"
-      _key: string
-    }>
-  } | null
-  settings: {
-    _id: string
-    _type: "siteSettings"
-    _createdAt: string
-    _updatedAt: string
-    _rev: string
-    siteTitle?: string
-    logo?: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: "image"
-    }
-    mainNav?: Array<
-      {
-        _key: string
-      } & PageReference
+    body?: Array<
+      | {
+          children?: Array<{
+            marks?: Array<string>
+            text?: string
+            _type: "span"
+            _key: string
+          }>
+          style?: "blockquote" | "h2" | "h3" | "normal"
+          listItem?: "bullet" | "number"
+          markDefs?: Array<{
+            href?: string
+            blank?: boolean
+            _type: "link"
+            _key: string
+          }>
+          level?: number
+          _type: "block"
+          _key: string
+        }
+      | {
+          asset?: SanityImageAssetReference
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          alt?: string
+          caption?: string
+          _type: "image"
+          _key: string
+        }
     >
-    callToActionText?: string
-    callToActionLink?: string
-    socialLinks?: Array<{
-      platform?: string
-      url?: string
-      _key: string
-    }>
-    socialIconStyle?: "filled" | "outline"
-    contactEmail?: string
-    contactEmailSubject?: string
-    signupLink?: string
-    signupHeadline?: string
-    signupDescription?: string
-    signupImage?: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: "image"
-    }
   } | null
+  _id: never
+  title: never
+  slug: never
+  body: never
 }
 
 // Source: sanity/queries/settings.ts
@@ -552,7 +542,7 @@ import "@sanity/client"
 declare module "@sanity/client" {
   interface SanityQueries {
     '{\n"home": *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCtaPosition,\n    body,\n    bodyImage,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage,\n  },\n "events": *[_type == "event" && date >= now()] | order(date asc) [0...5] {\n    _id,\n    title,\n    date,\n    endDate,\n    location,\n    address,\n    isVirtual,\n    summary,\n    rsvpLink\n  }\n}': HOME_PAGE_QUERY_RESULT
-    '{\n  "page": *[_type == "page" && slug.current == $slug][0],\n  "settings": *[_type == "siteSettings"][0]\n}': PAGE_BY_SLUG_QUERY_RESULT
+    '{\n  "page": *[_type == "page" && slug.current == $slug][0],\n  _id,\n  title,\n  "slug": slug.current,\n  body\n  }': PAGE_BY_SLUG_QUERY_RESULT
     '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },\n  socialLinks,\n  socialIconStyle,\n  callToActionText,\n  callToActionLink,\n  contactEmail,\n  contactEmailSubject,\n  signupLink,\n  signupHeadline,\n  signupDescription,\n  signupImage\n}': SETTINGS_QUERY_RESULT
   }
 }

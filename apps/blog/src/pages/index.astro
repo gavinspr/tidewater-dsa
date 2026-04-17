@@ -1,16 +1,15 @@
 ---
-import { PortableText as PortableTextInternal } from "astro-portabletext"
 import { Button } from "@tidewater-dsa/ui/components/button"
 import Layout from "@/layouts/main.astro"
 import { loadQuery } from "@/lib/load-query"
 import { HOME_PAGE_QUERY } from "@/sanity/queries"
 import type { HOME_PAGE_QUERY_RESULT } from "@/sanity/types"
-import PortableTextLink from "@/components/PortableTextLink.astro"
 import { UpcomingEvents } from "@/components/UpcomingEvents"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import { Calendar } from "lucide-react"
 import { Card, CardContent } from "@tidewater-dsa/ui/components/card"
 import { urlFor } from "@/lib/sanity-image"
+import RichText from "@/components/RichText.astro"
 
 const { data } = await loadQuery<HOME_PAGE_QUERY_RESULT>({
   query: HOME_PAGE_QUERY,
@@ -109,19 +108,7 @@ const heroImageUrl = home?.heroImage
       <section class="py-16 md:py-24">
         <div class="mx-auto max-w-6xl px-6">
           <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            <div>
-              <article class="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-lg prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl">
-                <PortableTextInternal
-                  value={home.body}
-                  components={{
-                    mark: {
-                      link: PortableTextLink,
-                    },
-                  }}
-                />
-              </article>
-            </div>
-
+            <RichText value={home.body} />
             <div class="mt-8 aspect-4/3 w-full overflow-hidden rounded-xl bg-muted shadow-lg lg:mt-0 lg:aspect-square">
               {bodyImageUrl ? (
                 <img

@@ -1,19 +1,10 @@
 ---
 import "@tidewater-dsa/ui/globals.css"
-import { PortableText as PortableTextInternal } from "astro-portabletext"
 import Layout from "@/layouts/main.astro"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@tidewater-dsa/ui/components/card"
-import { Button } from "@tidewater-dsa/ui/components/button"
-import { Input } from "@tidewater-dsa/ui/components/input"
 import { loadQuery } from "@/lib/load-query"
 import { PAGE_BY_SLUG_QUERY } from "@/sanity/queries"
 import type { PAGE_BY_SLUG_QUERY_RESULT } from "@/sanity/types"
-import { Mail } from "lucide-react"
+import RichText from "@/components/RichText.astro"
 
 const { slug } = Astro.params
 if (!slug) return new Response(null, { status: 404 })
@@ -29,7 +20,7 @@ const { page, settings } = data
 ---
 
 <Layout title={`${page.title} | ${settings?.siteTitle || "Tidewater DSA"}`}>
-  <header class="border-b bg-muted/50 py-16 md:py-24">
+  <header class="border-b border-border/50 bg-muted/30 py-16 md:py-20">
     <div class="mx-auto max-w-6xl px-6">
       <h1
         class="text-4xl font-extrabold tracking-tight text-foreground md:text-5xl"
@@ -40,74 +31,8 @@ const { page, settings } = data
   </header>
 
   <div class="mx-auto max-w-6xl px-6 py-12 md:py-16">
-    <div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
-      <main class="lg:col-span-8">
-        <article
-          class="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-a:text-red-600 hover:prose-a:text-red-700"
-        >
-          <PortableTextInternal value={page.body ?? []} />
-        </article>
-      </main>
-
-      <aside class="space-y-6 lg:col-span-4">
-        <div class="sticky top-8 space-y-6">
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <Mail className="h-5 w-5 text-red-600" />
-                Stay Updated
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="mb-4 text-sm text-muted-foreground">
-                Join our mailing list to hear about meetings, events, and
-                actions going on in the 757.
-              </p>
-              <form
-                action={settings?.newsletterUrl}
-                method="POST"
-                class="space-y-3"
-                target="_blank"
-              >
-                <Input
-                  type="email"
-                  placeholder="Email address"
-                  required
-                  className="bg-background"
-                />
-                <Button
-                  type="submit"
-                  className="w-full bg-red-600 font-semibold text-white hover:bg-red-700"
-                >
-                  Subscribe
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          <Card
-            className="border-red-100 bg-red-50/50 dark:border-red-900/30 dark:bg-red-950/20"
-          >
-            <CardContent
-              className="flex flex-col items-center space-y-3 pt-6 text-center"
-            >
-              <h3 class="font-semibold text-red-700 dark:text-red-400">
-                Support the Chapter
-              </h3>
-              <p class="text-xs text-muted-foreground">
-                Financial support funds our mutual aid and local organizing
-                efforts.
-              </p>
-              <Button
-                variant="outline"
-                className="w-full border-red-200 text-red-700 hover:bg-red-100 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-900/50"
-              >
-                Donate to TDSA
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </aside>
-    </div>
+    <main class="mx-auto w-full max-w-4xl">
+      <RichText value={page.body ?? []} />
+    </main>
   </div>
 </Layout>
