@@ -122,11 +122,36 @@ export const siteSettingsType = defineType({
       name: "signupLink",
       title: "Action Network Newsletter Signup URL",
       description:
-        "The direct link to your Action Network form (e.g., https://actionnetwork.org/forms/your-form-name)",
+        "Paste the URL of your Action Network form exactly as it appears in your browser when you visit the form page (e.g. https://actionnetwork.org/forms/your-form-slug). The site handles the rest, you don't need an 'embed' or 'widget' URL.",
       type: "url",
       group: "signup",
       validation: (Rule) =>
-        Rule.uri({ allowRelative: false, scheme: ["https"] }),
+        Rule.uri({ allowRelative: false, scheme: ["https"] }).custom(
+          (value) => {
+            // Empty is fine, the signup section renders a graceful fallback when no URL is set
+            if (!value) return true
+
+            let parsed: URL
+            try {
+              parsed = new URL(value)
+            } catch {
+              return "Must be a valid URL"
+            }
+
+            if (!parsed.hostname.endsWith("actionnetwork.org")) {
+              return "Must be an actionnetwork.org URL. Other embed providers aren't currently supported."
+            }
+
+            const section = parsed.pathname.split("/")[1]
+            if (section !== "forms") {
+              return section === "events"
+                ? "This is an event URL, not a signup form. Paste the URL of your newsletter form from Action Network."
+                : "The URL should be an Action Network form page, like https://actionnetwork.org/forms/your-form-slug"
+            }
+
+            return true
+          }
+        ),
     }),
     defineField({
       name: "signupHeadline",
