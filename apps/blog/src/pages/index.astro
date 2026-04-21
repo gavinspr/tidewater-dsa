@@ -1,20 +1,42 @@
 ---
-import { Button } from "@tidewater-dsa/ui/components/button"
+import { addMonths } from "date-fns"
+import { buttonVariants } from "@tidewater-dsa/ui/components/button"
+import { Card, CardContent } from "@tidewater-dsa/ui/components/card"
+import { Calendar } from "lucide-react"
 import Layout from "@/layouts/main.astro"
+import RichText from "@/components/RichText.astro"
+import { UpcomingEvents } from "@/components/UpcomingEvents"
 import { loadQuery } from "@/lib/load-query"
 import { HOME_PAGE_QUERY } from "@/sanity/queries"
 import type { HOME_PAGE_QUERY_RESULT } from "@/sanity/types"
-import { UpcomingEvents } from "@/components/UpcomingEvents"
-import { cn } from "@tidewater-dsa/ui/lib/utils"
-import { Calendar } from "lucide-react"
-import { Card, CardContent } from "@tidewater-dsa/ui/components/card"
+import { getEvents } from "@/lib/events"
 import { urlFor } from "@/lib/sanity-image"
-import RichText from "@/components/RichText.astro"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
 
-const { data } = await loadQuery<HOME_PAGE_QUERY_RESULT>({
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=300, stale-while-revalidate=600"
+)
+
+const { data: home } = await loadQuery<HOME_PAGE_QUERY_RESULT>({
   query: HOME_PAGE_QUERY,
 })
-const { home, events } = data
+
+// Fetch upcoming events from Google Calendar.
+// 90-day forward window should be enough to find 5 upcoming events for any active chapter.
+const now = new Date()
+const rangeEnd = addMonths(now, 3)
+
+let events: Awaited<ReturnType<typeof getEvents>> = []
+try {
+  const all = await getEvents({ rangeStart: now, rangeEnd })
+  events = all
+    .filter((e) => new Date(e.endISO) >= now)
+    .sort((a, b) => a.startISO.localeCompare(b.startISO))
+    .slice(0, 5)
+} catch (err) {
+  console.error("[index.astro] Failed to fetch events:", err)
+}
 
 // Sanity stega encoding embeds invisible characters in strings,
 // so strict equality (===) fails, use includes() instead.
@@ -87,13 +109,14 @@ const heroImageUrl = home?.heroImage
         {
           home?.heroCtaText && (
             <div class="pt-2">
-              <a href={home.heroCtaLink || "#"}>
-                <Button
-                  size="lg"
-                  className="h-12 cursor-pointer px-8 text-lg font-bold shadow-lg"
-                >
-                  {home.heroCtaText}
-                </Button>
+              <a
+                href={home.heroCtaLink || "#"}
+                class={cn(
+                  buttonVariants({ size: "lg" }),
+                  "h-12 cursor-pointer px-8 text-lg font-bold shadow-lg"
+                )}
+              >
+                {home.heroCtaText}
               </a>
             </div>
           )
@@ -102,7 +125,7 @@ const heroImageUrl = home?.heroImage
     </div>
   </section>
 
-  <!--Body: Rich text -->
+  <!-- Body: Rich text -->
   {
     home?.body && (
       <section class="py-16 md:py-24">
@@ -142,7 +165,7 @@ const heroImageUrl = home?.heroImage
       </div>
 
       {
-        events && events.length > 0 ? (
+        events.length > 0 ? (
           <UpcomingEvents
             client:visible
             events={events}
@@ -164,11 +187,15 @@ const heroImageUrl = home?.heroImage
                     "No events are scheduled right now, but we're always organizing. Join our mailing list below to be the first to know when something's coming up."}
                 </p>
               </div>
-              <a href="#signup" class="mt-2">
-                <Button variant="outline" className="cursor-pointer gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Get notified about events
-                </Button>
+              <a
+                href="#signup"
+                class={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "mt-2 cursor-pointer gap-2"
+                )}
+              >
+                <Calendar className="h-4 w-4" />
+                Get notified about events
               </a>
             </CardContent>
           </Card>

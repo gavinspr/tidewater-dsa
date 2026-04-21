@@ -1,13 +1,28 @@
-import { clean } from "./stega"
+const AN_URL_SCAN =
+  /https?:\/\/(?:www\.)?actionnetwork\.org\/(events|forms)\/[^\s<>"'\])/?#]+/i
 
-export const extractAnInfo = (
+const TRAILING_PUNCTUATION = /[.,;:!?)\]'"]+$/
+
+/**
+ * Parse an Action Network URL into { type, slug }.
+ * Returns null if the input isn't a valid URL, isn't on actionnetwork.org, or isn't in the /events/<slug> or /forms/<slug> shape.
+ */
+export const extractActionNetworkInfo = (
   url: string
-): { type: string; slug: string } | null => {
-  const cleaned = clean(url)
-  const match = cleaned.match(/actionnetwork\.org\/(events|forms)\/([^/?#]+)/)
+): { type: "event" | "form"; slug: string } | null => {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    return null
+  }
 
-  if (!match) return null
-  return { type: match[1] === "events" ? "event" : "form", slug: match[2] }
+  if (!parsed.hostname.endsWith("actionnetwork.org")) return null
+
+  const [, section, slug] = parsed.pathname.split("/")
+  if (section === "events" && slug) return { type: "event", slug }
+  if (section === "forms" && slug) return { type: "form", slug }
+  return null
 }
 
 export const ensureStylesLoaded = () => {
@@ -18,4 +33,25 @@ export const ensureStylesLoaded = () => {
     link.setAttribute("data-an-styles", "true")
     document.head.appendChild(link)
   }
+}
+
+/** Scan a single string for the first AN URL. */
+const extractActionNetworkUrl = (
+  text: string | null | undefined
+): string | null => {
+  if (!text) return null
+  const match = text.match(AN_URL_SCAN)
+  if (!match) return null
+  return match[0].replace(TRAILING_PUNCTUATION, "")
+}
+
+/** Find the first AN URL across multiple fields. */
+export const findActionNetworkUrl = (
+  ...fields: Array<string | null | undefined>
+): string | null => {
+  for (const field of fields) {
+    const url = extractActionNetworkUrl(field)
+    if (url) return url
+  }
+  return null
 }

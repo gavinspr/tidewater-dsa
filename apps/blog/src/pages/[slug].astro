@@ -19,19 +19,15 @@ const { page, settings } = data
 ---
 
 <Layout title={`${page.title} | ${settings?.siteTitle || "Tidewater DSA"}`}>
-  <header class="border-b border-border/50 bg-muted/30 py-16 md:py-20">
-    <div class="mx-auto max-w-6xl px-6">
-      <h1
-        class="text-4xl font-extrabold tracking-tight text-foreground md:text-5xl"
-      >
+  <main class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
         {page.title}
       </h1>
-    </div>
-  </header>
+    </header>
 
-  <div class="mx-auto max-w-6xl px-6 py-12 md:py-16">
-    <main class="mx-auto w-full max-w-4xl">
+    <div class="mx-auto w-full max-w-4xl">
       <RichText value={page.body ?? []} />
-    </main>
-  </div>
+    </div>
+  </main>
 </Layout>

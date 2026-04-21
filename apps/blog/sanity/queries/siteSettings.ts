@@ -1,9 +1,16 @@
 import { defineQuery } from "groq"
 
-export const SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0] {
+export const SITE_SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0] {
   siteTitle,
   logo,
-  "navLinks": mainNav[]{_key, ...@->{ title, "slug": slug.current } },
+  "navLinks": mainNav[]{
+    _key,
+    "title": @->title,
+    "slug": select(
+      @->_type == "eventsPage" => "events",
+      @->slug.current
+    )
+  },
   socialLinks,
   socialIconStyle,
   callToActionText,

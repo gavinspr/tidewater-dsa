@@ -1,9 +1,11 @@
 import { defineConfig } from "sanity"
 import { structureTool } from "sanity/structure"
 import { visionTool } from "@sanity/vision"
-import { presentationTool } from "sanity/presentation"
-import { defineLocations } from "sanity/presentation"
+import { presentationTool, defineLocations } from "sanity/presentation"
+import { CalendarIcon } from "@sanity/icons"
 import { schemaTypes } from "./sanity/schemas"
+import { structure, SINGLETON_TYPES } from "./sanity/structure"
+import { CustomizeEventsTool } from "./sanity/tools/customize-events/CustomizeEventsTool"
 
 const projectId =
   typeof process !== "undefined" && process.env.PUBLIC_SANITY_PROJECT_ID
@@ -21,34 +23,7 @@ export default defineConfig({
   projectId: projectId,
   dataset: dataset,
   plugins: [
-    structureTool({
-      structure: (S) =>
-        S.list()
-          .title("Content Management")
-          .items([
-            S.listItem()
-              .title("Global Settings")
-              .id("siteSettings")
-              .child(
-                S.document()
-                  .schemaType("siteSettings")
-                  .documentId("siteSettings")
-              ),
-            S.listItem()
-              .title("Homepage")
-              .id("homePage")
-              .child(
-                S.document().schemaType("homePage").documentId("homePage")
-              ),
-            S.divider(),
-            ...S.documentTypeListItems().filter(
-              (listItem) =>
-                !["siteSettings", "homePage"].includes(
-                  listItem.getId() as string
-                )
-            ),
-          ]),
-    }),
+    structureTool({ structure }),
     presentationTool({
       previewUrl: location.origin,
       resolve: {
@@ -66,24 +41,15 @@ export default defineConfig({
             ],
           }),
           page: defineLocations({
-            select: {
-              title: "title",
-              slug: "slug.current",
-            },
+            select: { title: "title", slug: "slug.current" },
             resolve: (doc) => ({
               locations: [
-                {
-                  title: doc?.title || "Untitled",
-                  href: `/${doc?.slug}`,
-                },
+                { title: doc?.title || "Untitled", href: `/${doc?.slug}` },
               ],
             }),
           }),
           post: defineLocations({
-            select: {
-              title: "title",
-              slug: "slug.current",
-            },
+            select: { title: "title", slug: "slug.current" },
             resolve: (doc) => ({
               locations: [
                 {
@@ -93,26 +59,44 @@ export default defineConfig({
               ],
             }),
           }),
+          eventsPage: defineLocations({
+            message: "This document is used on the /events page",
+            tone: "caution",
+            locations: [{ title: "Events Page", href: "/events" }],
+          }),
         },
       },
     }),
     visionTool(),
   ],
   schema: { types: schemaTypes },
+  tools: (prev) => {
+    const presentationIndex = prev.findIndex((t) => t.name === "presentation")
+    const customizeTool = {
+      name: "customize",
+      title: "Customize Events",
+      icon: CalendarIcon,
+      component: CustomizeEventsTool,
+    }
+
+    return [
+      ...prev.slice(0, presentationIndex + 1),
+      customizeTool,
+      ...prev.slice(presentationIndex + 1),
+    ]
+  },
   document: {
     actions: (input, context) => {
-      if (["siteSettings", "homePage"].includes(context.schemaType)) {
+      if (SINGLETON_TYPES.has(context.schemaType)) {
         return input.filter(
           (a) => a.action !== "delete" && a.action !== "duplicate"
         )
       }
       return input
     },
-    newDocumentOptions: (input) => {
-      return input.filter(
-        (creationOption) =>
-          !["siteSettings", "homePage"].includes(creationOption.templateId)
-      )
-    },
+    newDocumentOptions: (input) =>
+      input.filter(
+        (creationOption) => !SINGLETON_TYPES.has(creationOption.templateId)
+      ),
   },
 })

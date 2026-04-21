@@ -7,14 +7,10 @@ import {
 } from "@tidewater-dsa/ui/components/sheet"
 import { Button } from "@tidewater-dsa/ui/components/button"
 import { Menu } from "lucide-react"
-
-interface NavLink {
-  title: string
-  slug: string
-}
+import type { ValidNavLink } from "@/types"
 
 interface MobileNavProps {
-  navLinks: NavLink[]
+  navLinks: ValidNavLink[]
 }
 
 export const MobileNav = ({ navLinks = [] }: MobileNavProps) => {

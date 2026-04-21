@@ -4,12 +4,12 @@ import "@/styles/action-network.css"
 
 import { VisualEditing } from "@sanity/astro/visual-editing"
 import { loadQuery } from "@/lib/load-query"
-import { SETTINGS_QUERY } from "@/sanity/queries"
-import type { SETTINGS_QUERY_RESULT } from "@/sanity/types"
+import { SITE_SETTINGS_QUERY } from "@/sanity/queries"
+import type { SITE_SETTINGS_QUERY_RESULT } from "@/sanity/types"
 import Footer from "@/components/Footer.astro"
 import Header from "@/components/Header.astro"
 import { urlFor } from "@/lib/sanity-image"
-import type { IconVariant } from "@/lib/types"
+import type { IconVariant } from "@/types"
 
 interface Props {
   title?: string
@@ -17,8 +17,8 @@ interface Props {
 
 const { title = "Tidewater DSA" } = Astro.props
 
-const { data: settings } = await loadQuery<SETTINGS_QUERY_RESULT>({
-  query: SETTINGS_QUERY,
+const { data: settings } = await loadQuery<SITE_SETTINGS_QUERY_RESULT>({
+  query: SITE_SETTINGS_QUERY,
 })
 
 const logoUrl = settings?.logo?.asset
@@ -90,6 +90,7 @@ const iconVariant: IconVariant = settings?.socialIconStyle?.includes("filled")
             <link
               rel="stylesheet"
               href="https://actionnetwork.org/css/style-embed-whitelabel-v3.css"
+              data-an-styles
             />
             <script is:inline src={settings?.signupLink}></script>
           </div>

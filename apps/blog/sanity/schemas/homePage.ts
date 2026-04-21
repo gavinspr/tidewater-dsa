@@ -77,7 +77,7 @@ export const homePageType = defineType({
       type: "array",
       group: "content",
       description:
-        "Main content below the hero — chapter info, priorities, calls to action, etc.",
+        "Main content below the hero (e.g. chapter info, priorities, calls to action, etc.)",
       of: [
         {
           type: "block",

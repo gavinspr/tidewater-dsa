@@ -1,3 +1,6 @@
 export * from "./homePage"
 export * from "./page"
-export * from "./settings"
+export * from "./siteSettings"
+export * from "./eventsPage"
+export * from "./eventTypes"
+export * from "./events"

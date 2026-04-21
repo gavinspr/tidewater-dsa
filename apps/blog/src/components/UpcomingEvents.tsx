@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react"
-import { Button } from "@tidewater-dsa/ui/components/button"
+import { useEffect, useRef, useState } from "react"
 import {
   ArrowLeft,
   Calendar,
@@ -8,10 +7,7 @@ import {
   MapPin,
   Monitor,
 } from "lucide-react"
-import type { UpcomingEvent } from "@/lib/types"
-import { formatEventDate, formatEventTime } from "@/lib/format"
-import { clean } from "@/lib/stega"
-import { ensureStylesLoaded, extractAnInfo } from "@/lib/action-network"
+import { Button } from "@tidewater-dsa/ui/components/button"
 import {
   Card,
   CardContent,
@@ -20,6 +16,12 @@ import {
   CardTitle,
 } from "@tidewater-dsa/ui/components/card"
 import { Skeleton } from "@tidewater-dsa/ui/components/skeleton"
+import type { SerializedEvent } from "@/types"
+import { formatEventDate, formatEventTime } from "@/lib/format"
+import {
+  ensureStylesLoaded,
+  extractActionNetworkInfo,
+} from "@/lib/action-network"
 
 interface ActionNetworkEventProps {
   rsvpLink: string
@@ -28,7 +30,7 @@ interface ActionNetworkEventProps {
 const ActionNetworkEvent = ({ rsvpLink }: ActionNetworkEventProps) => {
   const [ready, setReady] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  const anInfo = extractAnInfo(rsvpLink)
+  const anInfo = extractActionNetworkInfo(rsvpLink)
 
   useEffect(() => {
     if (!anInfo || !containerRef.current) return
@@ -36,6 +38,7 @@ const ActionNetworkEvent = ({ rsvpLink }: ActionNetworkEventProps) => {
     const { type, slug } = anInfo
     const widgetId = `can-${type}-area-${slug}`
 
+    // Clean up any prior embed when the user clicks away from one event and into another without unmounting the parent
     const existing = document.getElementById(widgetId)
     if (existing) existing.remove()
 
@@ -57,6 +60,7 @@ const ActionNetworkEvent = ({ rsvpLink }: ActionNetworkEventProps) => {
     script.setAttribute("data-an-widget", `${type}-${slug}`)
     document.body.appendChild(script)
 
+    // Poll for the widget to render
     const interval = setInterval(() => {
       const el = document.getElementById(widgetId)
       if (el && el.children.length > 0) {
@@ -69,7 +73,6 @@ const ActionNetworkEvent = ({ rsvpLink }: ActionNetworkEventProps) => {
   }, [anInfo])
 
   if (!anInfo) {
-    const cleanedUrl = clean(rsvpLink)
     return (
       <Card className="flex min-h-62.5 w-full flex-col justify-center border-dashed bg-muted/20 text-center shadow-none">
         <CardHeader>
@@ -80,25 +83,25 @@ const ActionNetworkEvent = ({ rsvpLink }: ActionNetworkEventProps) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">
-          <a href={cleanedUrl} target="_blank" rel="noreferrer">
-            <Button
-              size="lg"
-              className="w-full cursor-pointer gap-2 font-semibold sm:w-72"
-            >
-              RSVP for this event
-              <ExternalLink className="font-me mb-0.5 size-4" strokeWidth={3} />
-            </Button>
-          </a>
+          <Button
+            size="lg"
+            className="w-full cursor-pointer gap-2 font-semibold sm:w-72"
+            render={<a href={rsvpLink} target="_blank" rel="noreferrer" />}
+          >
+            RSVP for this event
+            <ExternalLink className="mb-0.5 size-4" strokeWidth={3} />
+          </Button>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <div className="an-embed min-h-100">
+    <div className="an-embed min-h-138">
       {!ready && (
         <div className="space-y-4 py-4">
-          <Skeleton className="h-5 w-48 rounded-md" />
+          <Skeleton className="h-8 w-1/2 rounded-md" />
+          <Skeleton className="h-6 w-full rounded-md" />
           <div className="h-px w-full bg-border/30" />
           <div className="space-y-3">
             <Skeleton className="h-10 w-full rounded-md" />
@@ -121,28 +124,29 @@ interface EventSideImageProps {
   imageUrl?: string | null
 }
 
-const EventSideImage = ({ imageUrl }: EventSideImageProps) => {
-  return (
-    <div className="mt-8 w-full overflow-hidden rounded-xl shadow-lg lg:mt-0">
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt="Community event"
-          className="h-full w-full bg-muted object-cover object-center"
-        />
-      ) : (
-        <div className="flex h-full w-full flex-col items-center justify-center bg-primary/5 p-6 text-center text-primary/40">
-          <Calendar className="mb-2 h-8 w-8 opacity-50" />
-          <span className="font-medium">Events Image Space</span>
-          <span className="mt-1 text-sm">Add an 'eventsImage' in Sanity</span>
-        </div>
-      )}
-    </div>
-  )
-}
+const EventSideImage = ({ imageUrl }: EventSideImageProps) => (
+  <div className="mt-8 w-full overflow-hidden rounded-xl shadow-lg lg:mt-0">
+    {imageUrl ? (
+      <img
+        src={imageUrl}
+        alt="Community event"
+        className="h-full w-full bg-muted object-cover object-center"
+      />
+    ) : (
+      <div className="flex h-full w-full flex-col items-center justify-center bg-primary/5 p-6 text-center text-primary/40">
+        <Calendar className="mb-2 h-8 w-8 opacity-50" />
+        <span className="font-medium">Events Image Space</span>
+        <span className="mt-1 text-sm">Add an 'eventsImage' in Sanity</span>
+      </div>
+    )}
+  </div>
+)
 
-interface UpcomingEventProps {
-  events: UpcomingEvent[]
+const isVirtualEvent = (event: SerializedEvent): boolean =>
+  event.attendance === "virtual" || event.attendance === "hybrid"
+
+interface UpcomingEventsProps {
+  events: SerializedEvent[]
   sideImageUrl?: string | null
   noRsvpMessage?: string | null
 }
@@ -151,12 +155,14 @@ export const UpcomingEvents = ({
   events,
   sideImageUrl,
   noRsvpMessage,
-}: UpcomingEventProps) => {
-  const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent | null>(null)
+}: UpcomingEventsProps) => {
+  const [selectedEvent, setSelectedEvent] = useState<SerializedEvent | null>(
+    null
+  )
 
   // Detail View
   if (selectedEvent) {
-    const hasAnLink = !!selectedEvent.rsvpLink
+    const isVirtual = isVirtualEvent(selectedEvent)
 
     return (
       <div className="space-y-6">
@@ -169,12 +175,12 @@ export const UpcomingEvents = ({
           All Events
         </Button>
 
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-          <div className="space-y-6 py-2">
-            {hasAnLink ? (
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+          <div className="space-y-6 self-start py-2">
+            {selectedEvent.rsvpLink ? (
               <ActionNetworkEvent
-                key={selectedEvent._id}
-                rsvpLink={selectedEvent.rsvpLink!}
+                key={selectedEvent.id}
+                rsvpLink={selectedEvent.rsvpLink}
               />
             ) : (
               // Non-AN event
@@ -184,36 +190,35 @@ export const UpcomingEvents = ({
                     {selectedEvent.title}
                   </h3>
                   <div className="mt-4 space-y-2">
-                    {selectedEvent.date && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4 shrink-0 text-primary" />
-                        <span>
-                          {formatEventDate(selectedEvent.date)} •{" "}
-                          {formatEventTime(selectedEvent.date)}
-                        </span>
-                      </div>
-                    )}
-                    {selectedEvent.endDate && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4 shrink-0 text-primary" />
-                        <span>
-                          Ends {formatEventDate(selectedEvent.endDate)} •{" "}
-                          {formatEventTime(selectedEvent.endDate)}
-                        </span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4 shrink-0 text-primary" />
+                      <span>
+                        {formatEventDate(selectedEvent.startISO)}
+                        {!selectedEvent.isAllDay &&
+                          ` • ${formatEventTime(selectedEvent.startISO)}`}
+                      </span>
+                    </div>
+                    {selectedEvent.endISO &&
+                      selectedEvent.endISO !== selectedEvent.startISO &&
+                      formatEventDate(selectedEvent.endISO) !==
+                        formatEventDate(selectedEvent.startISO) && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Clock className="h-4 w-4 shrink-0 text-primary" />
+                          <span>
+                            Ends {formatEventDate(selectedEvent.endISO)}
+                            {!selectedEvent.isAllDay &&
+                              ` • ${formatEventTime(selectedEvent.endISO)}`}
+                          </span>
+                        </div>
+                      )}
                     {selectedEvent.location && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        {selectedEvent.isVirtual ? (
+                        {isVirtual ? (
                           <Monitor className="h-4 w-4 shrink-0 text-primary" />
                         ) : (
                           <MapPin className="h-4 w-4 shrink-0 text-primary" />
                         )}
-                        <span>
-                          {selectedEvent.location}
-                          {selectedEvent.address &&
-                            ` • ${selectedEvent.address}`}
-                        </span>
+                        <span>{selectedEvent.location}</span>
                       </div>
                     )}
                   </div>
@@ -230,7 +235,9 @@ export const UpcomingEvents = ({
             )}
           </div>
 
-          <EventSideImage imageUrl={sideImageUrl} />
+          <div className="self-center">
+            <EventSideImage imageUrl={sideImageUrl} />
+          </div>
         </div>
       </div>
     )
@@ -238,19 +245,19 @@ export const UpcomingEvents = ({
 
   // List View
   return (
-    <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+    <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
       <div className="py-2">
         <div className="max-h-125 divide-y divide-border/50 overflow-y-auto pr-2">
           {events.map((event) => (
             <div
-              key={event._id}
+              key={event.id}
               className="group flex items-center justify-between gap-4 py-5 first:pt-0 last:pb-0"
             >
               <div className="space-y-0.5">
                 <h3 className="leading-tight font-bold">{event.title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {event.date && formatEventDate(event.date)}{" "}
-                  {event.date && formatEventTime(event.date)}
+                  {formatEventDate(event.startISO)}
+                  {!event.isAllDay && ` ${formatEventTime(event.startISO)}`}
                   {event.location && ` · ${event.location}`}
                 </p>
               </div>

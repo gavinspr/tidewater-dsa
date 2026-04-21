@@ -1,4 +1,6 @@
 import { eventType } from "./event"
+import { eventsPageType } from "./eventsPage"
+import { eventTypesType } from "./eventTypes"
 import { homePageType } from "./homePage"
 import { pageType } from "./page"
 import { postType } from "./post"
@@ -10,4 +12,6 @@ export const schemaTypes = [
   siteSettingsType,
   homePageType,
   eventType,
+  eventsPageType,
+  eventTypesType,
 ]

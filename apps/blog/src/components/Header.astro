@@ -2,7 +2,7 @@
 import { MobileNav } from "./MobileNav"
 import { Button } from "@tidewater-dsa/ui/components/button"
 import { Heart } from "lucide-react"
-import type { Settings } from "@/lib/types"
+import type { Settings, ValidNavLink } from "@/types"
 
 interface Props {
   logoUrl: string | null
@@ -16,9 +16,8 @@ const { logoUrl, title, navLinks, callToActionText, callToActionLink } =
   Astro.props
 
 const validNavLinks =
-  navLinks?.filter(
-    (link): link is { title: string; slug: string; _key: string } =>
-      Boolean(link.title && link.slug)
+  navLinks?.filter((link): link is ValidNavLink =>
+    Boolean(link.title && link.slug)
   ) ?? []
 ---
 

@@ -1,0 +1,213 @@
+import { useState, useEffect, useMemo, useCallback } from "react"
+import { addMonths, parseISO, subMonths } from "date-fns"
+import type { SerializedEvent } from "@/types"
+import type { EVENT_TYPES_QUERY_RESULT } from "@/sanity/types"
+import { getEventTypeStyle, type EventTypeStyle } from "@/lib/event-type-colors"
+import {
+  EMPTY_FILTERS,
+  filterEvents,
+  filtersFromSearchParams,
+  filtersToSearchParams,
+  type CalendarFilterState,
+} from "@/lib/event-filters"
+import { CalendarFilters } from "./CalendarFilters"
+import { CalendarHeader, type ViewMode } from "./CalendarHeader"
+import { EventDialog } from "./EventDialog"
+import { FeaturedEvents } from "./FeaturedEvents"
+import { ListView } from "./ListView"
+import { MonthGrid } from "./MonthGrid"
+import { featuredForMonth, parseEvents } from "./utils"
+
+export type EventType = NonNullable<EVENT_TYPES_QUERY_RESULT>[number]
+
+type TransitionDir = "prev" | "next" | "fade"
+
+const TRANSITION_CLASS: Record<TransitionDir, string> = {
+  prev: "animate-in slide-in-from-left-4 fade-in duration-200",
+  next: "animate-in slide-in-from-right-4 fade-in duration-200",
+  fade: "animate-in fade-in duration-150",
+}
+
+/** Build a lookup that converts a given event into its render-ready style. */
+const makeStyleLookup = (
+  eventTypes: EventType[]
+): ((event: SerializedEvent) => EventTypeStyle) => {
+  const colorByValue = new Map<string, string | null>()
+
+  for (const t of eventTypes) {
+    if (t.value) colorByValue.set(t.value, t.color ?? null)
+  }
+
+  return (event) => {
+    const color = event.eventType
+      ? colorByValue.get(event.eventType)
+      : undefined
+    return getEventTypeStyle(color)
+  }
+}
+
+interface EventCalendarProps {
+  events: SerializedEvent[]
+  eventTypes: EventType[]
+  /** Optional override for the initial visible month (defaults to today). */
+  initialMonth?: string
+  /**
+   * Template for the Featured Events empty state.
+   * Use `{month}` as a placeholder for the current month name.
+   */
+  noFeaturedEventsMessage?: string
+}
+
+export const EventCalendar = ({
+  events,
+  eventTypes,
+  initialMonth,
+  noFeaturedEventsMessage,
+}: EventCalendarProps) => {
+  const [viewMonth, setViewMonth] = useState<Date>(() =>
+    initialMonth ? parseISO(initialMonth) : new Date()
+  )
+  const [view, setView] = useState<ViewMode>("month")
+  const [selected, setSelected] = useState<SerializedEvent | null>(null)
+  const [transition, setTransition] = useState<TransitionDir>("fade")
+  const [filters, setFilters] = useState<CalendarFilterState>(() => {
+    if (typeof window === "undefined") return EMPTY_FILTERS
+    return filtersFromSearchParams(new URLSearchParams(window.location.search))
+  })
+
+  const styleFor = useMemo(() => makeStyleLookup(eventTypes), [eventTypes])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const qs = filtersToSearchParams(filters).toString()
+    const url = qs
+      ? `${window.location.pathname}?${qs}`
+      : window.location.pathname
+    window.history.replaceState({}, "", url)
+  }, [filters])
+
+  const now = useMemo(() => new Date(), [])
+
+  const filtered = useMemo(
+    () => filterEvents(events, filters),
+    [events, filters]
+  )
+  const parsed = useMemo(() => parseEvents(filtered), [filtered])
+
+  // Featured events intersect the visible month. Not filtered by user filters.
+  const featured = useMemo(
+    () => featuredForMonth(events, viewMonth),
+    [events, viewMonth]
+  )
+
+  const goPrev = useCallback(() => {
+    setTransition("prev")
+    setViewMonth((m) => subMonths(m, 1))
+  }, [])
+
+  const goNext = useCallback(() => {
+    setTransition("next")
+    setViewMonth((m) => addMonths(m, 1))
+  }, [])
+
+  const goToday = useCallback(() => {
+    const today = new Date()
+    setViewMonth((m) => {
+      setTransition(today > m ? "next" : "prev")
+      return today
+    })
+  }, [])
+
+  const changeView = useCallback((v: ViewMode) => {
+    setTransition("fade")
+    setView(v)
+  }, [])
+
+  useEffect(() => {
+    if (selected) return
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLElement) {
+        const tag = e.target.tagName
+        if (
+          tag === "INPUT" ||
+          tag === "TEXTAREA" ||
+          e.target.isContentEditable
+        ) {
+          return
+        }
+      }
+      if (e.key === "ArrowLeft") goPrev()
+      else if (e.key === "ArrowRight") goNext()
+    }
+
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [selected, goPrev, goNext])
+
+  return (
+    <div className="space-y-8">
+      <div
+        key={`featured-${viewMonth.toISOString()}`}
+        className={TRANSITION_CLASS[transition]}
+      >
+        <FeaturedEvents
+          events={featured}
+          viewMonth={viewMonth}
+          noEventsMessage={noFeaturedEventsMessage}
+          onSelect={setSelected}
+        />
+      </div>
+
+      <div className="space-y-4">
+        <CalendarFilters
+          events={events}
+          eventTypes={eventTypes}
+          value={filters}
+          onChange={setFilters}
+          filteredCount={filtered.length}
+          totalCount={events.length}
+        />
+
+        <CalendarHeader
+          viewMonth={viewMonth}
+          onToday={goToday}
+          onPrev={goPrev}
+          onNext={goNext}
+          view={view}
+          onChangeView={changeView}
+        />
+
+        <div
+          key={`grid-${viewMonth.toISOString()}-${view}`}
+          className={TRANSITION_CLASS[transition]}
+        >
+          {view === "month" ? (
+            <MonthGrid
+              viewMonth={viewMonth}
+              events={parsed}
+              now={now}
+              onSelect={setSelected}
+              styleFor={styleFor}
+            />
+          ) : (
+            <ListView
+              events={parsed}
+              viewMonth={viewMonth}
+              now={now}
+              onSelect={setSelected}
+              styleFor={styleFor}
+            />
+          )}
+        </div>
+      </div>
+
+      <EventDialog
+        event={selected}
+        eventTypes={eventTypes}
+        onOpenChange={(open) => !open && setSelected(null)}
+      />
+    </div>
+  )
+}

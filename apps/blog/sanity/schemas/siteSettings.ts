@@ -33,7 +33,9 @@ export const siteSettingsType = defineType({
       title: "Main Navigation",
       description: "Select the pages to appear in the top menu",
       type: "array",
-      of: [{ type: "reference", to: [{ type: "page" }] }],
+      of: [
+        { type: "reference", to: [{ type: "page" }, { type: "eventsPage" }] },
+      ],
     }),
     defineField({
       name: "callToActionText",
