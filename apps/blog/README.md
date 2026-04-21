@@ -24,9 +24,9 @@ apps/blog/
 │   ├── components/        # App-specific Astro and React components
 │   │   └── calendar/      # Events page calendar components
 │   ├── layouts/           # Astro layouts (main.astro)
-│   ├── lib/               # Helpers — loadQuery, formatters, events, gCal
+│   ├── lib/               # Helpers — loadQuery, formatters, events, gcal
 │   ├── pages/
-│   │   └── api/           # Server endpoints (gCal-events, subscribe)
+│   │   └── api/           # Server endpoints (gcal-events, subscribe)
 │   └── types/             # Shared domain types
 ├── astro.config.mjs
 └── sanity.config.ts       # Embedded Studio config with Presentation tool
@@ -84,7 +84,8 @@ Content is managed through the embedded Sanity Studio at `/admin`. The document 
 - **Homepage** (singleton) — hero, CTA, section headings, events-section copy
 - **Events Page** (singleton) — heading, intro, and empty-state message for the `/events` calendar page
 - **Event Types** (singleton) — admin-defined taxonomy for categorizing events (e.g. "Training", "Action", "Meeting") with a color per type
-- **Event Customization** — per-event editorial metadata (featured flag, event type, RSVP override, summary) joined to Google Calendar events by ID. Managed through the **Customize Events** tool rather than as standalone documents — see the Events section below.
+- **Working Groups** (singleton) — admin-defined taxonomy of the chapter's working groups and committees. Shown as a badge on event details and as a filter on the events page.
+- **Event Customization** — per-event editorial metadata (featured flag, event type, working group, RSVP override, summary) joined to Google Calendar events by ID. Managed through the **Customize Events** tool rather than as standalone documents — see the Events section below.
 - **Static Page** — for routes like `/about-us`, etc.
 - **Blog Post** — long-form content with Portable Text
 
@@ -138,7 +139,7 @@ TypeGen configuration lives in `sanity.cli.ts` under the `typegen` key.
 
 ## Events
 
-The events system is a hybrid model: Google Calendar is the source of truth for event data (title, time, location, description), and Sanity stores optional editorial metadata that augments gCal events. Events appear on `/events` (full calendar) and on the homepage (next five upcoming).
+The events system is a hybrid model: Google Calendar is the source of truth for event data (title, time, location, description), and Sanity stores optional editorial metadata that augments gcal events. Events appear on `/events` (full calendar) and on the homepage (next five upcoming).
 
 ### Why a hybrid model
 
@@ -152,7 +153,7 @@ Sanity Studio has a custom **Customize Events** tool (in the top nav, after Pres
 - **Customize it** — creates a full editorial overlay with event type, RSVP link override, summary, working group, etc.
 - **Filter** by status (customized / not customized / all) and time window (upcoming / past / all)
 
-Customizations are stored as Sanity `event` documents linked to Google Calendar events by the gCal event ID. Admins shouldn't create `event` documents directly (the type is hidden from the main sidebar). Always use the Customize Events tool, which creates and links them automatically.
+Customizations are stored as Sanity `event` documents linked to Google Calendar events by the gcal event ID. Admins shouldn't create `event` documents directly (the type is hidden from the main sidebar). Always use the Customize Events tool, which creates and links them automatically.
 
 ### Event types taxonomy
 
@@ -164,6 +165,16 @@ Event categories (Training, Action, 101/Intro, etc.) are managed in **Settings �
 - An optional internal description
 
 Adding a new type in the taxonomy makes it immediately available in the Customize Events tool dropdown and as a filter chip on the events page. No code changes needed.
+
+### Working groups taxonomy
+
+Similar to Event Types but without the color. The chapter's working groups and committees (Labor, Political Education, Mutual Aid, etc.) are managed in **Settings → Working Groups**. Each entry has:
+
+- A display label (shown as a badge in the event detail dialog)
+- A slug (internal identifier, auto-filled from the label)
+- An optional internal description
+
+The working group value on an event customization stores the slug (e.g. `labor`). The site resolves the slug back to the friendly label at render time using the taxonomy. If an admin renames a taxonomy entry's slug, any event still tagged with the old slug shows up as an "orphan" — in the filter the raw slug appears as the label, and in the Customize Events dropdown the old value is flagged "(not in taxonomy)" so the admin knows to re-tag.
 
 ### Google Calendar setup
 
@@ -178,7 +189,7 @@ In development without credentials, the app serves mock event data from `src/lib
 
 ### Caching
 
-The `/events` page and homepage send `Cache-Control: public, max-age=300, stale-while-revalidate=600` — 5-minute edge caching with 10-minute stale revalidation. Keeps gCal API calls to a sane volume without events going stale. If you need faster propagation for a specific update, edit the customization in Studio (no cache invalidation needed — the Sanity customization fetch is part of the same cached render) or wait ≤5 minutes.
+The `/events` page and homepage send `Cache-Control: public, max-age=300, stale-while-revalidate=600` — 5-minute edge caching with 10-minute stale revalidation. Keeps gcal API calls to a sane volume without events going stale. If you need faster propagation for a specific update, edit the customization in Studio (no cache invalidation needed — the Sanity customization fetch is part of the same cached render) or wait ≤5 minutes.
 
 ## Adding routes
 
