@@ -10,8 +10,7 @@ import {
   PopoverTrigger,
 } from "@tidewater-dsa/ui/components/popover"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
-import type { SerializedEvent } from "@/types"
-import type { EventType } from "./EventCalendar"
+import type { EventType, SerializedEvent, WorkingGroup } from "@/types"
 import { getEventTypeStyle } from "@/lib/event-type-colors"
 import { ATTENDANCE_OPTIONS } from "@/lib/event-constants"
 import {
@@ -25,6 +24,7 @@ import {
 interface CalendarFiltersProps {
   events: SerializedEvent[]
   eventTypes: EventType[]
+  workingGroups: WorkingGroup[]
   value: CalendarFilterState
   onChange: (next: CalendarFilterState) => void
   filteredCount: number
@@ -80,14 +80,16 @@ const CheckboxList = ({
 interface FilterPopoverContentProps {
   value: CalendarFilterState
   onChange: (next: CalendarFilterState) => void
-  workingGroups: string[]
+  workingGroupSlugs: string[]
+  workingGroupLabelFor: (slug: string) => string
   topics: string[]
 }
 
 const FilterPopoverContent = ({
   value,
   onChange,
-  workingGroups,
+  workingGroupSlugs,
+  workingGroupLabelFor,
   topics,
 }: FilterPopoverContentProps) => {
   const toggleAttendance = (
@@ -137,14 +139,15 @@ const FilterPopoverContent = ({
         />
       </div>
 
-      {workingGroups.length > 0 && (
+      {workingGroupSlugs.length > 0 && (
         <div className="p-3">
           <SectionHeading>Working Group</SectionHeading>
           <CheckboxList
-            items={workingGroups}
+            items={workingGroupSlugs}
             selected={value.workingGroups}
             onToggle={toggleWorkingGroup}
             emptyLabel="No working groups yet"
+            getLabel={workingGroupLabelFor}
           />
         </div>
       )}
@@ -167,15 +170,26 @@ const FilterPopoverContent = ({
 export const CalendarFilters = ({
   events,
   eventTypes,
+  workingGroups,
   value,
   onChange,
   filteredCount,
   totalCount,
 }: CalendarFiltersProps) => {
-  const { workingGroups, topics } = useMemo(
+  const { workingGroups: eventWorkingGroups, topics } = useMemo(
     () => deriveFilterOptions(events),
     [events]
   )
+
+  const workingGroupLabelFor = useMemo(() => {
+    const labelBySlug = new Map<string, string>()
+
+    for (const g of workingGroups) {
+      if (g.value && g.label) labelBySlug.set(g.value, g.label)
+    }
+
+    return (slug: string) => labelBySlug.get(slug) ?? slug
+  }, [workingGroups])
 
   const active = isFilterActive(value)
   const activeCount = countActiveFilterCategories(value)
@@ -232,7 +246,8 @@ export const CalendarFilters = ({
             <FilterPopoverContent
               value={value}
               onChange={onChange}
-              workingGroups={workingGroups}
+              workingGroupSlugs={eventWorkingGroups}
+              workingGroupLabelFor={workingGroupLabelFor}
               topics={topics}
             />
           </PopoverContent>

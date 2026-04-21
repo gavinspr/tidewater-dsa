@@ -21,6 +21,27 @@ type ArrayOf<T> = Array<
 >
 
 // Source: sanity/schema.json
+export type WorkingGroups = {
+  _id: string
+  _type: "workingGroups"
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  groups?: Array<{
+    label?: string
+    value?: Slug
+    description?: string
+    _type: "workingGroupEntry"
+    _key: string
+  }>
+}
+
+export type Slug = {
+  _type: "slug"
+  current?: string
+  source?: string
+}
+
 export type EventTypes = {
   _id: string
   _type: "eventTypes"
@@ -35,12 +56,6 @@ export type EventTypes = {
     _type: "eventTypeEntry"
     _key: string
   }>
-}
-
-export type Slug = {
-  _type: "slug"
-  current?: string
-  source?: string
 }
 
 export type EventsPage = {
@@ -405,8 +420,9 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
-  | EventTypes
+  | WorkingGroups
   | Slug
+  | EventTypes
   | EventsPage
   | Event
   | SanityImageAssetReference
@@ -642,6 +658,15 @@ export type SITE_SETTINGS_QUERY_RESULT = {
   } | null
 } | null
 
+// Source: sanity/queries/workingGroups.ts
+// Variable: WORKING_GROUPS_QUERY
+// Query: *[_type == "workingGroups" && _id == "workingGroups"][0].groups[]{    label,    "value": value.current,    description  }
+export type WORKING_GROUPS_QUERY_RESULT = Array<{
+  label: string | null
+  value: string | null
+  description: string | null
+}> | null
+
 // Query TypeMap
 import "@sanity/client"
 declare module "@sanity/client" {
@@ -652,5 +677,6 @@ declare module "@sanity/client" {
     '\n  *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCtaPosition,\n    body,\n    bodyImage,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage\n  }\n': HOME_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n  "settings": *[_type == "siteSettings"][0] {\n    siteTitle\n  }\n}': PAGE_BY_SLUG_QUERY_RESULT
     '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->slug.current\n    )\n  },\n  socialLinks,\n  socialIconStyle,\n  callToActionText,\n  callToActionLink,\n  contactEmail,\n  contactEmailSubject,\n  signupLink,\n  signupHeadline,\n  signupDescription,\n  signupImage\n}': SITE_SETTINGS_QUERY_RESULT
+    '\n  *[_type == "workingGroups" && _id == "workingGroups"][0].groups[]{\n    label,\n    "value": value.current,\n    description\n  }\n': WORKING_GROUPS_QUERY_RESULT
   }
 }

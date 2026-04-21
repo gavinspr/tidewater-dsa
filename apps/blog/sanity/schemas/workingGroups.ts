@@ -1,35 +1,33 @@
 import { defineField, defineType } from "sanity"
-import { ColorPickerInput } from "../components/ColorPickerInput"
 import { AutoSlugFromLabelInput } from "../components/AutoSlugFromLabelInput"
 
 interface EntryShape {
   label?: string
   value?: { current?: string }
-  color?: string
 }
 
-export const eventTypesType = defineType({
-  name: "eventTypes",
-  title: "Event Types",
+export const workingGroupsType = defineType({
+  name: "workingGroups",
+  title: "Working Groups",
   type: "document",
   fields: [
     defineField({
-      name: "types",
-      title: "Event Types",
+      name: "groups",
+      title: "Working Groups",
       description:
-        "Define the categories of events. Each type gets a colored pill on the calendar and a filter chip. Drag to reorder, the order here is the order they appear in the filter bar.",
+        "Define the working groups and committees that organize events. Each entry shows up as a badge on event details and as a filter checkbox on the events page. Drag to reorder — the order here is the order they appear in the filter list.",
       type: "array",
       of: [
         {
           type: "object",
-          name: "eventTypeEntry",
+          name: "workingGroupEntry",
           fields: [
             defineField({
               name: "label",
               title: "Display Label",
               type: "string",
               description:
-                "Shown on the calendar (e.g. 'Training', '101 / Intro').",
+                "Shown on the site (e.g. 'Deflock', 'Mutual Aid').",
               validation: (Rule) => Rule.required().max(40),
             }),
             defineField({
@@ -53,45 +51,33 @@ export const eventTypesType = defineType({
               validation: (Rule) => Rule.required(),
             }),
             defineField({
-              name: "color",
-              title: "Color",
-              type: "string",
-              description: "Pill color on the calendar and filter chip.",
-              initialValue: "blue",
-              components: {
-                input: ColorPickerInput,
-              },
-              validation: (Rule) => Rule.required(),
-            }),
-            defineField({
               name: "description",
               title: "Description (internal)",
               type: "text",
               rows: 2,
               description:
-                "Optional note for admins. Not shown on the website. Useful for clarifying when to use this type.",
+                "Optional note for admins. Not shown on the website. Useful for clarifying what the group does or when to use this tag.",
             }),
           ],
           preview: {
             select: {
               title: "label",
               slug: "value.current",
-              color: "color",
             },
-            prepare({ title, slug, color }) {
+            prepare({ title, slug }) {
               return {
-                title: title ?? "Untitled type",
-                subtitle: `${color ?? "—"} · ${slug ?? "no-slug"}`,
+                title: title ?? "Untitled working group",
+                subtitle: slug ?? "no-slug",
               }
             },
           },
         },
       ],
       validation: (Rule) =>
-        Rule.custom((types) => {
-          if (!Array.isArray(types)) return true
+        Rule.custom((groups) => {
+          if (!Array.isArray(groups)) return true
           // Sanity's Rule.custom hands us an untyped array, narrow it to the partial shape
-          const entries = types as EntryShape[]
+          const entries = groups as EntryShape[]
 
           // Ensure slug values are unique
           const seen = new Set<string>()
@@ -99,7 +85,7 @@ export const eventTypesType = defineType({
             const slug = entry?.value?.current
             if (!slug) continue
             if (seen.has(slug)) {
-              return `Duplicate value "${slug}". Each event type must have a unique value.`
+              return `Duplicate value "${slug}". Each working group must have a unique slug.`
             }
             seen.add(slug)
           }
@@ -109,7 +95,7 @@ export const eventTypesType = defineType({
   ],
   preview: {
     prepare() {
-      return { title: "Event Types" }
+      return { title: "Working Groups" }
     },
   },
 })

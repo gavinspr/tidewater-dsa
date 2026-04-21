@@ -6,6 +6,7 @@ export const SINGLETON_IDS: Record<string, string> = {
   eventsPage: "eventsPage",
   homePage: "homePage",
   siteSettings: "siteSettings",
+  workingGroups: "workingGroups",
 }
 
 export const SINGLETON_TYPES = new Set(Object.keys(SINGLETON_IDS))
@@ -54,6 +55,7 @@ export const structure: StructureResolver = (S) =>
             .items([
               singletonItem(S, "siteSettings", "Site Settings"),
               singletonItem(S, "eventTypes", "Event Types"),
+              singletonItem(S, "workingGroups", "Working Groups"),
             ])
         ),
     ])

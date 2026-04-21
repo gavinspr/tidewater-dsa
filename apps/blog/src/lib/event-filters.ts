@@ -12,7 +12,7 @@ export interface CalendarFilterState {
   search: string
   /**
    * Selected event type slugs. Plain strings because the set of valid types is admin-defined in Sanity.
-   * We can't validate against a static union here. 
+   * We can't validate against a static union here.
    * Unknown values from the URL are accepted but simply won't match any events.
    */
   eventTypes: string[]
@@ -66,7 +66,7 @@ export const filterEvents = (
 
   return events.filter((e) => {
     if (searchQuery) {
-      const searchText = [e.title, e.description, e.location, e.workingGroup]
+      const searchText = [e.title, e.description, e.location]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()

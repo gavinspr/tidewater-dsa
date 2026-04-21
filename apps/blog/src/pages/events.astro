@@ -3,10 +3,15 @@ import { addMonths, endOfMonth, startOfMonth, subMonths } from "date-fns"
 import Layout from "@/layouts/main.astro"
 import { EventCalendar } from "@/components/calendar/EventCalendar"
 import { getEvents } from "@/lib/events"
-import { EVENTS_PAGE_QUERY, EVENT_TYPES_QUERY } from "@/sanity/queries"
+import {
+  EVENTS_PAGE_QUERY,
+  EVENT_TYPES_QUERY,
+  WORKING_GROUPS_QUERY,
+} from "@/sanity/queries"
 import type {
   EVENTS_PAGE_QUERY_RESULT,
   EVENT_TYPES_QUERY_RESULT,
+  WORKING_GROUPS_QUERY_RESULT,
 } from "@/sanity/types"
 import type { SerializedEvent } from "@/types"
 import { loadQuery } from "@/lib/load-query"
@@ -25,17 +30,21 @@ let events: SerializedEvent[] = []
 let error: string | null = null
 let pageData: EVENTS_PAGE_QUERY_RESULT["page"] = null
 let eventTypes: EVENT_TYPES_QUERY_RESULT = []
+let workingGroups: WORKING_GROUPS_QUERY_RESULT = []
 
 try {
-  const [eventsResult, pageResult, typesResult] = await Promise.all([
-    getEvents({ rangeStart, rangeEnd }),
-    loadQuery<EVENTS_PAGE_QUERY_RESULT>({ query: EVENTS_PAGE_QUERY }),
-    loadQuery<EVENT_TYPES_QUERY_RESULT>({ query: EVENT_TYPES_QUERY }),
-  ])
+  const [eventsResult, pageResult, typesResult, groupsResult] =
+    await Promise.all([
+      getEvents({ rangeStart, rangeEnd }),
+      loadQuery<EVENTS_PAGE_QUERY_RESULT>({ query: EVENTS_PAGE_QUERY }),
+      loadQuery<EVENT_TYPES_QUERY_RESULT>({ query: EVENT_TYPES_QUERY }),
+      loadQuery<WORKING_GROUPS_QUERY_RESULT>({ query: WORKING_GROUPS_QUERY }),
+    ])
 
   events = eventsResult
   pageData = pageResult.data.page
   eventTypes = typesResult.data ?? []
+  workingGroups = groupsResult.data ?? []
 } catch (err) {
   error = err instanceof Error ? err.message : "Unknown error"
 }
@@ -61,6 +70,7 @@ const noFeaturedEventsMessage = pageData?.noFeaturedEventsMessage ?? undefined
           client:load
           events={events}
           eventTypes={eventTypes}
+          workingGroups={workingGroups}
           noFeaturedEventsMessage={noFeaturedEventsMessage}
         />
       )

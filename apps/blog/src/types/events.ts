@@ -1,3 +1,8 @@
+import type {
+  EVENT_TYPES_QUERY_RESULT,
+  WORKING_GROUPS_QUERY_RESULT,
+} from "@/sanity/types"
+
 /** Event type slug. Plain string because the actual set of types is admin-defined in the Sanity event types taxonomy. */
 export type EventTypeTag = string
 
@@ -32,3 +37,7 @@ export interface GetEventsOptions {
   rangeStart: Date
   rangeEnd: Date
 }
+
+export type EventType = NonNullable<EVENT_TYPES_QUERY_RESULT>[number]
+
+export type WorkingGroup = NonNullable<WORKING_GROUPS_QUERY_RESULT>[number]

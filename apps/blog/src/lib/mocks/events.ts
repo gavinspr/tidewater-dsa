@@ -5,6 +5,16 @@ import type { SerializedEvent } from "@/types"
  *
  * Spread from 1 month back to 3 months forward so the calendar's
  * navigation works naturally in dev.
+ *
+ * Note on taxonomy fields: `eventType` and `workingGroup` here are slugs (kebab-case),
+ * matching what the app expects post-taxonomy.
+ * For dev admins to see friendly labels on the rendered page,
+ * the Event Types and Working Groups singletons in Studio need entries whose slugs match the ones used here:
+ *   - Event types: meeting, training, social, mutual-aid, fundraiser,
+ *     canvass, rally, 101-intro
+ *   - Working groups: labor, mutual-aid, political-education, healthcare
+ * If the taxonomy entries don't exist yet, the filter chips still
+ * work (against slug strings) and the dialog falls back to showing the slug as the badge label.
  */
 
 const now = new Date()
@@ -55,7 +65,7 @@ const ALL_MOCKS: SerializedEvent[] = [
     eventType: "action",
     attendance: "in_person",
     topics: ["labor", "solidarity"],
-    workingGroup: "Labor",
+    workingGroup: "labor",
     rsvpLink: null,
     summary: null,
   },
@@ -92,8 +102,9 @@ const ALL_MOCKS: SerializedEvent[] = [
     eventType: "action",
     attendance: "in_person",
     topics: ["mutual aid", "community"],
-    workingGroup: "Mutual Aid",
-    rsvpLink: "https://actionnetwork.org/events/mutual-aid-planning-meeting-11/",
+    workingGroup: "mutual-aid",
+    rsvpLink:
+      "https://actionnetwork.org/events/mutual-aid-planning-meeting-11/",
     summary:
       "Our monthly brake light repair clinic — free fixes, community building, mutual aid in action.",
   },
@@ -110,7 +121,7 @@ const ALL_MOCKS: SerializedEvent[] = [
     eventType: "meeting",
     attendance: "in_person",
     topics: ["political education"],
-    workingGroup: "Political Education",
+    workingGroup: "political-education",
     rsvpLink: null,
     summary: null,
   },
@@ -128,7 +139,7 @@ const ALL_MOCKS: SerializedEvent[] = [
     eventType: "action",
     attendance: "in_person",
     topics: ["labor", "solidarity"],
-    workingGroup: "Labor",
+    workingGroup: "labor",
     rsvpLink: "https://actionnetwork.org/events/may-day-rally-2026",
     summary:
       "Annual May Day march and rally. Workers' holiday, workers' power.",
@@ -165,7 +176,7 @@ const ALL_MOCKS: SerializedEvent[] = [
     eventType: "action",
     attendance: "in_person",
     topics: ["healthcare"],
-    workingGroup: "Healthcare",
+    workingGroup: "healthcare",
     rsvpLink: null,
     summary: null,
   },
@@ -183,7 +194,7 @@ const ALL_MOCKS: SerializedEvent[] = [
     eventType: "intro",
     attendance: "virtual",
     topics: ["political education"],
-    workingGroup: "Political Education",
+    workingGroup: "political-education",
     rsvpLink: "https://actionnetwork.org/events/dsa-101-june",
     summary:
       "New to DSA? Start here. Casual, intro-level session — no prior knowledge expected.",

@@ -19,10 +19,9 @@ import {
 } from "@tidewater-dsa/ui/components/dialog"
 import { Button } from "@tidewater-dsa/ui/components/button"
 import { Badge } from "@tidewater-dsa/ui/components/badge"
-import type { SerializedEvent } from "@/types"
+import type { EventType, SerializedEvent, WorkingGroup } from "@/types"
 import { ATTENDANCE_LABEL } from "@/lib/event-constants"
 import { formatEventDate, formatEventTime } from "@/lib/format"
-import type { EventType } from "./EventCalendar"
 
 interface InfoRowProps {
   icon: ReactNode
@@ -39,9 +38,14 @@ const InfoRow = ({ icon, children }: InfoRowProps) => (
 interface EventDetailsProps {
   event: SerializedEvent
   eventTypes: EventType[]
+  workingGroups: WorkingGroup[]
 }
 
-const EventDetails = ({ event, eventTypes }: EventDetailsProps) => {
+const EventDetails = ({
+  event,
+  eventTypes,
+  workingGroups,
+}: EventDetailsProps) => {
   const start = parseISO(event.startISO)
   const end = parseISO(event.endISO)
   const sameDay = isSameDay(start, end)
@@ -53,6 +57,14 @@ const EventDetails = ({ event, eventTypes }: EventDetailsProps) => {
 
     return match?.label ?? event.eventType
   }, [event.eventType, eventTypes])
+
+  const workingGroupLabel = useMemo(() => {
+    if (!event.workingGroup) return null
+
+    const match = workingGroups.find((g) => g.value === event.workingGroup)
+
+    return match?.label ?? event.workingGroup
+  }, [event.workingGroup, workingGroups])
 
   const dateLine = event.isAllDay
     ? sameDay
@@ -85,10 +97,10 @@ const EventDetails = ({ event, eventTypes }: EventDetailsProps) => {
               {attendanceLabel}
             </Badge>
           )}
-          {event.workingGroup && (
+          {workingGroupLabel && (
             <Badge variant="outline" className="gap-1 font-normal">
               <WrenchIcon />
-              {event.workingGroup}
+              {workingGroupLabel}
             </Badge>
           )}
         </div>
@@ -169,12 +181,14 @@ const EventDetails = ({ event, eventTypes }: EventDetailsProps) => {
 interface EventDialogProps {
   event: SerializedEvent | null
   eventTypes: EventType[]
+  workingGroups: WorkingGroup[]
   onOpenChange: (open: boolean) => void
 }
 
 export const EventDialog = ({
   event,
   eventTypes,
+  workingGroups,
   onOpenChange,
 }: EventDialogProps) => {
   const [preservedEvent, setPreservedEvent] = useState<SerializedEvent | null>(
@@ -191,7 +205,13 @@ export const EventDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[calc(100%-2rem)] sm:w-full sm:max-w-lg">
-        {current && <EventDetails event={current} eventTypes={eventTypes} />}
+        {current && (
+          <EventDetails
+            event={current}
+            eventTypes={eventTypes}
+            workingGroups={workingGroups}
+          />
+        )}
       </DialogContent>
     </Dialog>
   )

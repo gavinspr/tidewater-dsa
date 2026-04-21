@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { addMonths, parseISO, subMonths } from "date-fns"
-import type { SerializedEvent } from "@/types"
-import type { EVENT_TYPES_QUERY_RESULT } from "@/sanity/types"
+import type { EventType, SerializedEvent, WorkingGroup } from "@/types"
 import { getEventTypeStyle, type EventTypeStyle } from "@/lib/event-type-colors"
 import {
   EMPTY_FILTERS,
@@ -17,8 +16,6 @@ import { FeaturedEvents } from "./FeaturedEvents"
 import { ListView } from "./ListView"
 import { MonthGrid } from "./MonthGrid"
 import { featuredForMonth, parseEvents } from "./utils"
-
-export type EventType = NonNullable<EVENT_TYPES_QUERY_RESULT>[number]
 
 type TransitionDir = "prev" | "next" | "fade"
 
@@ -49,6 +46,7 @@ const makeStyleLookup = (
 interface EventCalendarProps {
   events: SerializedEvent[]
   eventTypes: EventType[]
+  workingGroups: WorkingGroup[]
   /** Optional override for the initial visible month (defaults to today). */
   initialMonth?: string
   /**
@@ -61,6 +59,7 @@ interface EventCalendarProps {
 export const EventCalendar = ({
   events,
   eventTypes,
+  workingGroups,
   initialMonth,
   noFeaturedEventsMessage,
 }: EventCalendarProps) => {
@@ -164,6 +163,7 @@ export const EventCalendar = ({
         <CalendarFilters
           events={events}
           eventTypes={eventTypes}
+          workingGroups={workingGroups}
           value={filters}
           onChange={setFilters}
           filteredCount={filtered.length}
@@ -206,6 +206,7 @@ export const EventCalendar = ({
       <EventDialog
         event={selected}
         eventTypes={eventTypes}
+        workingGroups={workingGroups}
         onOpenChange={(open) => !open && setSelected(null)}
       />
     </div>

@@ -1,5 +1,6 @@
 import { defineField, defineType } from "sanity"
 import { EventTypeInput } from "../components/EventTypeInput"
+import { WorkingGroupInput } from "../components/WorkingGroupInput"
 import { EventFormHeader } from "../components/EventFormHeader"
 
 export const eventType = defineType({
@@ -75,7 +76,10 @@ export const eventType = defineType({
       title: "Working Group",
       type: "string",
       description:
-        "The working group or committee organizing this event. Used for filtering on the events page.",
+        "The working group or committee organizing this event. Choose from the list managed in the 'Working Groups' document under Settings. Go there to add or rename groups.",
+      components: {
+        input: WorkingGroupInput,
+      },
     }),
     defineField({
       name: "rsvpLink",

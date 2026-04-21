@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react"
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from "react"
 import {
   set,
   unset,
@@ -22,7 +28,7 @@ const slugify = (input: string): string =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 30)
 
-export const EventTypeSlugInput = ({
+export const AutoSlugFromLabelInput = ({
   value,
   onChange,
   readOnly,
@@ -31,7 +37,7 @@ export const EventTypeSlugInput = ({
   const [unlocked, setUnlocked] = useState(false)
 
   // Read the sibling label field.
-  // path is like ["types", {_key: "abc"}, "value"]
+  // path is like ["types", {_key: "abc"}, "value"] (or ["groups", ...]),
   // so the label sibling lives at path[0..n-1] + "label".
   const labelPath: Path = [...path.slice(0, -1), "label"]
   const label = useFormValue(labelPath) as string | undefined
