@@ -11,9 +11,9 @@ export const ATTENDANCE_OPTIONS: { value: AttendanceType; label: string }[] = [
 ]
 
 /**
- * Attendance type → display label. Used anywhere we need to render a
- * single attendance value's label (badges on event cards, detail dialog,
- * etc.) without iterating the full options list.
+ * Attendance type → display label. 
+ * Used anywhere we need to render a single attendance value's label (badges on event cards,
+ * detail dialog, etc.) without iterating the full options list.
  */
 export const ATTENDANCE_LABEL: Record<AttendanceType, string> = {
   in_person: "In-person",

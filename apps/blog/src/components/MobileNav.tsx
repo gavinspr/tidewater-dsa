@@ -6,7 +6,7 @@ import {
   SheetTitle,
 } from "@tidewater-dsa/ui/components/sheet"
 import { Button } from "@tidewater-dsa/ui/components/button"
-import { Menu } from "lucide-react"
+import { MenuIcon } from "lucide-react"
 import type { ValidNavLink } from "@/types"
 
 interface MobileNavProps {
@@ -24,7 +24,7 @@ export const MobileNav = ({ navLinks = [] }: MobileNavProps) => {
           size="icon"
           className="cursor-pointer lg:hidden"
         >
-          <Menu className="size-6 text-foreground" />
+          <MenuIcon className="size-6 text-foreground" />
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>

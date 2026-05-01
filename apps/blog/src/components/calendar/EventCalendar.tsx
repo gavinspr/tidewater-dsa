@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { addMonths, parseISO, subMonths } from "date-fns"
 import type { EventType, SerializedEvent, WorkingGroup } from "@/types"
-import { getEventTypeStyle, type EventTypeStyle } from "@/lib/event-type-colors"
+import { getEventTypeStyle, type EventTypeStyle } from "@/lib/event-type-config"
 import {
   EMPTY_FILTERS,
   filterEvents,

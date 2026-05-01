@@ -25,6 +25,9 @@ dist
 # Astro
 .astro
 
+# Wrangler
+.wrangler
+
 # Debug
 npm-debug.log*
 

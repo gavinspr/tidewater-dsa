@@ -16,11 +16,15 @@ interface Props {
   title?: string
 }
 
-const { title = "Tidewater DSA" } = Astro.props
+const { title } = Astro.props
 
 const { data: settings } = await loadQuery<SITE_SETTINGS_QUERY_RESULT>({
   query: SITE_SETTINGS_QUERY,
 })
+
+const siteName = settings?.siteTitle || "Tidewater DSA"
+
+const formattedTitle = title ? `${title} | ${siteName}` : siteName
 
 const logoUrl = settings?.logo?.asset
   ? urlFor(settings.logo).height(400).url()
@@ -59,12 +63,12 @@ const signupEmbed =
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
+    <title>{formattedTitle}</title>
   </head>
   <body class="flex min-h-screen flex-col bg-background text-foreground">
     <Header
       logoUrl={logoUrl}
-      title={title}
+      title={formattedTitle}
       navLinks={settings?.navLinks ?? []}
       callToActionText={settings?.callToActionText ?? null}
       callToActionLink={settings?.callToActionLink ?? null}

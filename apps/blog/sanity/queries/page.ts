@@ -7,7 +7,4 @@ export const PAGE_BY_SLUG_QUERY = defineQuery(`{
     "slug": slug.current,
     body
   },
-  "settings": *[_type == "siteSettings"][0] {
-    siteTitle
-  }
 }`)

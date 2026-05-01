@@ -14,7 +14,7 @@ import {
   EVENT_COLORS,
   EVENT_TYPE_PALETTE_SLUGS,
   type EventTypeColor,
-} from "@/lib/event-type-colors"
+} from "@/lib/event-type-config"
 
 interface SwatchProps {
   hex: string

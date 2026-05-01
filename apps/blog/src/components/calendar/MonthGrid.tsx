@@ -12,7 +12,7 @@ import {
 import { Button } from "@tidewater-dsa/ui/components/button"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import type { SerializedEvent } from "@/types"
-import type { EventTypeStyle } from "@/lib/event-type-colors"
+import type { EventTypeStyle } from "@/lib/event-type-config"
 import { isPast, occursOnDay, type ParsedEvent } from "./utils"
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]

@@ -1,5 +1,5 @@
 ---
-import { getSocialIcon } from "@/lib/icons"
+import { detectSocialPlatform, getSocialIcon } from "@/lib/social"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import EmailLink from "./EmailLink.astro"
 import type { IconVariant, Settings } from "@/types"
@@ -36,7 +36,7 @@ const validLinks =
               icon: IconComponent,
               color,
               bg,
-            } = getSocialIcon(social.platform)
+            } = getSocialIcon(detectSocialPlatform(social.platform))
 
             const isFilled = iconVariant === "filled"
 

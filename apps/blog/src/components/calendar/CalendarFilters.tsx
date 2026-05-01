@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from "react"
-import { Search, SlidersHorizontal } from "lucide-react"
+import { SearchIcon, SlidersHorizontalIcon } from "lucide-react"
 import { Button } from "@tidewater-dsa/ui/components/button"
 import { Input } from "@tidewater-dsa/ui/components/input"
 import { Badge } from "@tidewater-dsa/ui/components/badge"
@@ -11,7 +11,7 @@ import {
 } from "@tidewater-dsa/ui/components/popover"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import type { EventType, SerializedEvent, WorkingGroup } from "@/types"
-import { getEventTypeStyle } from "@/lib/event-type-colors"
+import { getEventTypeStyle } from "@/lib/event-type-config"
 import { ATTENDANCE_OPTIONS } from "@/lib/event-constants"
 import {
   EMPTY_FILTERS,
@@ -209,7 +209,7 @@ export const CalendarFilters = ({
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             value={value.search}
@@ -230,7 +230,7 @@ export const CalendarFilters = ({
                 activeCount > 0 ? `Filters (${activeCount} active)` : "Filters"
               }
             >
-              <SlidersHorizontal className="h-4 w-4" />
+              <SlidersHorizontalIcon className="h-4 w-4" />
               Filters
               {activeCount > 0 && (
                 <Badge

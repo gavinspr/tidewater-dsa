@@ -181,4 +181,7 @@ export const siteSettingsType = defineType({
       group: "signup",
     }),
   ],
+  preview: {
+    prepare: () => ({ title: "Site Settings" }),
+  },
 })

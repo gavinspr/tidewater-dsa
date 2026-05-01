@@ -1,5 +1,5 @@
 import { format } from "date-fns"
-import { CalendarDays, MapPin } from "lucide-react"
+import { CalendarDaysIcon, MapPinIcon } from "lucide-react"
 import {
   Carousel,
   CarouselContent,
@@ -33,7 +33,7 @@ const FeaturedCard = ({ event, onSelect }: FeaturedCardProps) => {
     <button
       type="button"
       onClick={() => onSelect(event)}
-      className="group block h-full w-full text-left cursor-pointer"
+      className="group block h-full w-full cursor-pointer text-left"
     >
       <Card
         size="sm"
@@ -47,12 +47,12 @@ const FeaturedCard = ({ event, onSelect }: FeaturedCardProps) => {
 
         <CardContent className="space-y-1.5 text-xs text-muted-foreground">
           <div className="flex items-start gap-1.5">
-            <CalendarDays className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <CalendarDaysIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>{formatEventDateTime(event.startISO, event.isAllDay)}</span>
           </div>
           {event.location && (
             <div className="flex items-start gap-1.5">
-              <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              <MapPinIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               <span className="line-clamp-1">{event.location}</span>
             </div>
           )}

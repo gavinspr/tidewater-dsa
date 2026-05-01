@@ -1,0 +1,137 @@
+#printable-resources {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 0.6in;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Hide every element on the page EXCEPT the printable portal block. */
+  body > *:not(#printable-resources) {
+    display: none !important;
+  }
+
+  #printable-resources {
+    display: block !important;
+    font-family: Georgia, "Times New Roman", serif;
+    color: #000;
+    line-height: 1.4;
+    font-size: 10pt;
+  }
+
+  #printable-resources .print-header {
+    border-bottom: 2px solid #000;
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+  }
+
+  #printable-resources .print-header h1 {
+    font-size: 20pt;
+    margin: 0 0 0.2em;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  #printable-resources .print-meta {
+    font-size: 9pt;
+    color: #333;
+    margin: 0;
+  }
+
+  #printable-resources .print-filters {
+    font-size: 9pt;
+    color: #333;
+    margin: 0.2em 0 0;
+    font-style: italic;
+  }
+
+  #printable-resources .print-group {
+    margin-top: 1.25em;
+  }
+
+  #printable-resources .print-group h2 {
+    font-size: 13pt;
+    font-weight: 700;
+    border-bottom: 1px solid #000;
+    margin: 0 0 0.4em;
+    padding-bottom: 0.15em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    break-after: avoid;
+  }
+
+  #printable-resources ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  #printable-resources .print-resource {
+    margin-bottom: 0.9em;
+    padding-bottom: 0.6em;
+    border-bottom: 1px dotted #999;
+  }
+
+  #printable-resources .print-resource:last-child {
+    border-bottom: none;
+  }
+
+  #printable-resources .print-resource h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    margin: 0 0 0.1em;
+    break-after: avoid;
+  }
+
+  #printable-resources .print-org {
+    font-size: 9pt;
+    font-style: italic;
+    color: #444;
+    margin: 0 0 0.15em;
+  }
+
+  #printable-resources .print-categories {
+    font-size: 8.5pt;
+    color: #555;
+    margin: 0 0 0.3em;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  #printable-resources .print-desc {
+    margin: 0.2em 0 0.3em;
+  }
+
+  #printable-resources .print-dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.1em 0.6em;
+    margin: 0.2em 0 0;
+    font-size: 9.5pt;
+  }
+
+  #printable-resources .print-dl dt {
+    font-weight: 700;
+    color: #222;
+  }
+
+  #printable-resources .print-dl dd {
+    margin: 0;
+  }
+
+  #printable-resources .print-footer {
+    margin-top: 1.5em;
+    padding-top: 0.6em;
+    border-top: 1px solid #000;
+    font-size: 8.5pt;
+    color: #444;
+    font-style: italic;
+  }
+}

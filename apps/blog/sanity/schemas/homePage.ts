@@ -1,11 +1,12 @@
 import { defineField, defineType } from "sanity"
+import { defineRichTextBody } from "./richTextFields"
 
 export const homePageType = defineType({
   name: "homePage",
   title: "Homepage",
   type: "document",
   groups: [
-    { name: "hero", title: "Hero Section" },
+    { name: "hero", title: "Hero Section", default: true },
     { name: "content", title: "Page Content" },
     { name: "events", title: "Events Section" },
   ],
@@ -71,74 +72,10 @@ export const homePageType = defineType({
     }),
 
     // Content
-    defineField({
-      name: "body",
-      title: "Page Content",
-      type: "array",
-      group: "content",
+    defineRichTextBody({
       description:
-        "Main content below the hero (e.g. chapter info, priorities, calls to action, etc.)",
-      of: [
-        {
-          type: "block",
-          styles: [
-            { title: "Normal", value: "normal" },
-            { title: "H2", value: "h2" },
-            { title: "H3", value: "h3" },
-            { title: "Quote", value: "blockquote" },
-          ],
-          marks: {
-            decorators: [
-              { title: "Bold", value: "strong" },
-              { title: "Italic", value: "em" },
-            ],
-            annotations: [
-              {
-                name: "link",
-                type: "object",
-                title: "Link",
-                fields: [
-                  {
-                    name: "href",
-                    type: "url",
-                    title: "URL",
-                    validation: (Rule) =>
-                      Rule.uri({
-                        allowRelative: true,
-                        scheme: ["http", "https", "mailto"],
-                      }),
-                  },
-                  {
-                    name: "blank",
-                    type: "boolean",
-                    title: "Open in new tab",
-                    initialValue: true,
-                  },
-                ],
-              },
-            ],
-          },
-        },
-        {
-          type: "image",
-          options: { hotspot: true },
-          fields: [
-            {
-              name: "alt",
-              type: "string",
-              title: "Alt text",
-              description: "Describe the image for accessibility",
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: "caption",
-              type: "string",
-              title: "Caption",
-              description: "Optional text displayed below the image",
-            },
-          ],
-        },
-      ],
+        "Main content below the hero (e.g. chapter info, priorities, calls to action).",
+      group: "content",
     }),
     defineField({
       name: "bodyImage",
@@ -186,4 +123,7 @@ export const homePageType = defineType({
       initialValue: "No RSVP required — just show up!",
     }),
   ],
+  preview: {
+    prepare: () => ({ title: "Home Page" }),
+  },
 })

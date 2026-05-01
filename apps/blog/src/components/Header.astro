@@ -1,7 +1,7 @@
 ---
 import { MobileNav } from "./MobileNav"
 import { Button } from "@tidewater-dsa/ui/components/button"
-import { Heart } from "lucide-react"
+import { HeartIcon } from "lucide-react"
 import type { Settings, ValidNavLink } from "@/types"
 
 interface Props {
@@ -63,7 +63,7 @@ const validNavLinks =
             class="mb-0.5 ml-2"
           >
             <Button size="sm" className="cursor-pointer gap-1.5 font-bold">
-              <Heart fill="currentColor" />
+              <HeartIcon fill="currentColor" />
               {callToActionText}
             </Button>
           </a>
@@ -79,7 +79,7 @@ const validNavLinks =
               size="sm"
               className="cursor-pointer gap-1.5 text-xs font-semibold"
             >
-              <Heart className="size-3" fill="currentColor" />
+              <HeartIcon className="size-3" fill="currentColor" />
               {callToActionText}
             </Button>
           </a>

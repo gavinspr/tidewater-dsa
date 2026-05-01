@@ -1,5 +1,10 @@
 import { format } from "date-fns"
-import { ChevronLeft, ChevronRight, CalendarDays, List } from "lucide-react"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CalendarDaysIcon,
+  ListIcon,
+} from "lucide-react"
 import { Button } from "@tidewater-dsa/ui/components/button"
 import {
   DropdownMenu,
@@ -38,7 +43,7 @@ export const CalendarHeader = ({
         onClick={onPrev}
         aria-label="Previous month"
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeftIcon className="h-4 w-4" />
       </Button>
       <Button
         variant="ghost"
@@ -46,7 +51,7 @@ export const CalendarHeader = ({
         onClick={onNext}
         aria-label="Next month"
       >
-        <ChevronRight className="h-4 w-4" />
+        <ChevronRightIcon className="h-4 w-4" />
       </Button>
       <h3 className="ml-2 text-xl font-semibold tabular-nums">
         {format(viewMonth, "MMMM yyyy")}
@@ -58,12 +63,12 @@ export const CalendarHeader = ({
         <Button variant="outline" size="sm" className="gap-1.5">
           {view === "month" ? (
             <>
-              <CalendarDays className="h-4 w-4" />
+              <CalendarDaysIcon className="h-4 w-4" />
               Month
             </>
           ) : (
             <>
-              <List className="h-4 w-4" />
+              <ListIcon className="h-4 w-4" />
               List
             </>
           )}
@@ -71,11 +76,11 @@ export const CalendarHeader = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => onChangeView("month")}>
-          <CalendarDays className="mr-2 h-4 w-4" />
+          <CalendarDaysIcon className="mr-2 h-4 w-4" />
           Month
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onChangeView("list")}>
-          <List className="mr-2 h-4 w-4" />
+          <ListIcon className="mr-2 h-4 w-4" />
           List
         </DropdownMenuItem>
       </DropdownMenuContent>

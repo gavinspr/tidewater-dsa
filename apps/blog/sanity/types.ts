@@ -21,6 +21,77 @@ type ArrayOf<T> = Array<
 >
 
 // Source: sanity/schema.json
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: "reference"
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset"
+}
+
+export type ResourcesPage = {
+  _id: string
+  _type: "resourcesPage"
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  memberHeadline?: string
+  body?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: "span"
+          _key: string
+        }>
+        style?: "normal" | "h2" | "h3" | "blockquote"
+        listItem?: "bullet" | "number"
+        markDefs?: Array<{
+          href?: string
+          blank?: boolean
+          _type: "link"
+          _key: string
+        }>
+        level?: number
+        _type: "block"
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        displaySize?: "sm" | "md" | "lg" | "full"
+        _type: "image"
+        _key: string
+      }
+  >
+  communityHeadline?: string
+  communityIntro?: string
+  disclaimerText?: string
+  printFooterText?: string
+  googleSheetId?: string
+  googleSheetRange?: string
+}
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop"
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+}
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot"
+  x?: number
+  y?: number
+  height?: number
+  width?: number
+}
+
 export type WorkingGroups = {
   _id: string
   _type: "workingGroups"
@@ -65,24 +136,6 @@ export type EventsPage = {
   _updatedAt: string
   _rev: string
   title?: string
-  body?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: "span"
-      _key: string
-    }>
-    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote"
-    listItem?: "bullet" | "number"
-    markDefs?: Array<{
-      href?: string
-      _type: "link"
-      _key: string
-    }>
-    level?: number
-    _type: "block"
-    _key: string
-  }>
   noFeaturedEventsMessage?: string
 }
 
@@ -101,13 +154,6 @@ export type Event = {
   workingGroup?: string
   rsvpLink?: string
   summary?: string
-}
-
-export type SanityImageAssetReference = {
-  _ref: string
-  _type: "reference"
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: "sanity.imageAsset"
 }
 
 export type HomePage = {
@@ -155,6 +201,7 @@ export type HomePage = {
         crop?: SanityImageCrop
         alt?: string
         caption?: string
+        displaySize?: "sm" | "md" | "lg" | "full"
         _type: "image"
         _key: string
       }
@@ -176,22 +223,6 @@ export type HomePage = {
   noEventsHeadline?: string
   noEventsBody?: string
   noRsvpMessage?: string
-}
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop"
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
-}
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot"
-  x?: number
-  y?: number
-  height?: number
-  width?: number
 }
 
 export type PageReference = {
@@ -420,15 +451,16 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | SanityImageAssetReference
+  | ResourcesPage
+  | SanityImageCrop
+  | SanityImageHotspot
   | WorkingGroups
   | Slug
   | EventTypes
   | EventsPage
   | Event
-  | SanityImageAssetReference
   | HomePage
-  | SanityImageCrop
-  | SanityImageHotspot
   | PageReference
   | EventsPageReference
   | SiteSettings
@@ -470,33 +502,12 @@ export type EVENT_CUSTOMIZATIONS_QUERY_RESULT = Array<{
 
 // Source: sanity/queries/eventsPage.ts
 // Variable: EVENTS_PAGE_QUERY
-// Query: {  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {    _id,    title,    body,    noFeaturedEventsMessage  },  "settings": *[_type == "siteSettings"][0] {    siteTitle  }}
+// Query: {  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {    _id,    title,    noFeaturedEventsMessage  },}
 export type EVENTS_PAGE_QUERY_RESULT = {
   page: {
     _id: "eventsPage"
     title: string | null
-    body: Array<{
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: "span"
-        _key: string
-      }>
-      style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal"
-      listItem?: "bullet" | "number"
-      markDefs?: Array<{
-        href?: string
-        _type: "link"
-        _key: string
-      }>
-      level?: number
-      _type: "block"
-      _key: string
-    }> | null
     noFeaturedEventsMessage: string | null
-  } | null
-  settings: {
-    siteTitle: string | null
   } | null
 }
 
@@ -543,6 +554,7 @@ export type HOME_PAGE_QUERY_RESULT = {
         crop?: SanityImageCrop
         alt?: string
         caption?: string
+        displaySize?: "full" | "lg" | "md" | "sm"
         _type: "image"
         _key: string
       }
@@ -568,7 +580,7 @@ export type HOME_PAGE_QUERY_RESULT = {
 
 // Source: sanity/queries/page.ts
 // Variable: PAGE_BY_SLUG_QUERY
-// Query: {  "page": *[_type == "page" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    body  },  "settings": *[_type == "siteSettings"][0] {    siteTitle  }}
+// Query: {  "page": *[_type == "page" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    body  },}
 export type PAGE_BY_SLUG_QUERY_RESULT = {
   page: {
     _id: string
@@ -607,8 +619,54 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
         }
     > | null
   } | null
-  settings: {
-    siteTitle: string | null
+}
+
+// Source: sanity/queries/resourcesPage.ts
+// Variable: RESOURCES_PAGE_QUERY
+// Query: {  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {    _id,    title,    body,    memberHeadline,    communityHeadline,    communityIntro,    disclaimerText,    printFooterText,    googleSheetId,    googleSheetRange  },}
+export type RESOURCES_PAGE_QUERY_RESULT = {
+  page: {
+    _id: "resourcesPage"
+    title: string | null
+    body: Array<
+      | {
+          children?: Array<{
+            marks?: Array<string>
+            text?: string
+            _type: "span"
+            _key: string
+          }>
+          style?: "blockquote" | "h2" | "h3" | "normal"
+          listItem?: "bullet" | "number"
+          markDefs?: Array<{
+            href?: string
+            blank?: boolean
+            _type: "link"
+            _key: string
+          }>
+          level?: number
+          _type: "block"
+          _key: string
+        }
+      | {
+          asset?: SanityImageAssetReference
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          alt?: string
+          caption?: string
+          displaySize?: "full" | "lg" | "md" | "sm"
+          _type: "image"
+          _key: string
+        }
+    > | null
+    memberHeadline: string | null
+    communityHeadline: string | null
+    communityIntro: string | null
+    disclaimerText: string | null
+    printFooterText: string | null
+    googleSheetId: string | null
+    googleSheetRange: string | null
   } | null
 }
 
@@ -673,9 +731,10 @@ declare module "@sanity/client" {
   interface SanityQueries {
     '\n  *[_type == "eventTypes" && _id == "eventTypes"][0].types[]{\n    label,\n    "value": value.current,\n    color,\n    description\n  }\n': EVENT_TYPES_QUERY_RESULT
     '\n  *[_type == "event" && defined(googleEventId)]{\n    _id,\n    googleEventId,\n    featured,\n    eventType,\n    attendance,\n    topics,\n    workingGroup,\n    rsvpLink,\n    summary\n  }\n': EVENT_CUSTOMIZATIONS_QUERY_RESULT
-    '{\n  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {\n    _id,\n    title,\n    body,\n    noFeaturedEventsMessage\n  },\n  "settings": *[_type == "siteSettings"][0] {\n    siteTitle\n  }\n}': EVENTS_PAGE_QUERY_RESULT
+    '{\n  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {\n    _id,\n    title,\n    noFeaturedEventsMessage\n  },\n}': EVENTS_PAGE_QUERY_RESULT
     '\n  *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCtaPosition,\n    body,\n    bodyImage,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage\n  }\n': HOME_PAGE_QUERY_RESULT
-    '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n  "settings": *[_type == "siteSettings"][0] {\n    siteTitle\n  }\n}': PAGE_BY_SLUG_QUERY_RESULT
+    '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n}': PAGE_BY_SLUG_QUERY_RESULT
+    '{\n  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {\n    _id,\n    title,\n    body,\n    memberHeadline,\n    communityHeadline,\n    communityIntro,\n    disclaimerText,\n    printFooterText,\n    googleSheetId,\n    googleSheetRange\n  },\n}': RESOURCES_PAGE_QUERY_RESULT
     '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->slug.current\n    )\n  },\n  socialLinks,\n  socialIconStyle,\n  callToActionText,\n  callToActionLink,\n  contactEmail,\n  contactEmailSubject,\n  signupLink,\n  signupHeadline,\n  signupDescription,\n  signupImage\n}': SITE_SETTINGS_QUERY_RESULT
     '\n  *[_type == "workingGroups" && _id == "workingGroups"][0].groups[]{\n    label,\n    "value": value.current,\n    description\n  }\n': WORKING_GROUPS_QUERY_RESULT
   }

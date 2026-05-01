@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react"
 import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  ExternalLink,
-  MapPin,
-  Monitor,
+  ArrowLeftIcon,
+  CalendarIcon,
+  ClockIcon,
+  ExternalLinkIcon,
+  MapPinIcon,
+  MonitorIcon,
 } from "lucide-react"
 import { Button } from "@tidewater-dsa/ui/components/button"
 import {
@@ -89,7 +89,7 @@ const ActionNetworkEvent = ({ rsvpLink }: ActionNetworkEventProps) => {
             render={<a href={rsvpLink} target="_blank" rel="noreferrer" />}
           >
             RSVP for this event
-            <ExternalLink className="mb-0.5 size-4" strokeWidth={3} />
+            <ExternalLinkIcon className="mb-0.5 size-4" strokeWidth={3} />
           </Button>
         </CardContent>
       </Card>
@@ -134,7 +134,7 @@ const EventSideImage = ({ imageUrl }: EventSideImageProps) => (
       />
     ) : (
       <div className="flex h-full w-full flex-col items-center justify-center bg-primary/5 p-6 text-center text-primary/40">
-        <Calendar className="mb-2 h-8 w-8 opacity-50" />
+        <CalendarIcon className="mb-2 h-8 w-8 opacity-50" />
         <span className="font-medium">Events Image Space</span>
         <span className="mt-1 text-sm">Add an 'eventsImage' in Sanity</span>
       </div>
@@ -171,7 +171,7 @@ export const UpcomingEvents = ({
           variant="link"
           className="-ml-1 gap-1.5 p-0 text-muted-foreground no-underline! transition-colors hover:text-primary"
         >
-          <ArrowLeft />
+          <ArrowLeftIcon />
           All Events
         </Button>
 
@@ -191,7 +191,7 @@ export const UpcomingEvents = ({
                   </h3>
                   <div className="mt-4 space-y-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4 shrink-0 text-primary" />
+                      <CalendarIcon className="h-4 w-4 shrink-0 text-primary" />
                       <span>
                         {formatEventDate(selectedEvent.startISO)}
                         {!selectedEvent.isAllDay &&
@@ -203,7 +203,7 @@ export const UpcomingEvents = ({
                       formatEventDate(selectedEvent.endISO) !==
                         formatEventDate(selectedEvent.startISO) && (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Clock className="h-4 w-4 shrink-0 text-primary" />
+                          <ClockIcon className="h-4 w-4 shrink-0 text-primary" />
                           <span>
                             Ends {formatEventDate(selectedEvent.endISO)}
                             {!selectedEvent.isAllDay &&
@@ -214,9 +214,9 @@ export const UpcomingEvents = ({
                     {selectedEvent.location && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         {isVirtual ? (
-                          <Monitor className="h-4 w-4 shrink-0 text-primary" />
+                          <MonitorIcon className="h-4 w-4 shrink-0 text-primary" />
                         ) : (
-                          <MapPin className="h-4 w-4 shrink-0 text-primary" />
+                          <MapPinIcon className="h-4 w-4 shrink-0 text-primary" />
                         )}
                         <span>{selectedEvent.location}</span>
                       </div>

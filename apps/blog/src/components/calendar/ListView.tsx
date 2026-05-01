@@ -8,7 +8,7 @@ import {
 } from "date-fns"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import type { SerializedEvent } from "@/types"
-import type { EventTypeStyle } from "@/lib/event-type-colors"
+import type { EventTypeStyle } from "@/lib/event-type-config"
 import { isPast, type ParsedEvent } from "./utils"
 
 interface ListViewProps {

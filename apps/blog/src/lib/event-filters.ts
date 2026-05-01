@@ -1,11 +1,3 @@
-/**
- * Calendar filter utilities.
- *
- * The filter state is pure data; filterEvents is a pure function.
- * This keeps the filter logic easily testable and decoupled from React.
- * URL sync helpers let us make filtered views shareable.
- */
-
 import type { AttendanceType, SerializedEvent } from "@/types"
 
 export interface CalendarFilterState {
@@ -39,7 +31,7 @@ export const isFilterActive = (f: CalendarFilterState): boolean => {
   )
 }
 
-/** Used to render the count badge on the Filters button. */
+/** Count of filter categories with at least one active selection. */
 export const countActiveFilterCategories = (f: CalendarFilterState): number => {
   let n = 0
   if (f.search.trim()) n++
@@ -112,7 +104,7 @@ export const filtersToSearchParams = (
   return p
 }
 
-// Attendance is a fixed set (hardcoded in the customization schema), so we validate it strictly
+// Attendance is a fixed set (hardcoded in the customization schema), so validate it strictly
 const VALID_ATTENDANCE = new Set<AttendanceType>([
   "in_person",
   "virtual",
