@@ -1,25 +1,35 @@
-import { useMemo, type ReactNode } from "react"
-import { SearchIcon, SlidersHorizontalIcon } from "lucide-react"
+import { useMemo } from "react"
+import { SlidersHorizontalIcon } from "lucide-react"
 import { Button } from "@tidewater-dsa/ui/components/button"
-import { Input } from "@tidewater-dsa/ui/components/input"
 import { Badge } from "@tidewater-dsa/ui/components/badge"
-import { Checkbox } from "@tidewater-dsa/ui/components/checkbox"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@tidewater-dsa/ui/components/popover"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@tidewater-dsa/ui/components/sheet"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import type { EventType, SerializedEvent, WorkingGroup } from "@/types"
 import { getEventTypeStyle } from "@/lib/event-type-config"
 import { ATTENDANCE_OPTIONS } from "@/lib/event-constants"
 import {
   EMPTY_FILTERS,
-  countActiveFilterCategories,
   deriveFilterOptions,
   isFilterActive,
   type CalendarFilterState,
 } from "@/lib/event-filters"
+import { SearchInput } from "@/components/filters/SearchInput"
+import {
+  CheckboxList,
+  FilterSectionHeading,
+} from "@/components/filters/CheckboxList"
+import { toggleArrayValue } from "@/components/filters/utils"
 
 interface CalendarFiltersProps {
   events: SerializedEvent[]
@@ -31,53 +41,7 @@ interface CalendarFiltersProps {
   totalCount: number
 }
 
-const SectionHeading = ({ children }: { children: ReactNode }) => (
-  <h4 className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-    {children}
-  </h4>
-)
-
-interface CheckboxListProps {
-  items: string[]
-  selected: string[]
-  onToggle: (value: string) => void
-  emptyLabel: string
-  getLabel?: (value: string) => string
-}
-
-const CheckboxList = ({
-  items,
-  selected,
-  onToggle,
-  emptyLabel,
-  getLabel,
-}: CheckboxListProps) => {
-  if (items.length === 0) {
-    return <p className="text-xs text-muted-foreground">{emptyLabel}</p>
-  }
-  return (
-    <ul className="space-y-2">
-      {items.map((item) => (
-        <li key={item} className="flex items-center gap-2">
-          <Checkbox
-            id={`filter-${item}`}
-            checked={selected.includes(item)}
-            onCheckedChange={() => onToggle(item)}
-            className="cursor-pointer"
-          />
-          <label
-            htmlFor={`filter-${item}`}
-            className="cursor-pointer text-sm leading-none"
-          >
-            {getLabel ? getLabel(item) : item}
-          </label>
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-interface FilterPopoverContentProps {
+interface FilterBodyProps {
   value: CalendarFilterState
   onChange: (next: CalendarFilterState) => void
   workingGroupSlugs: string[]
@@ -85,80 +49,74 @@ interface FilterPopoverContentProps {
   topics: string[]
 }
 
-const FilterPopoverContent = ({
+const FilterBody = ({
   value,
   onChange,
   workingGroupSlugs,
   workingGroupLabelFor,
   topics,
-}: FilterPopoverContentProps) => {
-  const toggleAttendance = (
-    v: (typeof ATTENDANCE_OPTIONS)[number]["value"]
-  ) => {
-    onChange({
-      ...value,
-      attendance: value.attendance.includes(v)
-        ? value.attendance.filter((x) => x !== v)
-        : [...value.attendance, v],
-    })
-  }
-
-  const toggleWorkingGroup = (v: string) => {
-    onChange({
-      ...value,
-      workingGroups: value.workingGroups.includes(v)
-        ? value.workingGroups.filter((x) => x !== v)
-        : [...value.workingGroups, v],
-    })
-  }
-
-  const toggleTopic = (v: string) => {
-    onChange({
-      ...value,
-      topics: value.topics.includes(v)
-        ? value.topics.filter((x) => x !== v)
-        : [...value.topics, v],
-    })
-  }
-
+}: FilterBodyProps) => {
   const attendanceLabelFor = (v: string) =>
     ATTENDANCE_OPTIONS.find((o) => o.value === v)?.label ?? v
 
   return (
     <div className="divide-y">
       <div className="p-3">
-        <SectionHeading>Attendance</SectionHeading>
+        <FilterSectionHeading>Attendance</FilterSectionHeading>
         <CheckboxList
-          items={ATTENDANCE_OPTIONS.map((o) => o.value)}
+          idPrefix="event-attendance"
+          items={ATTENDANCE_OPTIONS.map((o) => ({
+            value: o.value,
+            renderLabel: attendanceLabelFor,
+          }))}
           selected={value.attendance}
           onToggle={(v) =>
-            toggleAttendance(v as (typeof ATTENDANCE_OPTIONS)[number]["value"])
+            onChange({
+              ...value,
+              attendance: toggleArrayValue(
+                value.attendance,
+                v as (typeof ATTENDANCE_OPTIONS)[number]["value"]
+              ),
+            })
           }
           emptyLabel="No attendance types"
-          getLabel={attendanceLabelFor}
         />
       </div>
 
       {workingGroupSlugs.length > 0 && (
         <div className="p-3">
-          <SectionHeading>Working Group</SectionHeading>
+          <FilterSectionHeading>Working Group</FilterSectionHeading>
           <CheckboxList
-            items={workingGroupSlugs}
+            idPrefix="event-wg"
+            items={workingGroupSlugs.map((v) => ({
+              value: v,
+              renderLabel: workingGroupLabelFor,
+            }))}
             selected={value.workingGroups}
-            onToggle={toggleWorkingGroup}
+            onToggle={(v) =>
+              onChange({
+                ...value,
+                workingGroups: toggleArrayValue(value.workingGroups, v),
+              })
+            }
             emptyLabel="No working groups yet"
-            getLabel={workingGroupLabelFor}
           />
         </div>
       )}
 
       {topics.length > 0 && (
         <div className="p-3">
-          <SectionHeading>Topics</SectionHeading>
+          <FilterSectionHeading>Topics</FilterSectionHeading>
           <CheckboxList
+            idPrefix="event-topic"
             items={topics}
             selected={value.topics}
-            onToggle={toggleTopic}
+            onToggle={(v) =>
+              onChange({
+                ...value,
+                topics: toggleArrayValue(value.topics, v),
+              })
+            }
             emptyLabel="No topics yet"
           />
         </div>
@@ -192,66 +150,104 @@ export const CalendarFilters = ({
   }, [workingGroups])
 
   const active = isFilterActive(value)
-  const activeCount = countActiveFilterCategories(value)
 
-  const toggleEventType = (t: string) => {
-    onChange({
-      ...value,
-      eventTypes: value.eventTypes.includes(t)
-        ? value.eventTypes.filter((v) => v !== t)
-        : [...value.eventTypes, t],
-    })
-  }
+  const toggleEventType = (t: string) =>
+    onChange({ ...value, eventTypes: toggleArrayValue(value.eventTypes, t) })
 
   const clearAll = () => onChange(EMPTY_FILTERS)
+
+  const popoverBadgeCount =
+    value.attendance.length + value.workingGroups.length + value.topics.length
 
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <div className="relative min-w-0 flex-1">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            value={value.search}
-            onChange={(e) => onChange({ ...value, search: e.target.value })}
-            placeholder="Search events..."
-            className="pl-9"
-            aria-label="Search events"
-          />
+        <SearchInput
+          value={value.search}
+          onChange={(next) => onChange({ ...value, search: next })}
+          placeholder="Search events..."
+          ariaLabel="Search events"
+        />
+
+        <div className="hidden sm:block">
+          <Popover>
+            <PopoverTrigger>
+              <Button
+                variant="outline"
+                size="sm"
+                className="shrink-0 gap-2"
+                aria-label={
+                  popoverBadgeCount > 0
+                    ? `Filters (${popoverBadgeCount} active)`
+                    : "Filters"
+                }
+              >
+                <SlidersHorizontalIcon className="h-4 w-4" />
+                Filters
+                {popoverBadgeCount > 0 && (
+                  <Badge
+                    className="h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums"
+                  >
+                    {popoverBadgeCount}
+                  </Badge>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="max-h-[70vh] w-80 overflow-y-auto p-0"
+            >
+              <FilterBody
+                value={value}
+                onChange={onChange}
+                workingGroupSlugs={eventWorkingGroups}
+                workingGroupLabelFor={workingGroupLabelFor}
+                topics={topics}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
-        <Popover>
-          <PopoverTrigger>
-            <Button
-              variant="outline"
-              size="sm"
-              className="shrink-0 gap-2"
-              aria-label={
-                activeCount > 0 ? `Filters (${activeCount} active)` : "Filters"
-              }
-            >
-              <SlidersHorizontalIcon className="h-4 w-4" />
-              Filters
-              {activeCount > 0 && (
-                <Badge
-                  variant="secondary"
-                  className="h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums"
-                >
-                  {activeCount}
-                </Badge>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-80 p-0">
-            <FilterPopoverContent
-              value={value}
-              onChange={onChange}
-              workingGroupSlugs={eventWorkingGroups}
-              workingGroupLabelFor={workingGroupLabelFor}
-              topics={topics}
-            />
-          </PopoverContent>
-        </Popover>
+        <div className="sm:hidden">
+          <Sheet>
+            <SheetTrigger>
+              <Button
+                variant="outline"
+                size="sm"
+                className="shrink-0 gap-2"
+                aria-label={
+                  popoverBadgeCount > 0
+                    ? `Filters (${popoverBadgeCount} active)`
+                    : "Filters"
+                }
+              >
+                <SlidersHorizontalIcon className="h-4 w-4" />
+                <span className="sr-only sm:not-sr-only">Filters</span>
+                {popoverBadgeCount > 0 && (
+                  <Badge
+                    className="h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums"
+                  >
+                    {popoverBadgeCount}
+                  </Badge>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="flex h-[85vh] flex-col p-0">
+              <SheetHeader className="border-b px-4 py-3">
+                <SheetTitle>Filters</SheetTitle>
+              </SheetHeader>
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <FilterBody
+                  value={value}
+                  onChange={onChange}
+                  workingGroupSlugs={eventWorkingGroups}
+                  workingGroupLabelFor={workingGroupLabelFor}
+                  topics={topics}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
 
       {eventTypes.length > 0 && (

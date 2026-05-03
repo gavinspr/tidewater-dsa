@@ -31,17 +31,6 @@ export const isFilterActive = (f: CalendarFilterState): boolean => {
   )
 }
 
-/** Count of filter categories with at least one active selection. */
-export const countActiveFilterCategories = (f: CalendarFilterState): number => {
-  let n = 0
-  if (f.search.trim()) n++
-  if (f.eventTypes.length) n++
-  if (f.attendance.length) n++
-  if (f.workingGroups.length) n++
-  if (f.topics.length) n++
-  return n
-}
-
 /**
  * Apply filters to an event list.
  *
@@ -87,6 +76,14 @@ export const filterEvents = (
     return true
   })
 }
+
+export const EVENT_FILTER_URL_KEYS = [
+  "q",
+  "type",
+  "attend",
+  "wg",
+  "topic",
+] as const
 
 /**
  * URL sync.

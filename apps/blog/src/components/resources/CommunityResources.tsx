@@ -59,8 +59,8 @@ const EmptyState = ({ onClear }: { onClear: () => void }) => (
 
 interface CommunityResourcesProps {
   resources: Resource[]
-  initialMeta: ResourcesMeta | null
-  initialError: string | null
+  meta: ResourcesMeta | null
+  error: string | null
   initialView: ResourceView
   disclaimerText: string
   printFooterText: string
@@ -69,8 +69,8 @@ interface CommunityResourcesProps {
 
 export const CommunityResources = ({
   resources,
-  initialMeta,
-  initialError,
+  meta,
+  error,
   initialView,
   disclaimerText,
   printFooterText,
@@ -186,8 +186,8 @@ export const CommunityResources = ({
     URL.revokeObjectURL(url)
   }, [filtered])
 
-  const fetchedAtDisplay = initialMeta?.fetchedAt
-    ? formatRefreshedAt(initialMeta.fetchedAt)
+  const fetchedAtDisplay = meta?.fetchedAt
+    ? formatRefreshedAt(meta.fetchedAt)
     : null
 
   const showEmpty = view === "grid" && filtered.length === 0
@@ -204,12 +204,9 @@ export const CommunityResources = ({
         onDownloadCsv={handleDownloadCsv}
       />
 
-      {initialError && (
+      {error && (
         <div className="mt-4">
-          <InlineError
-            message={initialError}
-            classify={classifyResourceError}
-          />
+          <InlineError message={error} classify={classifyResourceError} />
         </div>
       )}
 

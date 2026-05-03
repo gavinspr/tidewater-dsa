@@ -61,21 +61,13 @@ const noFeaturedEventsMessage = pageData?.noFeaturedEventsMessage ?? undefined
       </h1>
     </header>
 
-    {
-      error ? (
-        <div class="rounded-lg border border-destructive/50 bg-destructive/5 p-6 text-destructive">
-          <p class="font-semibold">Couldn't load events</p>
-          <p class="mt-2 text-sm">{error}</p>
-        </div>
-      ) : (
-        <EventCalendar
-          client:load
-          events={events}
-          eventTypes={eventTypes}
-          workingGroups={workingGroups}
-          noFeaturedEventsMessage={noFeaturedEventsMessage}
-        />
-      )
-    }
+    <EventCalendar
+      client:load
+      events={events}
+      eventTypes={eventTypes}
+      workingGroups={workingGroups}
+      error={error}
+      noFeaturedEventsMessage={noFeaturedEventsMessage}
+    />
   </main>
 </Layout>

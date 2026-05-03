@@ -19,6 +19,7 @@ import {
   CheckboxList,
   FilterSectionHeading,
 } from "@/components/filters/CheckboxList"
+import { toggleArrayValue } from "@/components/filters/utils"
 import {
   getCategoryLabel,
   getCategoryTheme,
@@ -30,9 +31,6 @@ import {
 } from "@/lib/resource-filters"
 import type { FilterOption } from "@/lib/resources"
 import type { Resource } from "@/types"
-
-const toggle = <T,>(arr: T[], value: T): T[] =>
-  arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value]
 
 interface FilterBodyProps {
   filters: ResourceFilterState
@@ -55,7 +53,10 @@ const FilterBody = ({
         items={cities}
         selected={filters.cities}
         onToggle={(v) =>
-          setFilters({ ...filters, cities: toggle(filters.cities, v) })
+          setFilters({
+            ...filters,
+            cities: toggleArrayValue(filters.cities, v),
+          })
         }
         emptyLabel="No cities found"
       />
@@ -68,13 +69,17 @@ const FilterBody = ({
         items={languages}
         selected={filters.languages}
         onToggle={(v) =>
-          setFilters({ ...filters, languages: toggle(filters.languages, v) })
+          setFilters({
+            ...filters,
+            languages: toggleArrayValue(filters.languages, v),
+          })
         }
         emptyLabel="No languages found"
       />
     </div>
   </div>
 )
+
 interface ResourceFiltersProps {
   filters: ResourceFilterState
   setFilters: (next: ResourceFilterState) => void
@@ -99,7 +104,7 @@ export const ResourceFilters = ({
   const toggleCategory = (group: string) =>
     setFilters({
       ...filters,
-      categories: toggle(filters.categories, group),
+      categories: toggleArrayValue(filters.categories, group),
     })
 
   const toggleFree = () =>
@@ -186,7 +191,6 @@ export const ResourceFilters = ({
                 <span className="sr-only sm:not-sr-only">Filters</span>
                 {popoverBadgeCount > 0 && (
                   <Badge
-                    variant="secondary"
                     className="h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums"
                   >
                     {popoverBadgeCount}
@@ -195,10 +199,10 @@ export const ResourceFilters = ({
               </Button>
             </SheetTrigger>
             <SheetContent
-              side="right"
-              className="flex w-full flex-col gap-0 p-0 sm:max-w-sm"
+              side="bottom"
+              className="flex h-[85vh] flex-col gap-0 p-0"
             >
-              <SheetHeader className="border-b p-4">
+              <SheetHeader className="border-b px-4 py-3">
                 <SheetTitle>Filters</SheetTitle>
               </SheetHeader>
               <div className="min-h-0 flex-1 overflow-y-auto">

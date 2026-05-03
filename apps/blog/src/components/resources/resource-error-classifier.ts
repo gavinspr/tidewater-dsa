@@ -44,7 +44,7 @@ export const classifyResourceError: ErrorClassifier = (raw) => {
     return {
       headline: "Temporarily unavailable",
       explanation:
-        "Google is rate-limiting us. Please try again in a minute — this usually resolves on its own.",
+        "Google is rate-limiting us. Please try again in a minute. This usually resolves on its own.",
     }
   }
 

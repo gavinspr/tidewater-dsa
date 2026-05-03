@@ -4,17 +4,21 @@ import type { EventType, SerializedEvent, WorkingGroup } from "@/types"
 import { getEventTypeStyle, type EventTypeStyle } from "@/lib/event-type-config"
 import {
   EMPTY_FILTERS,
+  EVENT_FILTER_URL_KEYS,
   filterEvents,
   filtersFromSearchParams,
   filtersToSearchParams,
   type CalendarFilterState,
 } from "@/lib/event-filters"
+import { useUrlFilterState } from "@/hooks/useUrlFilterState"
+import { InlineError } from "@/components/feedback/InlineError"
 import { CalendarFilters } from "./CalendarFilters"
 import { CalendarHeader, type ViewMode } from "./CalendarHeader"
 import { EventDialog } from "./EventDialog"
 import { FeaturedEvents } from "./FeaturedEvents"
 import { ListView } from "./ListView"
 import { MonthGrid } from "./MonthGrid"
+import { classifyEventError } from "./event-error-classifier"
 import { featuredForMonth, parseEvents } from "./utils"
 
 type TransitionDir = "prev" | "next" | "fade"
@@ -47,6 +51,7 @@ interface EventCalendarProps {
   events: SerializedEvent[]
   eventTypes: EventType[]
   workingGroups: WorkingGroup[]
+  error?: string | null
   /** Optional override for the initial visible month (defaults to today). */
   initialMonth?: string
   /**
@@ -60,6 +65,7 @@ export const EventCalendar = ({
   events,
   eventTypes,
   workingGroups,
+  error,
   initialMonth,
   noFeaturedEventsMessage,
 }: EventCalendarProps) => {
@@ -69,22 +75,15 @@ export const EventCalendar = ({
   const [view, setView] = useState<ViewMode>("month")
   const [selected, setSelected] = useState<SerializedEvent | null>(null)
   const [transition, setTransition] = useState<TransitionDir>("fade")
-  const [filters, setFilters] = useState<CalendarFilterState>(() => {
-    if (typeof window === "undefined") return EMPTY_FILTERS
-    return filtersFromSearchParams(new URLSearchParams(window.location.search))
-  })
+
+  const [filters, setFilters] = useUrlFilterState<CalendarFilterState>(
+    EMPTY_FILTERS,
+    filtersFromSearchParams,
+    filtersToSearchParams,
+    EVENT_FILTER_URL_KEYS
+  )
 
   const styleFor = useMemo(() => makeStyleLookup(eventTypes), [eventTypes])
-
-  useEffect(() => {
-    if (typeof window === "undefined") return
-
-    const qs = filtersToSearchParams(filters).toString()
-    const url = qs
-      ? `${window.location.pathname}?${qs}`
-      : window.location.pathname
-    window.history.replaceState({}, "", url)
-  }, [filters])
 
   const now = useMemo(() => new Date(), [])
 
@@ -144,6 +143,10 @@ export const EventCalendar = ({
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
   }, [selected, goPrev, goNext])
+
+  if (error) {
+    return <InlineError message={error} classify={classifyEventError} />
+  }
 
   return (
     <div className="space-y-8">
