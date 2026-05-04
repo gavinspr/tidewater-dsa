@@ -34,7 +34,7 @@ import {
   categorySlug,
   type ResourceCategoryGroup,
 } from "./ResourceCategoryAccordion"
-import type { Resource, ResourcesMeta } from "@/types/resources"
+import type { Resource, ResourcesMeta } from "@/types"
 import {
   Tabs,
   TabsContent,

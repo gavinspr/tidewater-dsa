@@ -1,9 +1,9 @@
 ---
+import RichText from "@/components/rich-text/RichText.astro"
 import Layout from "@/layouts/main.astro"
 import { loadQuery } from "@/lib/load-query"
 import { PAGE_BY_SLUG_QUERY } from "@/sanity/queries"
 import type { PAGE_BY_SLUG_QUERY_RESULT } from "@/sanity/types"
-import RichText from "@/components/RichText.astro"
 
 const { slug } = Astro.params
 if (!slug) return new Response(null, { status: 404 })

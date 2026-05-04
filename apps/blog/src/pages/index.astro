@@ -4,7 +4,6 @@ import { buttonVariants } from "@tidewater-dsa/ui/components/button"
 import { Card, CardContent } from "@tidewater-dsa/ui/components/card"
 import { CalendarIcon } from "lucide-react"
 import Layout from "@/layouts/main.astro"
-import RichText from "@/components/RichText.astro"
 import { UpcomingEvents } from "@/components/UpcomingEvents"
 import { loadQuery } from "@/lib/load-query"
 import { HOME_PAGE_QUERY } from "@/sanity/queries"
@@ -12,6 +11,7 @@ import type { HOME_PAGE_QUERY_RESULT } from "@/sanity/types"
 import { getEvents } from "@/lib/events"
 import { urlFor } from "@/lib/sanity-image"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
+import RichText from "@/components/rich-text/RichText.astro"
 
 Astro.response.headers.set(
   "Cache-Control",
