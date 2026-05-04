@@ -1,8 +1,10 @@
-echo "Running Sanity type generator..."
-npm run typegen
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# Check if the type generator modified the file in the working directory
-if ! git diff --exit-code apps/blog/sanity/types.ts > /dev/null; then
+echo "Running Sanity type generator..."
+CI=true npm run typegen
+
+if ! git --no-pager diff --exit-code apps/blog/sanity/types.ts > /dev/null; then
   RED='\033[0;31m'
   NC='\033[0m'
 
@@ -15,4 +17,4 @@ if ! git diff --exit-code apps/blog/sanity/types.ts > /dev/null; then
 fi
 
 echo "Running monorepo linter..."
-npm run lint
+CI=true npm run lint
