@@ -99,17 +99,17 @@ const ActionNetworkEvent = ({ rsvpLink }: ActionNetworkEventProps) => {
   return (
     <div className="an-embed min-h-138">
       {!ready && (
-        <div className="space-y-4 py-4">
-          <Skeleton className="h-8 w-1/2 rounded-md" />
-          <Skeleton className="h-6 w-full rounded-md" />
+        <div className="space-y-5 py-4">
+          <Skeleton className="h-8 w-1/2" />
+          <Skeleton className="h-6 w-full" />
           <div className="h-px w-full bg-border/30" />
           <div className="space-y-3">
-            <Skeleton className="h-10 w-full rounded-md" />
-            <Skeleton className="h-10 w-full rounded-md" />
-            <Skeleton className="h-10 w-full rounded-md" />
-            <Skeleton className="h-10 w-full rounded-md" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
           </div>
-          <Skeleton className="h-12 w-full rounded-md" />
+          <Skeleton className="h-12 w-full" />
         </div>
       )}
       <div
