@@ -76,7 +76,7 @@ export const ResourceJumpNav = ({
 
   return (
     <nav aria-label="Jump to category" className="hidden lg:block">
-      <div className="sticky top-24 space-y-1">
+      <div className="sticky space-y-1">
         <p className="px-2 py-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
           Categories
         </p>
