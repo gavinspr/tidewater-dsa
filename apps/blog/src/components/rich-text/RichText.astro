@@ -2,17 +2,25 @@
 import { PortableText as PortableTextInternal } from "astro-portabletext"
 import PortableTextImage from "./PortableTextImage.astro"
 import PortableTextLink from "./PortableTextLink.astro"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
 import type { PortableTextBlock } from "sanity"
 
 interface Props {
   value: PortableTextBlock[]
+  /** Render an oversized red drop-cap on the first paragraph. */
+  dropCap?: boolean
+  class?: string
 }
 
-const { value } = Astro.props
+const { value, dropCap = false, class: className } = Astro.props
 ---
 
 <article
-  class="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-lg prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl"
+  class={cn(
+    "prose-tdsa prose prose-lg max-w-none dark:prose-invert",
+    dropCap && "prose-dropcap",
+    className
+  )}
 >
   <PortableTextInternal
     value={value ?? []}

@@ -1,57 +1,95 @@
 ---
 import { MobileNav } from "./MobileNav"
-import { Button } from "@tidewater-dsa/ui/components/button"
+import { buttonVariants } from "@tidewater-dsa/ui/components/button"
 import { HeartIcon } from "lucide-react"
 import type { Settings, ValidNavLink } from "@/types"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
 
 interface Props {
   logoUrl: string | null
   title: string
-  navLinks: Settings["navLinks"]
+  siteName: string
+  logoTagline: Settings["logoTagline"]
+  navLinks: ValidNavLink[]
   callToActionText: Settings["callToActionText"]
   callToActionLink: Settings["callToActionLink"]
+  currentPath: string
 }
 
-const { logoUrl, title, navLinks, callToActionText, callToActionLink } =
-  Astro.props
+const {
+  logoUrl,
+  title,
+  siteName,
+  logoTagline,
+  navLinks,
+  callToActionText,
+  callToActionLink,
+  currentPath,
+} = Astro.props
 
-const validNavLinks =
-  navLinks?.filter((link): link is ValidNavLink =>
-    Boolean(link.title && link.slug)
-  ) ?? []
+const normalizePath = (path: string): string => path.replace(/^\/+|\/+$/g, "")
+
+const currentSlug = normalizePath(currentPath)
+
+const isCurrentLink = (slug: string): boolean =>
+  normalizePath(slug) === currentSlug
 ---
 
 <header
-  class="sticky top-0 z-50 border-b border-border/50 bg-card/95 backdrop-blur-sm"
+  class="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur"
 >
   <div
-    class="mx-auto flex max-w-340 items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
+    class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:gap-5 sm:px-6"
   >
     <a
       href="/"
-      class="flex items-center gap-3 transition-opacity hover:opacity-80"
+      class="flex shrink-0 items-center gap-3 text-foreground transition-opacity hover:opacity-90"
     >
       {
         logoUrl && (
           <img
             src={logoUrl}
             alt={title || "Site Logo"}
-            class="h-14 w-auto shrink-0 rounded-lg object-contain sm:h-16"
+            class="h-12 w-auto shrink-0 rounded-sm object-contain"
           />
         )
       }
+      <div class="leading-none">
+        <div
+          class="-ml-0.5 font-heading text-[1.35rem] leading-none font-extrabold tracking-tight uppercase"
+        >
+          {siteName}
+        </div>
+        {
+          logoTagline && (
+            <div class="mono-eyebrow mt-1 text-[0.62rem] tracking-widest text-foreground-soft">
+              {logoTagline}
+            </div>
+          )
+        }
+      </div>
     </a>
 
-    <nav class="hidden shrink-0 items-center gap-8 lg:flex">
+    <nav class="hidden shrink-0 items-center gap-7 lg:flex">
       {
-        validNavLinks.map((link) => (
-          <a
-            href={`/${link.slug}`}
-            class="font-semibold text-foreground/80 transition-colors hover:text-primary"
-          >
-            {link.title}
-          </a>
-        ))
+        navLinks.map((link) => {
+          const current = isCurrentLink(link.slug)
+          return (
+            <a
+              href={`/${link.slug}`}
+              aria-current={current ? "page" : undefined}
+              class="group relative py-1 text-[0.95rem] font-semibold whitespace-nowrap text-foreground"
+            >
+              {link.title}
+              <span
+                class:list={[
+                  "absolute bottom-0 left-0 h-0.5 bg-primary transition-[width] duration-200",
+                  current ? "w-full" : "w-0 group-hover:w-full",
+                ]}
+              />
+            </a>
+          )
+        })
       }
 
       {
@@ -60,32 +98,25 @@ const validNavLinks =
             href={callToActionLink}
             target="_blank"
             rel="noreferrer"
-            class="mb-0.5 ml-2"
+            class={cn(
+              buttonVariants({ size: "default" }),
+              "mb-1.5 ml-2 cursor-pointer gap-1.5 rounded-md px-3.5 text-base font-bold text-foreground hover:bg-primary-deep"
+            )}
           >
-            <Button size="sm" className="cursor-pointer gap-1.5 font-bold">
-              <HeartIcon fill="currentColor" />
-              {callToActionText}
-            </Button>
+            <HeartIcon fill="currentColor" />
+            {callToActionText}
           </a>
         )
       }
     </nav>
 
-    <div class="flex items-center gap-3 lg:hidden">
-      {
-        callToActionLink && callToActionText && (
-          <a href={callToActionLink} target="_blank" rel="noreferrer">
-            <Button
-              size="sm"
-              className="cursor-pointer gap-1.5 text-xs font-semibold"
-            >
-              <HeartIcon className="size-3" fill="currentColor" />
-              {callToActionText}
-            </Button>
-          </a>
-        )
-      }
-      <MobileNav client:load navLinks={validNavLinks} />
+    <div class="flex items-center lg:hidden">
+      <MobileNav
+        client:load
+        navLinks={navLinks}
+        callToActionText={callToActionText ?? null}
+        callToActionLink={callToActionLink ?? null}
+      />
     </div>
   </div>
 </header>

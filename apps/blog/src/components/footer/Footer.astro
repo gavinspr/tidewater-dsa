@@ -9,58 +9,167 @@ interface Props {
   iconVariant: IconVariant
   contactEmail?: string | null
   contactEmailSubject?: string | null
+  logoUrl: string | null
+  siteName: string
+  footerTagline: Settings["footerTagline"]
+  footerColumns: Settings["footerColumns"]
 }
 
-const { socialLinks, iconVariant, contactEmail, contactEmailSubject } =
-  Astro.props
+const {
+  socialLinks,
+  iconVariant,
+  contactEmail,
+  contactEmailSubject,
+  logoUrl,
+  siteName,
+  footerTagline,
+  footerColumns,
+} = Astro.props
 
-const validLinks =
+const validSocialLinks =
   socialLinks?.filter(
     (social): social is { platform: string; url: string; _key: string } =>
       Boolean(social.platform && social.url)
   ) ?? []
+
+const isExternalHref = (href: string | null | undefined): boolean =>
+  href ? /^(https?:|mailto:|tel:)/i.test(href) : false
+
+// Cap dynamic columns at 4 to prevent layout breakage
+const columnCount = Math.min(footerColumns?.length || 0, 4)
+
+const gridLayouts: Record<number, string> = {
+  0: "md:grid-cols-[2fr_1fr]",
+  1: "md:grid-cols-[2fr_1fr_1fr]",
+  2: "md:grid-cols-[2fr_1fr_1fr_1fr]",
+  3: "md:grid-cols-[2fr_1fr_1fr_1fr_1fr]",
+  4: "md:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr]",
+}
+
+const gridColsClass = gridLayouts[columnCount] || gridLayouts[2]
 ---
 
-<footer class="border-t border-border/50 bg-muted/50 py-8">
-  <div class="mx-auto flex max-w-5xl flex-col items-center gap-6">
-    {
-      contactEmail && (
-        <EmailLink email={contactEmail} subject={contactEmailSubject} />
-      )
-    }
-    {
-      validLinks.length > 0 && (
-        <div class="flex flex-wrap justify-center gap-3">
-          {validLinks.map((social) => {
-            const {
-              icon: IconComponent,
-              color,
-              bg,
-            } = getSocialIcon(detectSocialPlatform(social.platform))
+<footer class="bg-foreground text-background">
+  <div
+    class={cn(
+      "mx-auto grid max-w-7xl gap-12 px-5 pt-14 pb-7 sm:px-6",
+      gridColsClass
+    )}
+  >
+    {/* Brand column */}
+    <div>
+      <div class="mb-4 flex items-center gap-3">
+        {
+          logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={siteName}
+              class="h-12 w-auto shrink-0 rounded-sm object-contain"
+            />
+          ) : (
+            <div class="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary font-heading text-[1.4rem] leading-none font-black tracking-tighter text-primary-foreground">
+              TD
+            </div>
+          )
+        }
+        <span
+          class="font-heading text-[1.2rem] leading-none font-extrabold tracking-tight uppercase"
+        >
+          {siteName}
+        </span>
+      </div>
+      {
+        footerTagline && (
+          <p class="max-w-[36ch] text-[0.9rem] leading-relaxed text-background/70">
+            {footerTagline}
+          </p>
+        )
+      }
+      {
+        contactEmail && (
+          <div class="mt-4 text-[0.9rem] text-background/70">
+            <EmailLink email={contactEmail} subject={contactEmailSubject} />
+          </div>
+        )
+      }
+    </div>
 
-            const isFilled = iconVariant === "filled"
+    {/* Dynamic Columns */}
+    {
+      footerColumns?.map((column) => {
+        const validLinks =
+          column.links?.filter(
+            (link): link is { label: string; href: string; _key: string } =>
+              Boolean(link.label && link.href)
+          ) ?? []
 
-            return (
-              <a
-                href={social.url}
-                target="_blank"
-                rel="noreferrer"
-                class={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-full transition-all hover:scale-110",
-                  isFilled
-                    ? cn(bg, "border-transparent text-white")
-                    : "border bg-background text-muted-foreground hover:border-primary hover:text-primary"
-                )}
-                aria-label={social.platform}
-              >
-                <IconComponent
-                  className={cn("h-5 w-5", isFilled ? "text-white" : color)}
-                />
-              </a>
-            )
-          })}
-        </div>
-      )
+        return (
+          <div>
+            {validLinks.length > 0 && (
+              <>
+                <h4 class="mono-eyebrow mb-3 text-primary">{column.title}</h4>
+                <ul class="flex list-none flex-col gap-2.5 p-0">
+                  {validLinks.map((link) => (
+                    <li>
+                      <a
+                        href={link.href}
+                        target={
+                          isExternalHref(link.href) ? "_blank" : undefined
+                        }
+                        rel={
+                          isExternalHref(link.href) ? "noreferrer" : undefined
+                        }
+                        class="text-[0.94rem] text-background/85 no-underline hover:text-primary"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        )
+      })
     }
+
+    {/* Follow / socials column */}
+    <div>
+      {
+        validSocialLinks.length > 0 && (
+          <>
+            <h4 class="mono-eyebrow mb-3 text-primary">Follow</h4>
+            <div class="flex flex-wrap gap-2.5">
+              {validSocialLinks.map((social) => {
+                const {
+                  icon: IconComponent,
+                  color,
+                  bg,
+                } = getSocialIcon(detectSocialPlatform(social.platform))
+                const isFilled = iconVariant === "filled"
+                return (
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={social.platform}
+                    class={cn(
+                      "grid h-9 w-9 place-items-center rounded transition-all",
+                      isFilled
+                        ? cn(bg, "border border-transparent text-white")
+                        : "border border-background/25 text-background/85 hover:border-primary hover:bg-primary hover:text-white"
+                    )}
+                  >
+                    <IconComponent
+                      className={cn("h-4 w-4", isFilled ? "text-white" : color)}
+                    />
+                  </a>
+                )
+              })}
+            </div>
+          </>
+        )
+      }
+    </div>
   </div>
 </footer>

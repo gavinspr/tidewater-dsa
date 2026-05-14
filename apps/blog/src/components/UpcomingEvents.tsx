@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import {
   ArrowLeftIcon,
+  ArrowRightIcon,
   CalendarIcon,
   ClockIcon,
   ExternalLinkIcon,
@@ -16,8 +17,13 @@ import {
   CardTitle,
 } from "@tidewater-dsa/ui/components/card"
 import { Skeleton } from "@tidewater-dsa/ui/components/skeleton"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
 import type { SerializedEvent } from "@/types"
-import { formatEventDate, formatEventTime } from "@/lib/format"
+import {
+  formatEventDate,
+  formatEventTime,
+  splitDateForCard,
+} from "@/lib/format"
 import {
   ensureStylesLoaded,
   extractActionNetworkInfo,
@@ -125,7 +131,7 @@ interface EventSideImageProps {
 }
 
 const EventSideImage = ({ imageUrl }: EventSideImageProps) => (
-  <div className="mt-8 w-full overflow-hidden rounded-xl shadow-lg lg:mt-0">
+  <div className="mt-8 w-full overflow-hidden rounded-lg shadow-lg lg:mt-0">
     {imageUrl ? (
       <img
         src={imageUrl}
@@ -145,16 +151,19 @@ const EventSideImage = ({ imageUrl }: EventSideImageProps) => (
 const isVirtualEvent = (event: SerializedEvent): boolean =>
   event.attendance === "virtual" || event.attendance === "hybrid"
 
+// todo: derive from types
 interface UpcomingEventsProps {
   events: SerializedEvent[]
   sideImageUrl?: string | null
   noRsvpMessage?: string | null
+  trailingCta?: { text: string; href: string } | null
 }
 
 export const UpcomingEvents = ({
   events,
   sideImageUrl,
   noRsvpMessage,
+  trailingCta,
 }: UpcomingEventsProps) => {
   const [selectedEvent, setSelectedEvent] = useState<SerializedEvent | null>(
     null
@@ -169,7 +178,7 @@ export const UpcomingEvents = ({
         <Button
           onClick={() => setSelectedEvent(null)}
           variant="link"
-          className="-ml-1 gap-1.5 p-0 text-muted-foreground no-underline! transition-colors hover:text-primary"
+          className="-ml-1 gap-1.5 p-0 text-foreground-soft no-underline! transition-colors hover:text-primary"
         >
           <ArrowLeftIcon />
           All Events
@@ -186,11 +195,11 @@ export const UpcomingEvents = ({
               // Non-AN event
               <>
                 <div>
-                  <h3 className="text-2xl font-extrabold tracking-tight">
+                  <h3 className="heading-display text-2xl">
                     {selectedEvent.title}
                   </h3>
                   <div className="mt-4 space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-foreground-soft">
                       <CalendarIcon className="h-4 w-4 shrink-0 text-primary" />
                       <span>
                         {formatEventDate(selectedEvent.startISO)}
@@ -202,7 +211,7 @@ export const UpcomingEvents = ({
                       selectedEvent.endISO !== selectedEvent.startISO &&
                       formatEventDate(selectedEvent.endISO) !==
                         formatEventDate(selectedEvent.startISO) && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 text-sm text-foreground-soft">
                           <ClockIcon className="h-4 w-4 shrink-0 text-primary" />
                           <span>
                             Ends {formatEventDate(selectedEvent.endISO)}
@@ -212,7 +221,7 @@ export const UpcomingEvents = ({
                         </div>
                       )}
                     {selectedEvent.location && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 text-sm text-foreground-soft">
                         {isVirtual ? (
                           <MonitorIcon className="h-4 w-4 shrink-0 text-primary" />
                         ) : (
@@ -224,11 +233,11 @@ export const UpcomingEvents = ({
                   </div>
                 </div>
                 {selectedEvent.summary && (
-                  <p className="text-muted-foreground">
+                  <p className="text-foreground-soft">
                     {selectedEvent.summary}
                   </p>
                 )}
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground-soft">
                   {noRsvpMessage || "No RSVP required — just show up!"}
                 </p>
               </>
@@ -245,36 +254,85 @@ export const UpcomingEvents = ({
 
   // List View
   return (
-    <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
-      <div className="py-2">
-        <div className="max-h-125 divide-y divide-border/50 overflow-y-auto pr-2">
-          {events.map((event) => (
-            <div
+    <div className="space-y-7">
+      <div
+        className={cn(
+          "grid border-t-2 border-l-2 border-foreground",
+          "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+          "max-sm:border-l-0"
+        )}
+      >
+        {events.map((event) => {
+          const { day, monthYear, weekday } = splitDateForCard(event.startISO)
+          const isVirtual = isVirtualEvent(event)
+
+          return (
+            <button
               key={event.id}
-              className="group flex items-center justify-between gap-4 py-5 first:pt-0 last:pb-0"
+              type="button"
+              onClick={() => setSelectedEvent(event)}
+              className={cn(
+                "group/card flex flex-col gap-3 border-r-2 border-b-2 border-foreground bg-background p-6 pb-7 text-left",
+                "cursor-pointer transition-colors duration-150",
+                "hover:bg-foreground hover:text-background focus-visible:bg-foreground focus-visible:text-background focus-visible:outline-none",
+                "max-sm:border-r-0"
+              )}
             >
-              <div className="space-y-0.5">
-                <h3 className="leading-tight font-bold">{event.title}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {formatEventDate(event.startISO)}
-                  {!event.isAllDay && ` ${formatEventTime(event.startISO)}`}
-                  {event.location && ` · ${event.location}`}
-                </p>
+              {event.eventType && (
+                <span
+                  className={cn(
+                    "inline-block self-start rounded-sm bg-primary-soft px-2 py-1 font-mono text-[0.66rem] font-semibold tracking-[0.12em] text-primary-deep uppercase",
+                    "group-hover/card:bg-primary group-hover/card:text-white"
+                  )}
+                >
+                  {event.eventType}
+                </span>
+              )}
+              <div className="flex items-baseline gap-2.5 font-heading text-[2.4rem] leading-none font-extrabold text-primary">
+                {day}
+                <span className="font-mono text-[0.78rem] font-medium tracking-[0.06em] text-foreground-soft uppercase group-hover/card:text-white/70">
+                  {monthYear}
+                </span>
               </div>
-              <Button
-                onClick={() => setSelectedEvent(event)}
-                size="sm"
-                variant="outline"
-                className="cursor-pointer gap-1 border-primary/30 text-xs font-bold tracking-wider text-primary uppercase hover:bg-primary hover:text-white"
-              >
-                View Event
-              </Button>
-            </div>
-          ))}
-        </div>
+              <div className="heading-display text-[1.35rem] leading-[1.05]">
+                {event.title}
+              </div>
+              <div className="font-mono text-[0.74rem] tracking-[0.06em] text-foreground-soft uppercase group-hover/card:text-white/75">
+                <span>
+                  {weekday}
+                  {!event.isAllDay && ` · ${formatEventTime(event.startISO)}`}
+                </span>
+                {event.location && (
+                  <>
+                    <br />
+                    <span className="inline-flex items-center gap-1.5 tracking-normal normal-case">
+                      {isVirtual ? (
+                        <MonitorIcon className="h-3 w-3" />
+                      ) : (
+                        <MapPinIcon className="h-3 w-3" />
+                      )}
+                      {event.location}
+                    </span>
+                  </>
+                )}
+              </div>
+            </button>
+          )
+        })}
       </div>
 
-      <EventSideImage imageUrl={sideImageUrl} />
+      {trailingCta && (
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            className="rounded-lg border-2 border-foreground bg-transparent p-5 text-base font-bold transition-all hover:bg-foreground hover:text-background"
+            render={<a href={trailingCta.href} />}
+          >
+            {trailingCta.text}
+            <ArrowRightIcon className="size-5" />
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

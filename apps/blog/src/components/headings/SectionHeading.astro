@@ -1,0 +1,56 @@
+---
+import { splitHighlight } from "@/lib/format-headline"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
+
+interface Props {
+  eyebrow?: string | null
+  headline?: string | null
+  eyebrowColor?: "primary" | "white"
+  ruleColor?: "foreground" | "white"
+  accentColor?: "primary" | "highlight-white"
+  class?: string
+}
+
+const {
+  eyebrow,
+  headline,
+  eyebrowColor = "primary",
+  ruleColor = "foreground",
+  accentColor = "primary",
+  class: className,
+} = Astro.props
+
+const parts = headline ? splitHighlight(headline) : null
+
+const eyebrowClass =
+  eyebrowColor === "white" ? "text-white opacity-85" : "text-primary"
+
+const ruleClass = ruleColor === "white" ? "border-white" : "border-foreground"
+
+const accentClass =
+  accentColor === "highlight-white"
+    ? "bg-[linear-gradient(transparent_65%,rgba(255,255,255,0.3)_65%)] px-0.5"
+    : "text-primary"
+---
+
+{
+  (eyebrow || parts) && (
+    <div class={cn("mb-8 border-t-2 pt-6", ruleClass, className)}>
+      {eyebrow && (
+        <span class={cn("mono-eyebrow mb-3 block", eyebrowClass)}>
+          {eyebrow}
+        </span>
+      )}
+      {parts && (
+        <h2
+          class="heading-display"
+          style="font-size: clamp(2.25rem, 5vw, 3.6rem);"
+        >
+          {parts.before}
+          {parts.accent && <span class={accentClass}>{parts.accent}</span>}
+          {parts.after}
+        </h2>
+      )}
+    </div>
+  )
+}

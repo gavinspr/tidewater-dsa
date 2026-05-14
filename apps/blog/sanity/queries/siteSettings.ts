@@ -2,7 +2,9 @@ import { defineQuery } from "groq"
 
 export const SITE_SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0] {
   siteTitle,
+  siteShortName,
   logo,
+  logoTagline,
   "navLinks": mainNav[]{
     _key,
     "title": @->title,
@@ -11,14 +13,27 @@ export const SITE_SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0] {
       @->slug.current
     )
   },
-  socialLinks,
-  socialIconStyle,
   callToActionText,
   callToActionLink,
-  contactEmail,
-  contactEmailSubject,
+  showRibbon,
+  ribbonText,
+  nextMeetingLabel,
+  nextMeetingMatch,
+  nextMeetingTextOverride,
+  nextMeetingLinkOverride,
+  bannerWords,
   signupLink,
+  signupEyebrow,
   signupHeadline,
   signupDescription,
-  signupImage
+  socialLinks,
+  socialIconStyle,
+  contactEmail,
+  contactEmailSubject,
+  footerTagline,
+ footerColumns[]{
+    _key,
+    title,
+    links[]{ _key, label, href }
+  }
 }`)

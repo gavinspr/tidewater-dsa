@@ -148,7 +148,7 @@ const ALL_MOCKS: SerializedEvent[] = [
   // ----- Next month -----
   {
     id: "mock-next-1",
-    title: "General Body Meeting",
+    title: "Monthly General Meeting",
     description: "Monthly GBM.",
     location: "Community Center, 123 Main St",
     startISO: dateAt(1, 5, 19, 0),
@@ -160,7 +160,7 @@ const ALL_MOCKS: SerializedEvent[] = [
     attendance: "hybrid",
     topics: [],
     workingGroup: null,
-    rsvpLink: null,
+    rsvpLink: "https://actionnetwork.org/events/general-meeting-month-plus-1",
     summary: null,
   },
   {
@@ -221,7 +221,7 @@ const ALL_MOCKS: SerializedEvent[] = [
   },
   {
     id: "mock-f2-2",
-    title: "General Body Meeting",
+    title: "Monthly General Meeting",
     description: "Monthly GBM.",
     location: "Community Center, 123 Main St",
     startISO: dateAt(2, 9, 19, 0),
@@ -233,7 +233,7 @@ const ALL_MOCKS: SerializedEvent[] = [
     attendance: "hybrid",
     topics: [],
     workingGroup: null,
-    rsvpLink: null,
+    rsvpLink: "https://actionnetwork.org/events/general-meeting-month-plus-2",
     summary: null,
   },
   {

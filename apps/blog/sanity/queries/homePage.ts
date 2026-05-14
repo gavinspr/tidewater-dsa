@@ -7,12 +7,18 @@ export const HOME_PAGE_QUERY = defineQuery(`
     heroImage,
     heroCtaText,
     heroCtaLink,
+    heroCta2Text,
+    heroCta2Link,
     heroCtaPosition,
+    contentEyebrow,
+    contentHeadline,
     body,
     bodyImage,
+    eventsEyebrow,
+    eventsHeadline,
     eventsImage,
     noEventsHeadline,
     noEventsBody,
-    noRsvpMessage
+    noRsvpMessage,
   }
 `)

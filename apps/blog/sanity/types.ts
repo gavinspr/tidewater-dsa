@@ -173,7 +173,11 @@ export type HomePage = {
   }
   heroCtaText?: string
   heroCtaLink?: string
-  heroCtaPosition?: "center" | "bottom-left" | "bottom-right"
+  heroCta2Text?: string
+  heroCta2Link?: string
+  heroCtaPosition?: "bottom-left" | "center" | "bottom-right"
+  contentEyebrow?: string
+  contentHeadline?: string
   body?: Array<
     | {
         children?: Array<{
@@ -213,6 +217,8 @@ export type HomePage = {
     crop?: SanityImageCrop
     _type: "image"
   }
+  eventsEyebrow?: string
+  eventsHeadline?: string
   eventsImage?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -246,6 +252,7 @@ export type SiteSettings = {
   _updatedAt: string
   _rev: string
   siteTitle?: string
+  siteShortName?: string
   logo?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -253,9 +260,21 @@ export type SiteSettings = {
     crop?: SanityImageCrop
     _type: "image"
   }
+  logoTagline?: string
   mainNav?: ArrayOf<PageReference | EventsPageReference>
   callToActionText?: string
   callToActionLink?: string
+  showRibbon?: boolean
+  ribbonText?: string
+  nextMeetingLabel?: string
+  nextMeetingMatch?: string
+  nextMeetingTextOverride?: string
+  nextMeetingLinkOverride?: string
+  bannerWords?: Array<string>
+  signupLink?: string
+  signupEyebrow?: string
+  signupHeadline?: string
+  signupDescription?: string
   socialLinks?: Array<{
     platform?: string
     url?: string
@@ -264,16 +283,18 @@ export type SiteSettings = {
   socialIconStyle?: "outline" | "filled"
   contactEmail?: string
   contactEmailSubject?: string
-  signupLink?: string
-  signupHeadline?: string
-  signupDescription?: string
-  signupImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: "image"
-  }
+  footerTagline?: string
+  footerColumns?: Array<{
+    title?: string
+    links?: Array<{
+      label?: string
+      href?: string
+      _type: "footerLink"
+      _key: string
+    }>
+    _type: "footerColumn"
+    _key: string
+  }>
 }
 
 export type Page = {
@@ -513,7 +534,7 @@ export type EVENTS_PAGE_QUERY_RESULT = {
 
 // Source: sanity/queries/homePage.ts
 // Variable: HOME_PAGE_QUERY
-// Query: *[_type == "homePage" && _id == "homePage"][0] {    heroHeadline,    heroSubheadline,    heroImage,    heroCtaText,    heroCtaLink,    heroCtaPosition,    body,    bodyImage,    eventsImage,    noEventsHeadline,    noEventsBody,    noRsvpMessage  }
+// Query: *[_type == "homePage" && _id == "homePage"][0] {    heroHeadline,    heroSubheadline,    heroImage,    heroCtaText,    heroCtaLink,    heroCta2Text,    heroCta2Link,    heroCtaPosition,    contentEyebrow,    contentHeadline,    body,    bodyImage,    eventsEyebrow,    eventsHeadline,    eventsImage,    noEventsHeadline,    noEventsBody,    noRsvpMessage,  }
 export type HOME_PAGE_QUERY_RESULT = {
   heroHeadline: string | null
   heroSubheadline: string | null
@@ -526,7 +547,11 @@ export type HOME_PAGE_QUERY_RESULT = {
   } | null
   heroCtaText: string | null
   heroCtaLink: string | null
+  heroCta2Text: string | null
+  heroCta2Link: string | null
   heroCtaPosition: "bottom-left" | "bottom-right" | "center" | null
+  contentEyebrow: string | null
+  contentHeadline: string | null
   body: Array<
     | {
         children?: Array<{
@@ -566,6 +591,8 @@ export type HOME_PAGE_QUERY_RESULT = {
     crop?: SanityImageCrop
     _type: "image"
   } | null
+  eventsEyebrow: string | null
+  eventsHeadline: string | null
   eventsImage: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -672,9 +699,10 @@ export type RESOURCES_PAGE_QUERY_RESULT = {
 
 // Source: sanity/queries/siteSettings.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings"][0] {  siteTitle,  logo,  "navLinks": mainNav[]{    _key,    "title": @->title,    "slug": select(      @->_type == "eventsPage" => "events",      @->slug.current    )  },  socialLinks,  socialIconStyle,  callToActionText,  callToActionLink,  contactEmail,  contactEmailSubject,  signupLink,  signupHeadline,  signupDescription,  signupImage}
+// Query: *[_type == "siteSettings"][0] {  siteTitle,  siteShortName,  logo,  logoTagline,  "navLinks": mainNav[]{    _key,    "title": @->title,    "slug": select(      @->_type == "eventsPage" => "events",      @->slug.current    )  },  callToActionText,  callToActionLink,  showRibbon,  ribbonText,  nextMeetingLabel,  nextMeetingMatch,  nextMeetingTextOverride,  nextMeetingLinkOverride,  bannerWords,  signupLink,  signupEyebrow,  signupHeadline,  signupDescription,  socialLinks,  socialIconStyle,  contactEmail,  contactEmailSubject,  footerTagline, footerColumns[]{    _key,    title,    links[]{ _key, label, href }  }}
 export type SITE_SETTINGS_QUERY_RESULT = {
   siteTitle: string | null
+  siteShortName: string | null
   logo: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -682,6 +710,7 @@ export type SITE_SETTINGS_QUERY_RESULT = {
     crop?: SanityImageCrop
     _type: "image"
   } | null
+  logoTagline: string | null
   navLinks: Array<
     | {
         _key: null
@@ -694,26 +723,37 @@ export type SITE_SETTINGS_QUERY_RESULT = {
         slug: string | null
       }
   > | null
+  callToActionText: string | null
+  callToActionLink: string | null
+  showRibbon: boolean | null
+  ribbonText: string | null
+  nextMeetingLabel: string | null
+  nextMeetingMatch: string | null
+  nextMeetingTextOverride: string | null
+  nextMeetingLinkOverride: string | null
+  bannerWords: Array<string> | null
+  signupLink: string | null
+  signupEyebrow: string | null
+  signupHeadline: string | null
+  signupDescription: string | null
   socialLinks: Array<{
     platform?: string
     url?: string
     _key: string
   }> | null
   socialIconStyle: "filled" | "outline" | null
-  callToActionText: string | null
-  callToActionLink: string | null
   contactEmail: string | null
   contactEmailSubject: string | null
-  signupLink: string | null
-  signupHeadline: string | null
-  signupDescription: string | null
-  signupImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: "image"
-  } | null
+  footerTagline: string | null
+  footerColumns: Array<{
+    _key: string
+    title: string | null
+    links: Array<{
+      _key: string
+      label: string | null
+      href: string | null
+    }> | null
+  }> | null
 } | null
 
 // Source: sanity/queries/workingGroups.ts
@@ -732,10 +772,10 @@ declare module "@sanity/client" {
     '\n  *[_type == "eventTypes" && _id == "eventTypes"][0].types[]{\n    label,\n    "value": value.current,\n    color,\n    description\n  }\n': EVENT_TYPES_QUERY_RESULT
     '\n  *[_type == "event" && defined(googleEventId)]{\n    _id,\n    googleEventId,\n    featured,\n    eventType,\n    attendance,\n    topics,\n    workingGroup,\n    rsvpLink,\n    summary\n  }\n': EVENT_CUSTOMIZATIONS_QUERY_RESULT
     '{\n  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {\n    _id,\n    title,\n    noFeaturedEventsMessage\n  },\n}': EVENTS_PAGE_QUERY_RESULT
-    '\n  *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCtaPosition,\n    body,\n    bodyImage,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage\n  }\n': HOME_PAGE_QUERY_RESULT
+    '\n  *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCta2Text,\n    heroCta2Link,\n    heroCtaPosition,\n    contentEyebrow,\n    contentHeadline,\n    body,\n    bodyImage,\n    eventsEyebrow,\n    eventsHeadline,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage,\n  }\n': HOME_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n}': PAGE_BY_SLUG_QUERY_RESULT
     '{\n  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {\n    _id,\n    title,\n    body,\n    memberHeadline,\n    communityHeadline,\n    communityIntro,\n    disclaimerText,\n    printFooterText,\n    googleSheetId,\n    googleSheetRange\n  },\n}': RESOURCES_PAGE_QUERY_RESULT
-    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  logo,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->slug.current\n    )\n  },\n  socialLinks,\n  socialIconStyle,\n  callToActionText,\n  callToActionLink,\n  contactEmail,\n  contactEmailSubject,\n  signupLink,\n  signupHeadline,\n  signupDescription,\n  signupImage\n}': SITE_SETTINGS_QUERY_RESULT
+    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  siteShortName,\n  logo,\n  logoTagline,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->slug.current\n    )\n  },\n  callToActionText,\n  callToActionLink,\n  showRibbon,\n  ribbonText,\n  nextMeetingLabel,\n  nextMeetingMatch,\n  nextMeetingTextOverride,\n  nextMeetingLinkOverride,\n  bannerWords,\n  signupLink,\n  signupEyebrow,\n  signupHeadline,\n  signupDescription,\n  socialLinks,\n  socialIconStyle,\n  contactEmail,\n  contactEmailSubject,\n  footerTagline,\n footerColumns[]{\n    _key,\n    title,\n    links[]{ _key, label, href }\n  }\n}': SITE_SETTINGS_QUERY_RESULT
     '\n  *[_type == "workingGroups" && _id == "workingGroups"][0].groups[]{\n    label,\n    "value": value.current,\n    description\n  }\n': WORKING_GROUPS_QUERY_RESULT
   }
 }

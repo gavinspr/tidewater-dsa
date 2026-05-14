@@ -73,3 +73,17 @@ export const isVerificationFresh = (
   if (Number.isNaN(verified.getTime())) return false
   return differenceInDays(new Date(), verified) <= freshnessDays
 }
+
+export const splitDateForCard = (
+  iso: string
+): { day: string; monthYear: string; weekday: string } => {
+  const d = new Date(iso)
+  const day = String(d.getDate()).padStart(2, "0")
+  const monthYear = d.toLocaleString("en-US", {
+    month: "short",
+    year: "numeric",
+  })
+  const weekday = d.toLocaleString("en-US", { weekday: "short" })
+
+  return { day, monthYear, weekday }
+}

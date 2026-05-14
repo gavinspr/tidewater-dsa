@@ -1,15 +1,16 @@
 ---
 import { addMonths } from "date-fns"
-import { buttonVariants } from "@tidewater-dsa/ui/components/button"
-import { Card, CardContent } from "@tidewater-dsa/ui/components/card"
 import { CalendarIcon } from "lucide-react"
 import Layout from "@/layouts/main.astro"
+import SectionHeading from "@/components/headings/SectionHeading.astro"
 import { UpcomingEvents } from "@/components/UpcomingEvents"
 import { loadQuery } from "@/lib/load-query"
 import { HOME_PAGE_QUERY } from "@/sanity/queries"
 import type { HOME_PAGE_QUERY_RESULT } from "@/sanity/types"
 import { getEvents } from "@/lib/events"
 import { urlFor } from "@/lib/sanity-image"
+import { splitHighlight } from "@/lib/format-headline"
+import { Card, CardContent } from "@tidewater-dsa/ui/components/card"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import RichText from "@/components/rich-text/RichText.astro"
 
@@ -23,7 +24,7 @@ const { data: home } = await loadQuery<HOME_PAGE_QUERY_RESULT>({
 })
 
 // Fetch upcoming events from Google Calendar.
-// 90-day forward window should be enough to find 5 upcoming events for any active chapter.
+// 90-day window covers any active chapter's upcoming meetings.
 const now = new Date()
 const rangeEnd = addMonths(now, 3)
 
@@ -33,23 +34,23 @@ try {
   events = all
     .filter((e) => new Date(e.endISO) >= now)
     .sort((a, b) => a.startISO.localeCompare(b.startISO))
-    .slice(0, 5)
+    .slice(0, 3)
 } catch (err) {
   console.error("[index.astro] Failed to fetch events:", err)
 }
 
 // Sanity stega encoding embeds invisible characters in strings,
-// so strict equality (===) fails, use includes() instead.
-const ctaPosition = home?.heroCtaPosition?.includes("bottom-left")
-  ? "bottom-left"
+// so strict equality (===) fails. Use includes() instead.
+const ctaPosition = home?.heroCtaPosition?.includes("center")
+  ? "center"
   : home?.heroCtaPosition?.includes("bottom-right")
     ? "bottom-right"
-    : "center"
+    : "bottom-left"
 
 const ctaPositionClasses = {
-  center: "items-center justify-center text-center",
-  "bottom-left": "items-end justify-start text-left",
-  "bottom-right": "items-end justify-end text-right",
+  center: "items-center text-center",
+  "bottom-left": "items-start text-left",
+  "bottom-right": "items-end text-right",
 }
 
 const bodyImageUrl = home?.bodyImage?.asset
@@ -63,13 +64,24 @@ const eventsImageUrl = home?.eventsImage?.asset
 const heroImageUrl = home?.heroImage
   ? urlFor(home.heroImage).width(1920).quality(80).url()
   : null
+
+const heroParts = home?.heroHeadline ? splitHighlight(home.heroHeadline) : null
+
+// Count standard text blocks in Sanity Portable Text
+const paragraphCount = Array.isArray(home?.body)
+  ? home.body.filter((block) => block._type === "block").length
+  : 0
+
+const aspectDenominator = Math.min(Math.max(paragraphCount + 1, 2), 5)
 ---
 
-<Layout title="Home">
-  <!-- Hero -->
-  <section class="relative h-100 w-full overflow-hidden bg-black md:h-125">
+<Layout title="Home" showSignup showBanner={true}>
+  <section
+    class="relative overflow-hidden bg-foreground text-background"
+    style="min-height: clamp(480px, 70vh, 720px);"
+  >
     {
-      home?.heroImage && (
+      heroImageUrl && (
         <img
           src={heroImageUrl}
           alt={home?.heroHeadline || "Tidewater DSA"}
@@ -78,91 +90,118 @@ const heroImageUrl = home?.heroImage
       )
     }
     <div
-      class="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-black/10"
+      class="absolute inset-0"
+      style="background:
+        radial-gradient(ellipse at 70% 20%, transparent 0%, rgba(10,10,10,0.5) 70%),
+        linear-gradient(180deg, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.55) 60%, rgba(10,10,10,0.92) 100%);"
     >
     </div>
 
     <div
       class={cn(
-        "absolute inset-0 z-10 flex flex-col gap-4 px-6 py-12 md:px-12 md:py-16 lg:px-20",
+        "relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-5 pt-8 pb-14 sm:px-6 sm:pt-24 md:pb-18",
         ctaPositionClasses[ctaPosition]
       )}
     >
-      <div
-        class={cn(
-          "max-w-3xl space-y-4",
-          ctaPosition === "center" && "text-center"
-        )}
-      >
-        <h1
-          class="text-4xl font-extrabold tracking-tight text-white drop-shadow-lg md:text-5xl lg:text-6xl"
-        >
-          {home?.heroHeadline}
-        </h1>
-        {
-          home?.heroSubheadline && (
-            <p class="text-lg font-medium text-white/90 drop-shadow md:text-xl">
-              {home.heroSubheadline}
-            </p>
-          )
-        }
-        {
-          home?.heroCtaText && (
-            <div class="pt-2">
+      {
+        heroParts && (
+          <h1
+            class="heading-display mb-5 max-w-[16ch] text-white"
+            style="font-size: clamp(2.6rem, 7vw, 5.4rem); font-weight: 900; line-height: 0.95; text-shadow: 0 2px 12px rgba(0,0,0,0.35);"
+          >
+            {heroParts.before}
+            {heroParts.accent && (
+              <em class="text-primary not-italic">{heroParts.accent}</em>
+            )}
+            {heroParts.after}
+          </h1>
+        )
+      }
+
+      {
+        home?.heroSubheadline && (
+          <p class="mb-7 max-w-[56ch] text-[clamp(1rem,1.3vw,1.2rem)] leading-relaxed text-white/95">
+            {home.heroSubheadline}
+          </p>
+        )
+      }
+
+      {
+        (home?.heroCtaText || home?.heroCta2Text) && (
+          <div class="flex flex-wrap gap-3">
+            {home?.heroCtaText && (
               <a
                 href={home.heroCtaLink || "#"}
                 class={cn(
-                  buttonVariants({ size: "lg" }),
-                  "h-12 cursor-pointer px-8 text-lg font-bold shadow-lg"
+                  "rounded-lg border-2 border-primary bg-primary px-6 py-3 text-base font-bold whitespace-nowrap text-primary-foreground transition-all sm:px-8 sm:py-4 sm:text-lg",
+                  "hover:-translate-y-px hover:border-primary-deep hover:bg-primary-deep"
                 )}
               >
                 {home.heroCtaText}
               </a>
-            </div>
-          )
-        }
-      </div>
+            )}
+            {home?.heroCta2Text && (
+              <a
+                href={home.heroCta2Link || "#"}
+                class={cn(
+                  "rounded-lg border-2 border-white bg-transparent px-6 py-3 text-base font-bold whitespace-nowrap text-white transition-all sm:px-8 sm:py-4 sm:text-lg",
+                  "hover:bg-white hover:text-foreground"
+                )}
+              >
+                {home.heroCta2Text}
+              </a>
+            )}
+          </div>
+        )
+      }
     </div>
+
+    <div class="absolute right-0 bottom-0 left-0 z-20 h-1.5 bg-primary"></div>
   </section>
 
-  <!-- Body: Rich text -->
   {
-    home?.body && (
-      <section class="py-16 md:py-24">
-        <div class="mx-auto max-w-6xl px-6">
-          <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            <RichText value={home.body} />
-            <div class="mt-8 aspect-4/3 w-full overflow-hidden rounded-xl bg-muted shadow-lg lg:mt-0 lg:aspect-square">
-              {bodyImageUrl ? (
-                <img
-                  src={bodyImageUrl}
-                  alt="About Tidewater DSA"
-                  class="h-full w-full bg-muted object-cover object-center"
-                />
-              ) : (
-                <div class="flex h-full w-full flex-col items-center justify-center bg-primary/5 p-6 text-center text-primary/40">
-                  <span class="font-medium">Body Image Space</span>
-                  <span class="mt-1 text-sm">Add a 'bodyImage' in Sanity</span>
-                </div>
-              )}
-            </div>
+    (home?.body || home?.contentHeadline) && (
+      <section class="mx-auto max-w-7xl px-5 py-20 sm:px-6 md:py-24">
+        <SectionHeading
+          eyebrow={home?.contentEyebrow}
+          headline={home?.contentHeadline}
+        />
+
+        <div class="grid grid-cols-1 items-start gap-9 md:grid-cols-[7fr_5fr] md:gap-14">
+          <div>{home?.body && <RichText value={home.body} />}</div>
+
+          <div
+            class="relative mt-2 w-full transition-all duration-300"
+            style={`aspect-ratio: 4 / ${aspectDenominator};`}
+          >
+            <div
+              class="absolute z-0 bg-primary"
+              style="inset: 14px -14px -14px 14px;"
+            />
+            {bodyImageUrl ? (
+              <img
+                src={bodyImageUrl}
+                alt="About Tidewater DSA"
+                class="relative z-10 h-full w-full object-cover"
+              />
+            ) : (
+              <div class="relative z-10 flex h-full w-full flex-col items-center justify-center bg-primary/5 p-6 text-center text-primary/40">
+                <span class="font-medium">About Image Space</span>
+                <span class="mt-1 text-sm">Add a 'bodyImage' in Sanity</span>
+              </div>
+            )}
           </div>
         </div>
       </section>
     )
   }
 
-  <!-- Upcoming Events -->
-  <section class="border-t border-primary/20 bg-muted/20 py-16 md:py-24">
-    <div class="mx-auto max-w-6xl px-6">
-      <div class="mb-8">
-        <div class="mb-1 h-1 w-16 bg-primary"></div>
-        <h2
-          class="text-3xl font-extrabold tracking-tight text-primary uppercase"
-        >
-          Upcoming Events
-        </h2>
-      </div>
+  <section class="bg-paper">
+    <div class="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-20">
+      <SectionHeading
+        eyebrow={home?.eventsEyebrow}
+        headline={home?.eventsHeadline}
+      />
 
       {
         events.length > 0 ? (
@@ -171,18 +210,19 @@ const heroImageUrl = home?.heroImage
             events={events}
             sideImageUrl={eventsImageUrl}
             noRsvpMessage={home?.noRsvpMessage}
+            trailingCta={{ text: "All events", href: "/events" }}
           />
         ) : (
-          <Card className="border-0 bg-linear-to-br from-muted/50 to-muted/80 shadow-none">
-            <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
-              <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+          <Card className="border-2  rounded-sm bg-background/60 shadow-none">
+            <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+              <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft">
                 <CalendarIcon className="h-8 w-8 text-primary" />
               </div>
               <div class="space-y-2">
-                <p class="text-xl font-semibold text-foreground">
+                <p class="heading-display text-2xl">
                   {home?.noEventsHeadline || "We're planning our next move."}
                 </p>
-                <p class="mx-auto max-w-md text-muted-foreground">
+                <p class="mx-auto max-w-md text-foreground-soft">
                   {home?.noEventsBody ||
                     "No events are scheduled right now, but we're always organizing. Join our mailing list below to be the first to know when something's coming up."}
                 </p>
@@ -190,8 +230,8 @@ const heroImageUrl = home?.heroImage
               <a
                 href="#signup"
                 class={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "mt-2 cursor-pointer gap-2"
+                  "mt-2 inline-flex items-center gap-2 rounded-lg border-2 border-foreground bg-transparent px-5 py-2.5 text-[0.95rem] font-bold text-foreground transition-all",
+                  "hover:bg-foreground hover:text-background"
                 )}
               >
                 <CalendarIcon className="h-4 w-4" />

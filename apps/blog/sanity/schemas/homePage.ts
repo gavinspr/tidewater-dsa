@@ -16,7 +16,8 @@ export const homePageType = defineType({
       name: "heroHeadline",
       title: "Headline",
       type: "string",
-      description: "The main heading overlaid on the hero image",
+      description:
+        "The main heading overlaid on the hero image. Wrap a phrase in *asterisks* to highlight it (e.g. 'Building working-class power across the *757*.').",
       group: "hero",
       validation: (Rule) => Rule.required(),
     }),
@@ -24,7 +25,7 @@ export const homePageType = defineType({
       name: "heroSubheadline",
       title: "Subheadline",
       type: "text",
-      rows: 2,
+      rows: 3,
       description: "A short supporting line below the headline",
       group: "hero",
     }),
@@ -40,59 +41,110 @@ export const homePageType = defineType({
     }),
     defineField({
       name: "heroCtaText",
-      title: "Button Text",
+      title: "Primary Button Text",
       type: "string",
-      description: "Text for the call-to-action button (leave empty to hide)",
+      description:
+        "Text for the primary CTA (e.g. 'Start Organizing'). Leave empty to hide.",
       group: "hero",
     }),
     defineField({
       name: "heroCtaLink",
-      title: "Button Link",
+      title: "Primary Button Link",
       type: "url",
-      description: "Where the button links to (e.g. a signup form, event page)",
+      description: "Where the primary button links to (e.g. /get-involved)",
+      group: "hero",
+      validation: (Rule) =>
+        Rule.uri({ allowRelative: true, scheme: ["http", "https", "mailto"] }),
+    }),
+    defineField({
+      name: "heroCta2Text",
+      title: "Secondary Button Text",
+      type: "string",
+      description:
+        "Optional secondary CTA shown next to the primary button (e.g. 'Upcoming events').",
+      group: "hero",
+    }),
+    defineField({
+      name: "heroCta2Link",
+      title: "Secondary Button Link",
+      type: "url",
+      description: "Where the secondary button links to (e.g. /events).",
       group: "hero",
       validation: (Rule) =>
         Rule.uri({ allowRelative: true, scheme: ["http", "https", "mailto"] }),
     }),
     defineField({
       name: "heroCtaPosition",
-      title: "Button Position",
+      title: "Content Position",
       type: "string",
-      description: "Where the text and CTA appear on the hero image",
+      description: "Where the headline + CTAs sit on the hero image",
       group: "hero",
       options: {
         list: [
-          { title: "Center", value: "center" },
           { title: "Bottom Left", value: "bottom-left" },
+          { title: "Center", value: "center" },
           { title: "Bottom Right", value: "bottom-right" },
         ],
         layout: "radio",
       },
-      initialValue: "center",
+      initialValue: "bottom-left",
     }),
 
     // Content
+    defineField({
+      name: "contentEyebrow",
+      title: "Content Eyebrow",
+      type: "string",
+      description:
+        "Small label above the content headline (e.g. 'Who we are').",
+      group: "content",
+      initialValue: "Who we are",
+    }),
+    defineField({
+      name: "contentHeadline",
+      title: "Content Headline",
+      type: "string",
+      description:
+        "Section heading. Wrap a phrase in *asterisks* to render it in red (e.g. 'A chapter of *organizers*.').",
+      group: "content",
+      initialValue: "A chapter of *organizers*.",
+    }),
     defineRichTextBody({
       description:
-        "Main content below the hero (e.g. chapter info, priorities, calls to action).",
+        "Body copy under the content headline. The first paragraph automatically renders with a large red drop-cap.",
       group: "content",
     }),
     defineField({
       name: "bodyImage",
-      title: "Body Section Image",
+      title: "Content Image",
       type: "image",
-      description: "Image displayed alongside the rich text body content",
+      description: "Image displayed alongside the rich text body content copy.",
       options: { hotspot: true },
       group: "content",
     }),
 
     // Events Section
     defineField({
+      name: "eventsEyebrow",
+      title: "Events Eyebrow",
+      type: "string",
+      group: "events",
+      initialValue: "Coming up",
+    }),
+    defineField({
+      name: "eventsHeadline",
+      title: "Events Headline",
+      type: "string",
+      description:
+        "Section heading. Wrap a phrase in *asterisks* to render it in red (e.g. 'Upcoming *events*').",
+      group: "events",
+      initialValue: "Upcoming *events*",
+    }),
+    defineField({
       name: "eventsImage",
       title: "Events Section Image",
       type: "image",
-      description:
-        "Image displayed alongside the events list (e.g. a chapter action photo)",
+      description: "Image displayed alongside the in-page event details view.",
       options: { hotspot: true },
       group: "events",
     }),

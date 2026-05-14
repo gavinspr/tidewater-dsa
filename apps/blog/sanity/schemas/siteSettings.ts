@@ -6,15 +6,26 @@ export const siteSettingsType = defineType({
   type: "document",
   groups: [
     { name: "cta", title: "Call-To-Action" },
+    { name: "ribbon", title: "Top Ribbon" },
+    { name: "banner", title: "Chapter Banner" },
     { name: "signup", title: "Signup Section" },
+    { name: "footer", title: "Footer" },
   ],
   fields: [
     defineField({
       name: "siteTitle",
-      title: "Site Title",
+      title: "Site Full Name",
       type: "string",
       description:
-        "The global name of the website. Used for SEO, browser tabs, and as a text fallback if no logo is uploaded.",
+        "The chapter's full official name (e.g. 'Tidewater Democratic Socialists of America'). Used for SEO metadata, browser tab titles, and image alt text.",
+    }),
+    defineField({
+      name: "siteShortName",
+      title: "Site Short Name",
+      type: "string",
+      description:
+        "Wordmark shown next to the logo in the header and footer (e.g. 'Tidewater DSA'). Leave blank to use Site Full Name in both places. Doesn't affect SEO, browser tab titles, or image alt text, those always use the full name.",
+      initialValue: "Tidewater DSA",
     }),
     defineField({
       name: "logo",
@@ -25,6 +36,14 @@ export const siteSettingsType = defineType({
       options: {
         hotspot: true,
       },
+    }),
+    defineField({
+      name: "logoTagline",
+      title: "Logo Tagline",
+      type: "string",
+      description:
+        "Small line shown next to the logo in the header (e.g. 'Hampton Roads · VA'). Leave blank to hide.",
+      initialValue: "Hampton Roads · VA",
     }),
 
     // Navbar Section
@@ -57,64 +76,81 @@ export const siteSettingsType = defineType({
         Rule.uri({ allowRelative: true, scheme: ["http", "https", "mailto"] }),
     }),
 
-    // Footer Section
+    // Top ribbon
     defineField({
-      name: "socialLinks",
-      title: "Social Media Links",
+      name: "showRibbon",
+      title: "Show Ribbon",
+      type: "boolean",
+      description:
+        "When off, the small black bar at the very top of every page is hidden entirely.",
+      group: "ribbon",
+      initialValue: true,
+    }),
+    defineField({
+      name: "ribbonText",
+      title: "Ribbon Text",
+      type: "string",
+      description:
+        "Short tagline shown on the left side of the ribbon (e.g. 'Hampton Roads, VA · Founded 2021'). Leave blank to hide the left side only.",
+      group: "ribbon",
+      initialValue: "Hampton Roads, VA · Founded 2021",
+    }),
+    defineField({
+      name: "nextMeetingLabel",
+      title: "Next Meeting Label",
+      type: "string",
+      description:
+        "Prefix text before the auto-derived meeting date (e.g. 'Next general meeting'). The date and time are fetched from Google Calendar.",
+      group: "ribbon",
+      initialValue: "Next general meeting",
+    }),
+    defineField({
+      name: "nextMeetingMatch",
+      title: "Next Meeting Match",
+      type: "string",
+      description:
+        "Substring used to identify which calendar event is the 'next meeting'. The site checks this (case-insensitive) against each event's RSVP link, event type, and title. Leave blank to skip the calendar lookup entirely.",
+      group: "ribbon",
+      initialValue: "general-meeting",
+    }),
+    defineField({
+      name: "nextMeetingTextOverride",
+      title: "Next Meeting Text Override",
+      type: "string",
+      description:
+        "Optional. If filled, this string is shown verbatim on the right side of the ribbon, overriding the auto-derived value. Useful when you want to advertise something other than the next meeting.",
+      group: "ribbon",
+    }),
+    defineField({
+      name: "nextMeetingLinkOverride",
+      title: "Next Meeting Link Override",
+      type: "url",
+      description:
+        "Optional. Where the ribbon's right side links to. Defaults to the matched event's RSVP link, or /events if there's no RSVP.",
+      group: "ribbon",
+      validation: (Rule) =>
+        Rule.uri({ allowRelative: true, scheme: ["http", "https"] }),
+    }),
+
+    // Chapter motto banner
+    defineField({
+      name: "bannerWords",
+      title: "Banner Words",
       type: "array",
+      of: [{ type: "string" }],
       description:
-        "Add links to your social media profiles. These appear in the site footer.",
-      of: [
-        {
-          type: "object",
-          fields: [
-            {
-              name: "platform",
-              type: "string",
-              title: "Platform (e.g., Instagram, X)",
-              validation: (Rule) => Rule.required(),
-            },
-            {
-              name: "url",
-              type: "url",
-              title: "URL",
-              validation: (Rule) => Rule.required(),
-            },
-          ],
-        },
-      ],
-    }),
-    defineField({
-      name: "socialIconStyle",
-      title: "Social Icon Style",
-      type: "string",
-      description: "How social media icons appear across the site",
-      options: {
-        list: [
-          { title: "Outline — colored icons on white", value: "outline" },
-          {
-            title: "Filled — white icons on colored background",
-            value: "filled",
-          },
-        ],
-        layout: "radio",
-      },
-      initialValue: "outline",
-    }),
-    defineField({
-      name: "contactEmail",
-      title: "Contact Email",
-      type: "string",
-      description:
-        "Public email shown in the footer (e.g. tidewaterdsa@gmail.com)",
-      validation: (Rule) => Rule.required().email(),
-    }),
-    defineField({
-      name: "contactEmailSubject",
-      title: "Contact Email Subject Line",
-      type: "string",
-      description:
-        "Pre-filled subject when someone clicks the email link (optional)",
+        "Optional. Short words shown as the chapter-motto strip on the home page (e.g. 'Educate', 'Agitate', 'Organize'). They are separated by red star glyphs and rendered twice in a row to fill the band.",
+      group: "banner",
+      validation: (Rule) =>
+        Rule.unique()
+          .min(0)
+          .custom((words) => {
+            if (!words || words.length === 0) return true
+            const empty = words.findIndex(
+              (w) => typeof w !== "string" || w.trim().length === 0
+            )
+            return empty === -1 ? true : "Banner words can't be blank."
+          }),
     }),
 
     // Signup Section
@@ -154,12 +190,21 @@ export const siteSettingsType = defineType({
         ),
     }),
     defineField({
+      name: "signupEyebrow",
+      title: "Signup Eyebrow",
+      type: "string",
+      description:
+        "Small mono label above the signup headline (e.g. 'Newsletter').",
+      group: "signup",
+      initialValue: "Newsletter",
+    }),
+    defineField({
       name: "signupHeadline",
       title: "Signup Headline",
       type: "string",
-      description: "Heading shown above the email signup form on every page",
+      description: "Heading shown above the email signup form.",
       group: "signup",
-      initialValue: "Stay Updated",
+      initialValue: "Join the 757 with us.",
     }),
     defineField({
       name: "signupDescription",
@@ -169,18 +214,145 @@ export const siteSettingsType = defineType({
       description: "Supporting text below the signup headline",
       group: "signup",
       initialValue:
-        "Get the latest on meetings, events, and actions in the 757 — straight to your inbox.",
+        "Get the latest on meetings, events, and actions across the seven cities — straight to your inbox. Member-written, no spam, unsubscribe anytime.",
+    }),
+
+    // Footer
+    defineField({
+      name: "socialLinks",
+      title: "Social Media Links",
+      type: "array",
+      description:
+        "Add links to your social media profiles. These appear in the site footer.",
+      group: "footer",
+      of: [
+        {
+          type: "object",
+          fields: [
+            {
+              name: "platform",
+              type: "string",
+              title: "Platform (e.g., Instagram, X)",
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "url",
+              type: "url",
+              title: "URL",
+              validation: (Rule) => Rule.required(),
+            },
+          ],
+        },
+      ],
     }),
     defineField({
-      name: "signupImage",
-      title: "Signup Section Image",
-      type: "image",
+      name: "socialIconStyle",
+      title: "Social Icon Style",
+      type: "string",
+      description: "How social media icons appear across the site",
+      group: "footer",
+      options: {
+        list: [
+          { title: "Outline — colored icons on white", value: "outline" },
+          {
+            title: "Filled — white icons on colored background",
+            value: "filled",
+          },
+        ],
+        layout: "radio",
+      },
+      initialValue: "outline",
+    }),
+    defineField({
+      name: "contactEmail",
+      title: "Contact Email",
+      type: "string",
       description:
-        "Image displayed next to the signup form (e.g. a group photo of members)",
-      options: { hotspot: true },
-      group: "signup",
+        "Public email shown in the footer (e.g. tidewaterdsa@gmail.com)",
+      group: "footer",
+      validation: (Rule) => Rule.required().email(),
+    }),
+    defineField({
+      name: "contactEmailSubject",
+      title: "Contact Email Subject Line",
+      type: "string",
+      description:
+        "Pre-filled subject when someone clicks the email link (optional)",
+      group: "footer",
+    }),
+    defineField({
+      name: "footerTagline",
+      title: "Footer Tagline",
+      type: "text",
+      rows: 3,
+      description: "Short paragraph shown next to the footer logo.",
+      group: "footer",
+      initialValue:
+        "Tidewater DSA is the Hampton Roads chapter of the Democratic Socialists of America. Workers organizing across the 757.",
+    }),
+    defineField({
+      name: "footerColumns",
+      title: "Footer Link Columns",
+      type: "array",
+      description:
+        "Create columns of links for the footer. A good rule of thumb is to dedicate one column to chapter information (e.g., 'About Us', 'Who We Are') and another to actionable items (e.g., 'Get Involved', 'Resources').",
+      group: "footer",
+      validation: (Rule) =>
+        Rule.max(4).error(
+          "You can only add up to 4 columns to the footer to keep the design from breaking."
+        ),
+      initialValue: [
+        { title: "Chapter", links: [] },
+        { title: "Get Involved", links: [] },
+      ],
+      of: [
+        {
+          type: "object",
+          name: "footerColumn",
+          fields: [
+            {
+              name: "title",
+              type: "string",
+              title: "Column Title",
+              description:
+                "The public-facing heading displayed above this list of links (e.g., 'Chapter', 'Get Involved', 'Campaigns').",
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "links",
+              type: "array",
+              title: "Links",
+              of: [
+                {
+                  type: "object",
+                  name: "footerLink",
+                  fields: [
+                    {
+                      name: "label",
+                      type: "string",
+                      title: "Label",
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: "href",
+                      type: "string",
+                      title: "URL",
+                      description:
+                        "Path (like '/about-us') or full URL (like 'https://...').",
+                      validation: (Rule) => Rule.required(),
+                    },
+                  ],
+                  preview: { select: { title: "label", subtitle: "href" } },
+                },
+              ],
+            },
+          ],
+          preview: { select: { title: "title" } },
+        },
+      ],
     }),
   ],
+
   preview: {
     prepare: () => ({ title: "Site Settings" }),
   },
