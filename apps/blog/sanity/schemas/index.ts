@@ -4,11 +4,25 @@ import { eventTypesType } from "./eventTypes"
 import { homePageType } from "./homePage"
 import { pageType } from "./page"
 import { postType } from "./post"
+import { priorityType } from "./priority"
+import { chapterPrioritiesPageType } from "./chapterPrioritiesPage"
 import { resourcesPageType } from "./resourcesPage"
 import { siteSettingsType } from "./siteSettings"
 import { workingGroupsType } from "./workingGroups"
 
+/**
+ * Registration order matters for Sanity's TypeGen
+ *
+ * Object types that are referenced by document types MUST appear earlier in this array
+ * than the documents that use them. If a document is declared before the objects it references,
+ * TypeGen resolves those references to `never` and the entire downstream type chain breaks.
+ */
+
 export const schemaTypes = [
+  // Object types (must come first)
+  priorityType,
+
+  // Document types
   postType,
   pageType,
   siteSettingsType,
@@ -18,4 +32,5 @@ export const schemaTypes = [
   eventTypesType,
   workingGroupsType,
   resourcesPageType,
+  chapterPrioritiesPageType,
 ]

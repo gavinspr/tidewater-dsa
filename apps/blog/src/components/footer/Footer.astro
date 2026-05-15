@@ -3,6 +3,7 @@ import { detectSocialPlatform, getSocialIcon } from "@/lib/social"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import EmailLink from "./EmailLink.astro"
 import type { IconVariant, Settings } from "@/types"
+import { isExternalHref } from "@/lib/url"
 
 interface Props {
   socialLinks: Settings["socialLinks"]
@@ -31,9 +32,6 @@ const validSocialLinks =
     (social): social is { platform: string; url: string; _key: string } =>
       Boolean(social.platform && social.url)
   ) ?? []
-
-const isExternalHref = (href: string | null | undefined): boolean =>
-  href ? /^(https?:|mailto:|tel:)/i.test(href) : false
 
 // Cap dynamic columns at 4 to prevent layout breakage
 const columnCount = Math.min(footerColumns?.length || 0, 4)

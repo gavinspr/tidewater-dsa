@@ -1,0 +1,39 @@
+---
+import { splitHighlight } from "@/lib/format-headline"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
+
+interface Props {
+  eyebrow?: string | null
+  headline?: string | null
+  class?: string
+}
+
+const { eyebrow, headline, class: className } = Astro.props
+
+const parts = headline ? splitHighlight(headline) : null
+---
+
+{
+  (eyebrow || parts) && (
+    <header
+      class={cn(
+        "mb-8 border-t-2 border-foreground pt-7 md:mb-10 md:pt-9",
+        className
+      )}
+    >
+      {eyebrow && (
+        <span class="mono-eyebrow mb-3 block text-primary">{eyebrow}</span>
+      )}
+      {parts && (
+        <h1
+          class="heading-display text-balance"
+          style="font-size: clamp(2.6rem, 6.5vw, 5rem); letter-spacing: -0.015em;"
+        >
+          {parts.before}
+          {parts.accent && <span class="text-primary">{parts.accent}</span>}
+          {parts.after}
+        </h1>
+      )}
+    </header>
+  )
+}

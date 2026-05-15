@@ -1,5 +1,10 @@
 import { defineField } from "sanity"
-import type { FieldDefinition, Rule } from "sanity"
+import type {
+  ArrayRule,
+  FieldDefinition,
+  PortableTextBlock,
+  Rule,
+} from "sanity"
 
 interface RichTextBodyOptions {
   name?: string
@@ -7,6 +12,9 @@ interface RichTextBodyOptions {
   description?: string
   group?: string
   allowImages?: boolean
+  validation?: (
+    rule: ArrayRule<PortableTextBlock>
+  ) => ArrayRule<PortableTextBlock> | ArrayRule<PortableTextBlock>[]
 }
 
 /**
@@ -22,6 +30,7 @@ export const defineRichTextBody = ({
   description,
   group,
   allowImages = true,
+  validation,
 }: RichTextBodyOptions = {}): FieldDefinition<"array"> => {
   const blockType = {
     type: "block" as const,
@@ -105,6 +114,7 @@ export const defineRichTextBody = ({
     type: "array",
     description,
     ...(group ? { group } : {}),
+    validation,
     of: allowImages ? [blockType, imageType] : [blockType],
   })
 }

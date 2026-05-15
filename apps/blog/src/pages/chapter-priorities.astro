@@ -1,0 +1,126 @@
+---
+import Layout from "@/layouts/main.astro"
+import PageHeading from "@/components/headings/PageHeading.astro"
+import RichText from "@/components/rich-text/RichText.astro"
+import { loadQuery } from "@/lib/load-query"
+import { CHAPTER_PRIORITIES_PAGE_QUERY } from "@/sanity/queries"
+import type { CHAPTER_PRIORITIES_PAGE_QUERY_RESULT } from "@/sanity/types"
+import { urlFor } from "@/lib/sanity-image"
+import { splitHighlight } from "@/lib/format-headline"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
+import { ArrowRightIcon } from "lucide-react"
+import { isExternalHref } from "@/lib/url"
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=300, stale-while-revalidate=600"
+)
+
+const { data } = await loadQuery<CHAPTER_PRIORITIES_PAGE_QUERY_RESULT>({
+  query: CHAPTER_PRIORITIES_PAGE_QUERY,
+})
+
+const eyebrow = data?.eyebrow ?? "2026 Resolutions"
+const headline = data?.headline ?? "Chapter *priorities*"
+const intro = data?.intro ?? null
+const priorities = data?.priorities ?? []
+const pageTitle = data?.title ?? "Chapter Priorities"
+---
+
+<Layout title={pageTitle}>
+  <section class="mx-auto max-w-7xl px-5 py-10 sm:px-6 md:py-16">
+    <PageHeading eyebrow={eyebrow} headline={headline} />
+
+    {
+      intro && intro.length > 0 && (
+        <div class="max-w-4xl">
+          <RichText value={intro} />
+        </div>
+      )
+    }
+
+    {
+      priorities.length === 0 ? (
+        <p class="py-16 text-center text-foreground-soft">
+          No priorities published yet
+        </p>
+      ) : (
+        <div class="divide-y-2 divide-border">
+          {priorities.map((priority, idx) => {
+            const number = String(idx + 1).padStart(2, "0")
+            // Even-positioned priorities (2nd, 4th, …) flip image to the right
+            // on md+ via order-2. Mobile stacks single-column with image first
+            // (default DOM order), no override needed.
+            const flipped = idx % 2 === 1
+
+            const headlineParts = priority.headline
+              ? splitHighlight(priority.headline)
+              : null
+
+            const imageUrl = priority.image
+              ? urlFor(priority.image).width(1000).quality(85).url()
+              : null
+
+            const showCta = Boolean(priority.ctaText && priority.ctaLink)
+            const ctaExternal = priority.ctaLink
+              ? isExternalHref(priority.ctaLink)
+              : false
+
+            return (
+              <article class="grid grid-cols-1 items-center gap-8 py-14 md:grid-cols-2 md:gap-14 md:py-20">
+                <div class={cn("w-full", flipped && "md:order-2")}>
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={priority.category || "Priority"}
+                      class="h-auto w-full rounded-md"
+                    />
+                  ) : (
+                    <div class="flex aspect-4/3 w-full items-center justify-center rounded-md bg-primary/5 text-primary/40">
+                      <span class="mono-eyebrow">No image set</span>
+                    </div>
+                  )}
+                </div>
+
+                <div class="flex flex-col items-start">
+                  <div class="mono-eyebrow mb-3 text-primary">
+                    {number} / {priority.category}
+                  </div>
+
+                  {headlineParts && (
+                    <h2
+                      class="heading-display mb-4 text-balance"
+                      style="font-size: clamp(1.8rem, 3.5vw, 2.6rem); line-height: 1;"
+                    >
+                      {headlineParts.before}
+                      {headlineParts.accent && (
+                        <span class="text-primary">{headlineParts.accent}</span>
+                      )}
+                      {headlineParts.after}
+                    </h2>
+                  )}
+
+                  {priority.description && (
+                    <RichText value={priority.description} />
+                  )}
+
+                  {showCta && priority.ctaLink && (
+                    <a
+                      href={priority.ctaLink}
+                      target={ctaExternal ? "_blank" : undefined}
+                      rel={ctaExternal ? "noreferrer" : undefined}
+                      class="mono-eyebrow mt-6 inline-flex items-center gap-1.5 self-start border-b-2 border-primary pb-1 font-semibold whitespace-nowrap text-primary transition-colors hover:border-primary-deep hover:text-primary-deep"
+                    >
+                      {priority.ctaText}
+                      <ArrowRightIcon className="size-3" />
+                    </a>
+                  )}
+                </div>
+              </article>
+            )
+          })}
+        </div>
+      )
+    }
+  </section>
+</Layout>

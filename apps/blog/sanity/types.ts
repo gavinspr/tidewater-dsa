@@ -28,6 +28,70 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset"
 }
 
+export type ChapterPrioritiesPage = {
+  _id: string
+  _type: "chapterPrioritiesPage"
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  eyebrow?: string
+  headline?: string
+  intro?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: "span"
+          _key: string
+        }>
+        style?: "normal" | "h2" | "h3" | "blockquote"
+        listItem?: "bullet" | "number"
+        markDefs?: Array<{
+          href?: string
+          blank?: boolean
+          _type: "link"
+          _key: string
+        }>
+        level?: number
+        _type: "block"
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        displaySize?: "sm" | "md" | "lg" | "full"
+        _type: "image"
+        _key: string
+      }
+  >
+  priorities?: Array<
+    {
+      _key: string
+    } & Priority
+  >
+}
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop"
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+}
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot"
+  x?: number
+  y?: number
+  height?: number
+  width?: number
+}
+
 export type ResourcesPage = {
   _id: string
   _type: "resourcesPage"
@@ -74,22 +138,6 @@ export type ResourcesPage = {
   printFooterText?: string
   googleSheetId?: string
   googleSheetRange?: string
-}
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop"
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
-}
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot"
-  x?: number
-  y?: number
-  height?: number
-  width?: number
 }
 
 export type WorkingGroups = {
@@ -245,6 +293,13 @@ export type EventsPageReference = {
   [internalGroqTypeReferenceTo]?: "eventsPage"
 }
 
+export type ChapterPrioritiesPageReference = {
+  _ref: string
+  _type: "reference"
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: "chapterPrioritiesPage"
+}
+
 export type SiteSettings = {
   _id: string
   _type: "siteSettings"
@@ -261,7 +316,9 @@ export type SiteSettings = {
     _type: "image"
   }
   logoTagline?: string
-  mainNav?: ArrayOf<PageReference | EventsPageReference>
+  mainNav?: ArrayOf<
+    PageReference | EventsPageReference | ChapterPrioritiesPageReference
+  >
   callToActionText?: string
   callToActionLink?: string
   showRibbon?: boolean
@@ -374,6 +431,40 @@ export type Post = {
   }>
 }
 
+export type Priority = {
+  _type: "priority"
+  category?: string
+  headline?: string
+  description?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: "span"
+      _key: string
+    }>
+    style?: "normal" | "h2" | "h3" | "blockquote"
+    listItem?: "bullet" | "number"
+    markDefs?: Array<{
+      href?: string
+      blank?: boolean
+      _type: "link"
+      _key: string
+    }>
+    level?: number
+    _type: "block"
+    _key: string
+  }>
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: "image"
+  }
+  ctaText?: string
+  ctaLink?: string
+}
+
 export type SanityImagePaletteSwatch = {
   _type: "sanity.imagePaletteSwatch"
   background?: string
@@ -473,9 +564,10 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
-  | ResourcesPage
+  | ChapterPrioritiesPage
   | SanityImageCrop
   | SanityImageHotspot
+  | ResourcesPage
   | WorkingGroups
   | Slug
   | EventTypes
@@ -484,9 +576,11 @@ export type AllSanitySchemaTypes =
   | HomePage
   | PageReference
   | EventsPageReference
+  | ChapterPrioritiesPageReference
   | SiteSettings
   | Page
   | Post
+  | Priority
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -495,6 +589,81 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint
+
+// Source: sanity/queries/chapterPrioritiesPage.ts
+// Variable: CHAPTER_PRIORITIES_PAGE_QUERY
+// Query: *[_type == "chapterPrioritiesPage" && _id == "chapterPrioritiesPage"][0] {  _id,  title,  eyebrow,  headline,  intro,  priorities[] {    _key,    category,    headline,    description,    image,    ctaText,    ctaLink  }}
+export type CHAPTER_PRIORITIES_PAGE_QUERY_RESULT = {
+  _id: "chapterPrioritiesPage"
+  title: string | null
+  eyebrow: string | null
+  headline: string | null
+  intro: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: "span"
+          _key: string
+        }>
+        style?: "blockquote" | "h2" | "h3" | "normal"
+        listItem?: "bullet" | "number"
+        markDefs?: Array<{
+          href?: string
+          blank?: boolean
+          _type: "link"
+          _key: string
+        }>
+        level?: number
+        _type: "block"
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        displaySize?: "full" | "lg" | "md" | "sm"
+        _type: "image"
+        _key: string
+      }
+  > | null
+  priorities: Array<{
+    _key: string
+    category: string | null
+    headline: string | null
+    description: Array<{
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: "span"
+        _key: string
+      }>
+      style?: "blockquote" | "h2" | "h3" | "normal"
+      listItem?: "bullet" | "number"
+      markDefs?: Array<{
+        href?: string
+        blank?: boolean
+        _type: "link"
+        _key: string
+      }>
+      level?: number
+      _type: "block"
+      _key: string
+    }> | null
+    image: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: "image"
+    } | null
+    ctaText: string | null
+    ctaLink: string | null
+  }> | null
+} | null
 
 // Source: sanity/queries/eventTypes.ts
 // Variable: EVENT_TYPES_QUERY
@@ -699,7 +868,7 @@ export type RESOURCES_PAGE_QUERY_RESULT = {
 
 // Source: sanity/queries/siteSettings.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings"][0] {  siteTitle,  siteShortName,  logo,  logoTagline,  "navLinks": mainNav[]{    _key,    "title": @->title,    "slug": select(      @->_type == "eventsPage" => "events",      @->slug.current    )  },  callToActionText,  callToActionLink,  showRibbon,  ribbonText,  nextMeetingLabel,  nextMeetingMatch,  nextMeetingTextOverride,  nextMeetingLinkOverride,  bannerWords,  signupLink,  signupEyebrow,  signupHeadline,  signupDescription,  socialLinks,  socialIconStyle,  contactEmail,  contactEmailSubject,  footerTagline, footerColumns[]{    _key,    title,    links[]{ _key, label, href }  }}
+// Query: *[_type == "siteSettings"][0] {  siteTitle,  siteShortName,  logo,  logoTagline,  "navLinks": mainNav[]{    _key,    "title": @->title,    "slug": select(      @->_type == "eventsPage" => "events",      @->_type == "chapterPrioritiesPage" => "chapter-priorities",      @->slug.current    )  },  callToActionText,  callToActionLink,  showRibbon,  ribbonText,  nextMeetingLabel,  nextMeetingMatch,  nextMeetingTextOverride,  nextMeetingLinkOverride,  bannerWords,  signupLink,  signupEyebrow,  signupHeadline,  signupDescription,  socialLinks,  socialIconStyle,  contactEmail,  contactEmailSubject,  footerTagline, footerColumns[]{    _key,    title,    links[]{ _key, label, href }  }}
 export type SITE_SETTINGS_QUERY_RESULT = {
   siteTitle: string | null
   siteShortName: string | null
@@ -712,6 +881,11 @@ export type SITE_SETTINGS_QUERY_RESULT = {
   } | null
   logoTagline: string | null
   navLinks: Array<
+    | {
+        _key: null
+        title: string | null
+        slug: "chapter-priorities"
+      }
     | {
         _key: null
         title: string | null
@@ -769,13 +943,14 @@ export type WORKING_GROUPS_QUERY_RESULT = Array<{
 import "@sanity/client"
 declare module "@sanity/client" {
   interface SanityQueries {
+    '*[_type == "chapterPrioritiesPage" && _id == "chapterPrioritiesPage"][0] {\n  _id,\n  title,\n  eyebrow,\n  headline,\n  intro,\n  priorities[] {\n    _key,\n    category,\n    headline,\n    description,\n    image,\n    ctaText,\n    ctaLink\n  }\n}': CHAPTER_PRIORITIES_PAGE_QUERY_RESULT
     '\n  *[_type == "eventTypes" && _id == "eventTypes"][0].types[]{\n    label,\n    "value": value.current,\n    color,\n    description\n  }\n': EVENT_TYPES_QUERY_RESULT
     '\n  *[_type == "event" && defined(googleEventId)]{\n    _id,\n    googleEventId,\n    featured,\n    eventType,\n    attendance,\n    topics,\n    workingGroup,\n    rsvpLink,\n    summary\n  }\n': EVENT_CUSTOMIZATIONS_QUERY_RESULT
     '{\n  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {\n    _id,\n    title,\n    noFeaturedEventsMessage\n  },\n}': EVENTS_PAGE_QUERY_RESULT
     '\n  *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCta2Text,\n    heroCta2Link,\n    heroCtaPosition,\n    contentEyebrow,\n    contentHeadline,\n    body,\n    bodyImage,\n    eventsEyebrow,\n    eventsHeadline,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage,\n  }\n': HOME_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n}': PAGE_BY_SLUG_QUERY_RESULT
     '{\n  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {\n    _id,\n    title,\n    body,\n    memberHeadline,\n    communityHeadline,\n    communityIntro,\n    disclaimerText,\n    printFooterText,\n    googleSheetId,\n    googleSheetRange\n  },\n}': RESOURCES_PAGE_QUERY_RESULT
-    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  siteShortName,\n  logo,\n  logoTagline,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->slug.current\n    )\n  },\n  callToActionText,\n  callToActionLink,\n  showRibbon,\n  ribbonText,\n  nextMeetingLabel,\n  nextMeetingMatch,\n  nextMeetingTextOverride,\n  nextMeetingLinkOverride,\n  bannerWords,\n  signupLink,\n  signupEyebrow,\n  signupHeadline,\n  signupDescription,\n  socialLinks,\n  socialIconStyle,\n  contactEmail,\n  contactEmailSubject,\n  footerTagline,\n footerColumns[]{\n    _key,\n    title,\n    links[]{ _key, label, href }\n  }\n}': SITE_SETTINGS_QUERY_RESULT
+    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  siteShortName,\n  logo,\n  logoTagline,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->_type == "chapterPrioritiesPage" => "chapter-priorities",\n      @->slug.current\n    )\n  },\n  callToActionText,\n  callToActionLink,\n  showRibbon,\n  ribbonText,\n  nextMeetingLabel,\n  nextMeetingMatch,\n  nextMeetingTextOverride,\n  nextMeetingLinkOverride,\n  bannerWords,\n  signupLink,\n  signupEyebrow,\n  signupHeadline,\n  signupDescription,\n  socialLinks,\n  socialIconStyle,\n  contactEmail,\n  contactEmailSubject,\n  footerTagline,\n footerColumns[]{\n    _key,\n    title,\n    links[]{ _key, label, href }\n  }\n}': SITE_SETTINGS_QUERY_RESULT
     '\n  *[_type == "workingGroups" && _id == "workingGroups"][0].groups[]{\n    label,\n    "value": value.current,\n    description\n  }\n': WORKING_GROUPS_QUERY_RESULT
   }
 }

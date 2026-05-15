@@ -53,7 +53,14 @@ export const siteSettingsType = defineType({
       description: "Select the pages to appear in the top menu",
       type: "array",
       of: [
-        { type: "reference", to: [{ type: "page" }, { type: "eventsPage" }] },
+        {
+          type: "reference",
+          to: [
+            { type: "page" },
+            { type: "eventsPage" },
+            { type: "chapterPrioritiesPage" },
+          ],
+        },
       ],
     }),
     defineField({

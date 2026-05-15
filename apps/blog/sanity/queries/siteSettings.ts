@@ -10,6 +10,7 @@ export const SITE_SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0] {
     "title": @->title,
     "slug": select(
       @->_type == "eventsPage" => "events",
+      @->_type == "chapterPrioritiesPage" => "chapter-priorities",
       @->slug.current
     )
   },
