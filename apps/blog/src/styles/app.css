@@ -66,6 +66,14 @@
   font-weight: 500;
 }
 
+@utility mono-eyebrow-sm {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
 @utility grain-overlay {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
@@ -116,6 +124,10 @@
   }
   .prose-tdsa :where(img):not(:where([class~="not-prose"] *)) {
     border-radius: var(--radius);
+  }
+
+  .layout-container {
+    @apply mx-auto max-w-7xl px-5 py-10 sm:px-6 md:py-16;
   }
 
   /**

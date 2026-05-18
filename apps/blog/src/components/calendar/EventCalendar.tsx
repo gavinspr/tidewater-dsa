@@ -149,13 +149,14 @@ export const EventCalendar = ({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <div
         key={`featured-${viewMonth.toISOString()}`}
         className={TRANSITION_CLASS[transition]}
       >
         <FeaturedEvents
           events={featured}
+          eventTypes={eventTypes}
           viewMonth={viewMonth}
           noEventsMessage={noFeaturedEventsMessage}
           onSelect={setSelected}

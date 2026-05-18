@@ -17,17 +17,24 @@ export const SearchInput = ({
   ariaLabel,
   className,
 }: SearchInputProps) => (
-  <div className={cn("relative min-w-0 flex-1", className)}>
-    <SearchIcon
+  <div
+    className={cn(
+      "relative flex min-w-0 flex-1 items-stretch rounded-sm border-2 border-border bg-background transition-colors focus-within:border-foreground",
+      className
+    )}
+  >
+    <span
       aria-hidden
-      className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-    />
+      className="grid shrink-0 place-items-center px-3 text-foreground-soft"
+    >
+      <SearchIcon className="size-4" />
+    </span>
     <Input
       type="search"
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="pl-9"
+      className="h-9 border-0 bg-transparent px-0 pl-0.5 shadow-none focus-visible:border-0 focus-visible:ring-0"
       aria-label={ariaLabel}
     />
     {value && (
@@ -35,9 +42,9 @@ export const SearchInput = ({
         type="button"
         onClick={() => onChange("")}
         aria-label="Clear search"
-        className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+        className="grid shrink-0 cursor-pointer place-items-center px-3 text-foreground-soft transition-colors hover:text-primary"
       >
-        <XIcon className="h-4 w-4" />
+        <XIcon className="size-4" />
       </button>
     )}
   </div>

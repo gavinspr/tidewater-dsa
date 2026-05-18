@@ -33,6 +33,45 @@ export const formatEventMeta = (iso: string, isAllDay: boolean): string => {
   return `${datePart} · ${formatEventTime(iso)}`
 }
 
+/** Date-stamp pieces for an editorial event card. */
+export interface EventCardDate {
+  day: string
+  monthYear: string
+  weekday: string
+}
+
+export const splitEventDate = (iso: string): EventCardDate => {
+  const d = parseISO(iso)
+  return {
+    day: format(d, "d"),
+    monthYear: format(d, "MMM yyyy").toUpperCase(),
+    weekday: format(d, "EEE").toUpperCase(),
+  }
+}
+
+/** Meta-line pieces for an editorial event card. */
+export interface EventCardMeta {
+  timeLine: string
+  location: string | null
+}
+
+/** Build the meta-line pieces for an editorial event card. */
+export const formatEventCardMeta = (
+  iso: string,
+  isAllDay: boolean,
+  location: string | null
+): EventCardMeta => {
+  const d = parseISO(iso)
+  const weekday = format(d, "EEE").toUpperCase()
+  const time = isAllDay
+    ? "All day"
+    : format(d, "h:mm a").toLowerCase().replace(":00", "")
+  return {
+    timeLine: `${weekday} · ${time}`,
+    location: location || null,
+  }
+}
+
 /**
  * Parse a US-format date string (M/D/YYYY) from the Google Sheet into an ISO date string (YYYY-MM-DD).
  * Returns null for empty input or unparseable values.
@@ -72,18 +111,4 @@ export const isVerificationFresh = (
   const verified = parseISO(iso)
   if (Number.isNaN(verified.getTime())) return false
   return differenceInDays(new Date(), verified) <= freshnessDays
-}
-
-export const splitDateForCard = (
-  iso: string
-): { day: string; monthYear: string; weekday: string } => {
-  const d = new Date(iso)
-  const day = String(d.getDate()).padStart(2, "0")
-  const monthYear = d.toLocaleString("en-US", {
-    month: "short",
-    year: "numeric",
-  })
-  const weekday = d.toLocaleString("en-US", { weekday: "short" })
-
-  return { day, monthYear, weekday }
 }

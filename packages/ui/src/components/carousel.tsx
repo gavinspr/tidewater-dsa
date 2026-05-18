@@ -229,6 +229,53 @@ function CarouselNext({
   )
 }
 
+function CarouselArrows({
+  className,
+  variant = "outline",
+  size = "icon-sm",
+  hideWhenInactive = true,
+  ...props
+}: React.ComponentProps<"div"> & {
+  variant?: React.ComponentProps<typeof Button>["variant"]
+  size?: React.ComponentProps<typeof Button>["size"]
+  hideWhenInactive?: boolean
+}) {
+  const { scrollPrev, scrollNext, canScrollPrev, canScrollNext } = useCarousel()
+
+  if (hideWhenInactive && !canScrollPrev && !canScrollNext) return null
+
+  return (
+    <div
+      data-slot="carousel-arrows"
+      className={cn("flex items-center gap-1.5", className)}
+      {...props}
+    >
+      <Button
+        data-slot="carousel-arrows-previous"
+        variant={variant}
+        size={size}
+        className="touch-manipulation"
+        disabled={!canScrollPrev}
+        onClick={scrollPrev}
+      >
+        <ChevronLeftIcon />
+        <span className="sr-only">Previous slide</span>
+      </Button>
+      <Button
+        data-slot="carousel-arrows-next"
+        variant={variant}
+        size={size}
+        className="touch-manipulation"
+        disabled={!canScrollNext}
+        onClick={scrollNext}
+      >
+        <ChevronRightIcon />
+        <span className="sr-only">Next slide</span>
+      </Button>
+    </div>
+  )
+}
+
 export {
   type CarouselApi,
   Carousel,
@@ -236,5 +283,6 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselArrows,
   useCarousel,
 }

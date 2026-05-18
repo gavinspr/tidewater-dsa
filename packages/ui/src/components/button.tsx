@@ -18,6 +18,12 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
+        editorial:
+          "mono-eyebrow-sm rounded-sm border-2 border-foreground bg-background text-foreground hover:bg-foreground hover:text-background aria-expanded:bg-foreground aria-expanded:text-background aria-pressed:bg-foreground aria-pressed:text-background",
+        "editorial-primary":
+          "mono-eyebrow-sm rounded-sm border-2 border-primary bg-primary text-primary-foreground hover:border-primary-deep hover:bg-primary-deep",
+        "editorial-chip":
+          "mono-eyebrow-sm rounded-sm border border-border bg-muted/40 text-foreground hover:bg-muted aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background",
       },
       size: {
         default:

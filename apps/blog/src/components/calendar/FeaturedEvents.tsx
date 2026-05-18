@@ -1,21 +1,12 @@
 import { format } from "date-fns"
-import { CalendarDaysIcon, MapPinIcon } from "lucide-react"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselArrows,
 } from "@tidewater-dsa/ui/components/carousel"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@tidewater-dsa/ui/components/card"
-import type { SerializedEvent } from "@/types"
-import { formatEventDateTime } from "@/lib/format"
-
-const CARD_WIDTH_PX = 240
+import type { EventType, SerializedEvent } from "@/types"
+import { EventCard } from "@/components/events/EventCard"
 
 const DEFAULT_EMPTY_MESSAGE =
   "No featured events in {month}. Use the arrows above the calendar to look ahead."
@@ -23,55 +14,9 @@ const DEFAULT_EMPTY_MESSAGE =
 const renderMessage = (template: string, viewMonth: Date): string =>
   template.replace(/\{month\}/gi, format(viewMonth, "MMMM"))
 
-interface FeaturedCardProps {
-  event: SerializedEvent
-  onSelect: (e: SerializedEvent) => void
-}
-
-const FeaturedCard = ({ event, onSelect }: FeaturedCardProps) => {
-  return (
-    <button
-      type="button"
-      onClick={() => onSelect(event)}
-      className="group block h-full w-full cursor-pointer text-left"
-    >
-      <Card
-        size="sm"
-        className="h-full rounded-md shadow-none ring-2 ring-foreground/15 transition-all duration-200 group-hover:ring-primary/80"
-      >
-        <CardHeader>
-          <CardTitle className="line-clamp-2 leading-tight text-primary">
-            {event.title}
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="space-y-1.5 text-xs text-muted-foreground">
-          <div className="flex items-start gap-1.5">
-            <CalendarDaysIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            <span>{formatEventDateTime(event.startISO, event.isAllDay)}</span>
-          </div>
-          {event.location && (
-            <div className="flex items-start gap-1.5">
-              <MapPinIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <span className="line-clamp-1">{event.location}</span>
-            </div>
-          )}
-        </CardContent>
-
-        {event.summary && (
-          <CardFooter>
-            <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground italic">
-              {event.summary}
-            </p>
-          </CardFooter>
-        )}
-      </Card>
-    </button>
-  )
-}
-
 interface FeaturedEventsProps {
   events: SerializedEvent[]
+  eventTypes: EventType[]
   viewMonth: Date
   onSelect: (e: SerializedEvent) => void
   noEventsMessage?: string
@@ -79,40 +24,61 @@ interface FeaturedEventsProps {
 
 export const FeaturedEvents = ({
   events,
+  eventTypes,
   viewMonth,
   onSelect,
   noEventsMessage,
 }: FeaturedEventsProps) => {
+  const labelForType = (slug: string | null): string | null => {
+    if (!slug) return null
+    const match = eventTypes.find((t) => t.value === slug)
+    return match?.label ?? slug
+  }
+
   const emptyText = renderMessage(
     noEventsMessage?.trim() || DEFAULT_EMPTY_MESSAGE,
     viewMonth
   )
 
   return (
-    <section aria-labelledby="featured-heading" className="space-y-3">
+    <section aria-labelledby="featured-heading">
       <h2
         id="featured-heading"
-        className="text-2xl font-semibold tracking-tight"
+        className="mono-eyebrow mb-5 flex items-center gap-2 text-primary"
       >
-        Featured Events
+        <span aria-hidden="true">★</span>
+        Featured events
       </h2>
 
       {events.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{emptyText}</p>
+        <p className="border-l-2 border-border bg-background/40 px-4 py-6 text-sm text-foreground-soft">
+          {emptyText}
+        </p>
       ) : (
-        <Carousel opts={{ align: "start", containScroll: "trimSnaps" }}>
-          <CarouselContent className="-ml-3">
+        <Carousel
+          opts={{ align: "start", containScroll: "trimSnaps", dragFree: true }}
+        >
+          <CarouselContent className="-ml-4 items-stretch">
             {events.map((event) => (
               <CarouselItem
                 key={event.id}
-                className="py-1 pl-4"
-                // Tailwind arbitrary basis values don't compose well with the carousel's own flex math
-                style={{ flex: `0 0 ${CARD_WIDTH_PX}px` }}
+                className="pl-4 sm:basis-75 md:basis-80"
               >
-                <FeaturedCard event={event} onSelect={onSelect} />
+                <EventCard
+                  event={event}
+                  eventTypeLabel={labelForType(event.eventType)}
+                  onSelect={onSelect}
+                  className="w-full"
+                />
               </CarouselItem>
             ))}
           </CarouselContent>
+
+          <CarouselArrows
+            variant="editorial"
+            size="icon"
+            className="mt-5 justify-end"
+          />
         </Carousel>
       )}
     </section>

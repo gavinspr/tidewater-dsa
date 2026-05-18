@@ -1,5 +1,6 @@
 import { defineField, defineType } from "sanity"
 import { defineRichTextBody } from "./richTextFields"
+import { defineShowSignupField } from "./showSignupField"
 
 export const chapterPrioritiesPageType = defineType({
   name: "chapterPrioritiesPage",
@@ -46,6 +47,7 @@ export const chapterPrioritiesPageType = defineType({
         "The chapter's priorities, in display order. Numbering ('01', '02', …) is derived from position in this array, reorder to renumber.",
       validation: (Rule) => Rule.min(1),
     }),
+    defineShowSignupField({ initialValue: false }),
   ],
   preview: {
     prepare: () => ({ title: "Chapter Priorities Page" }),

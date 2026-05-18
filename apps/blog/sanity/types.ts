@@ -74,6 +74,7 @@ export type ChapterPrioritiesPage = {
       _key: string
     } & Priority
   >
+  showSignup?: boolean
 }
 
 export type SanityImageCrop = {
@@ -184,7 +185,29 @@ export type EventsPage = {
   _updatedAt: string
   _rev: string
   title?: string
+  eyebrow?: string
+  headline?: string
+  intro?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: "span"
+      _key: string
+    }>
+    style?: "normal" | "h2" | "h3" | "blockquote"
+    listItem?: "bullet" | "number"
+    markDefs?: Array<{
+      href?: string
+      blank?: boolean
+      _type: "link"
+      _key: string
+    }>
+    level?: number
+    _type: "block"
+    _key: string
+  }>
   noFeaturedEventsMessage?: string
+  showSignup?: boolean
 }
 
 export type Event = {
@@ -692,12 +715,34 @@ export type EVENT_CUSTOMIZATIONS_QUERY_RESULT = Array<{
 
 // Source: sanity/queries/eventsPage.ts
 // Variable: EVENTS_PAGE_QUERY
-// Query: {  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {    _id,    title,    noFeaturedEventsMessage  },}
+// Query: {  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {    _id,    title,    eyebrow,    headline,    intro,    noFeaturedEventsMessage,    showSignup  },}
 export type EVENTS_PAGE_QUERY_RESULT = {
   page: {
     _id: "eventsPage"
     title: string | null
+    eyebrow: string | null
+    headline: string | null
+    intro: Array<{
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: "span"
+        _key: string
+      }>
+      style?: "blockquote" | "h2" | "h3" | "normal"
+      listItem?: "bullet" | "number"
+      markDefs?: Array<{
+        href?: string
+        blank?: boolean
+        _type: "link"
+        _key: string
+      }>
+      level?: number
+      _type: "block"
+      _key: string
+    }> | null
     noFeaturedEventsMessage: string | null
+    showSignup: boolean | null
   } | null
 }
 
@@ -946,7 +991,7 @@ declare module "@sanity/client" {
     '*[_type == "chapterPrioritiesPage" && _id == "chapterPrioritiesPage"][0] {\n  _id,\n  title,\n  eyebrow,\n  headline,\n  intro,\n  priorities[] {\n    _key,\n    category,\n    headline,\n    description,\n    image,\n    ctaText,\n    ctaLink\n  }\n}': CHAPTER_PRIORITIES_PAGE_QUERY_RESULT
     '\n  *[_type == "eventTypes" && _id == "eventTypes"][0].types[]{\n    label,\n    "value": value.current,\n    color,\n    description\n  }\n': EVENT_TYPES_QUERY_RESULT
     '\n  *[_type == "event" && defined(googleEventId)]{\n    _id,\n    googleEventId,\n    featured,\n    eventType,\n    attendance,\n    topics,\n    workingGroup,\n    rsvpLink,\n    summary\n  }\n': EVENT_CUSTOMIZATIONS_QUERY_RESULT
-    '{\n  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {\n    _id,\n    title,\n    noFeaturedEventsMessage\n  },\n}': EVENTS_PAGE_QUERY_RESULT
+    '{\n  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {\n    _id,\n    title,\n    eyebrow,\n    headline,\n    intro,\n    noFeaturedEventsMessage,\n    showSignup\n  },\n}': EVENTS_PAGE_QUERY_RESULT
     '\n  *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCta2Text,\n    heroCta2Link,\n    heroCtaPosition,\n    contentEyebrow,\n    contentHeadline,\n    body,\n    bodyImage,\n    eventsEyebrow,\n    eventsHeadline,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage,\n  }\n': HOME_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n}': PAGE_BY_SLUG_QUERY_RESULT
     '{\n  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {\n    _id,\n    title,\n    body,\n    memberHeadline,\n    communityHeadline,\n    communityIntro,\n    disclaimerText,\n    printFooterText,\n    googleSheetId,\n    googleSheetRange\n  },\n}': RESOURCES_PAGE_QUERY_RESULT

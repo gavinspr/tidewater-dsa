@@ -28,7 +28,8 @@ interface EventPillProps {
 
 const EventPill = ({ event, day, now, style, onClick }: EventPillProps) => {
   const past = isPast(event, now)
-  // Only show the time in the cell where the event starts, and only on wider screens, cells are too narrow on phones to fit time + title
+  // Only show the time in the cell where the event starts, and only on wider screens,
+  // cells are too narrow on phones to fit time + title
   const showTime = !event.isAllDay && isSameDay(event.start, day)
 
   return (
@@ -37,23 +38,18 @@ const EventPill = ({ event, day, now, style, onClick }: EventPillProps) => {
       onClick={onClick}
       title={event.title}
       className={cn(
-        "group flex w-full cursor-pointer items-center gap-1 overflow-hidden rounded border-l-2 px-1.5 py-0.5 text-left text-[11px] leading-tight transition-colors",
-        style.bg,
-        style.text,
-        style.border,
+        "group flex w-full cursor-pointer items-center gap-1 overflow-hidden rounded-sm px-1.5 py-0.5 text-left text-xs leading-tight font-semibold text-white transition-opacity",
+        style.dot,
         past && "opacity-60"
       )}
     >
       {showTime && (
-        <span className="hidden shrink-0 tabular-nums opacity-75 md:inline">
+        <span className="hidden shrink-0 tabular-nums opacity-85 md:inline">
           {format(event.start, "h:mma").toLowerCase().replace(":00", "")}
         </span>
       )}
       <span
-        className={cn(
-          "truncate font-medium",
-          past && "line-through decoration-current/60"
-        )}
+        className={cn("truncate", past && "line-through decoration-current/60")}
       >
         {event.title}
       </span>
@@ -90,27 +86,24 @@ const DayCell = ({
   return (
     <div
       className={cn(
-        "relative min-h-28 p-1.5 text-sm",
-        !isLastCol && "border-r",
-        !isLastRow && "border-b",
-        !inMonth && "bg-muted/20"
+        "relative min-h-22 p-2 text-sm md:min-h-27.5 md:p-2.5",
+        !isLastCol && "border-r border-border",
+        !isLastRow && "border-b border-border",
+        !inMonth && "bg-muted/80",
+        today && "shadow-[inset_0_3px_0_0_var(--color-primary)]"
       )}
     >
       <div className="flex items-center justify-start">
-        {today ? (
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-[11px] font-semibold text-background">
-            {format(day, "d")}
-          </span>
-        ) : (
-          <span
-            className={cn(
-              "px-1 text-xs font-medium",
-              inMonth ? "text-foreground" : "text-muted-foreground/60"
-            )}
-          >
-            {format(day, "d")}
-          </span>
-        )}
+        <span
+          className={cn(
+            "mono-eyebrow tracking-normal",
+            today && "text-primary",
+            !today && inMonth && "text-foreground",
+            !today && !inMonth && "text-foreground-soft/60"
+          )}
+        >
+          {format(day, "d")}
+        </span>
       </div>
 
       <div className="mt-1 flex flex-col gap-0.5">
@@ -129,7 +122,7 @@ const DayCell = ({
             variant="link"
             size="xs"
             onClick={() => onSelect(events[MAX_EVENTS_PER_CELL])}
-            className="mt-0.5 h-auto justify-start px-0 text-[11px] text-muted-foreground hover:text-foreground"
+            className="mono-eyebrow-sm mt-0.5 h-auto justify-start px-0 text-foreground-soft hover:text-foreground"
           >
             +{overflow} more
           </Button>
@@ -173,12 +166,15 @@ export const MonthGrid = ({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border bg-card">
-      <div className="grid grid-cols-7 border-b bg-muted/30">
-        {WEEKDAYS.map((d) => (
+    <div className="overflow-hidden border-2 border-foreground bg-background">
+      <div className="grid grid-cols-7 border-b-2 border-foreground bg-muted/40">
+        {WEEKDAYS.map((d, idx) => (
           <div
             key={d}
-            className="px-2 py-2 text-center text-xs font-medium text-muted-foreground"
+            className={cn(
+              "mono-eyebrow-sm px-2 py-2.5 text-center text-foreground-soft",
+              idx < WEEKDAYS.length - 1 && "border-r border-border"
+            )}
           >
             {d}
           </div>

@@ -5,8 +5,11 @@ import Layout from "@/layouts/main.astro"
 import SectionHeading from "@/components/headings/SectionHeading.astro"
 import { UpcomingEvents } from "@/components/UpcomingEvents"
 import { loadQuery } from "@/lib/load-query"
-import { HOME_PAGE_QUERY } from "@/sanity/queries"
-import type { HOME_PAGE_QUERY_RESULT } from "@/sanity/types"
+import { HOME_PAGE_QUERY, EVENT_TYPES_QUERY } from "@/sanity/queries"
+import type {
+  HOME_PAGE_QUERY_RESULT,
+  EVENT_TYPES_QUERY_RESULT,
+} from "@/sanity/types"
 import { getEvents } from "@/lib/events"
 import { urlFor } from "@/lib/sanity-image"
 import { splitHighlight } from "@/lib/format-headline"
@@ -19,9 +22,12 @@ Astro.response.headers.set(
   "public, max-age=300, stale-while-revalidate=600"
 )
 
-const { data: home } = await loadQuery<HOME_PAGE_QUERY_RESULT>({
-  query: HOME_PAGE_QUERY,
-})
+const [{ data: home }, { data: eventTypesData }] = await Promise.all([
+  loadQuery<HOME_PAGE_QUERY_RESULT>({ query: HOME_PAGE_QUERY }),
+  loadQuery<EVENT_TYPES_QUERY_RESULT>({ query: EVENT_TYPES_QUERY }),
+])
+
+const eventTypes = eventTypesData ?? []
 
 // Fetch upcoming events from Google Calendar.
 // 90-day window covers any active chapter's upcoming meetings.
@@ -161,7 +167,7 @@ const aspectDenominator = Math.min(Math.max(paragraphCount + 1, 2), 5)
 
   {
     (home?.body || home?.contentHeadline) && (
-      <section class="mx-auto max-w-7xl px-5 py-20 sm:px-6 md:py-24">
+      <section class="layout-container">
         <SectionHeading
           eyebrow={home?.contentEyebrow}
           headline={home?.contentHeadline}
@@ -197,7 +203,7 @@ const aspectDenominator = Math.min(Math.max(paragraphCount + 1, 2), 5)
   }
 
   <section class="bg-paper">
-    <div class="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-20">
+    <div class="layout-container">
       <SectionHeading
         eyebrow={home?.eventsEyebrow}
         headline={home?.eventsHeadline}
@@ -208,12 +214,12 @@ const aspectDenominator = Math.min(Math.max(paragraphCount + 1, 2), 5)
           <UpcomingEvents
             client:visible
             events={events}
+            eventTypes={eventTypes}
             sideImageUrl={eventsImageUrl}
             noRsvpMessage={home?.noRsvpMessage}
-            trailingCta={{ text: "All events", href: "/events" }}
           />
         ) : (
-          <Card className="border-2  rounded-sm bg-background/60 shadow-none">
+          <Card className="border-2 rounded-sm bg-background/60 shadow-none">
             <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
               <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft">
                 <CalendarIcon className="h-8 w-8 text-primary" />

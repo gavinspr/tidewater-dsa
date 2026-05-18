@@ -17,17 +17,13 @@ import {
   CardTitle,
 } from "@tidewater-dsa/ui/components/card"
 import { Skeleton } from "@tidewater-dsa/ui/components/skeleton"
-import { cn } from "@tidewater-dsa/ui/lib/utils"
-import type { SerializedEvent } from "@/types"
-import {
-  formatEventDate,
-  formatEventTime,
-  splitDateForCard,
-} from "@/lib/format"
+import type { EventType, SerializedEvent } from "@/types"
+import { formatEventDate, formatEventTime } from "@/lib/format"
 import {
   ensureStylesLoaded,
   extractActionNetworkInfo,
 } from "@/lib/action-network"
+import { EventCard } from "./events/EventCard"
 
 interface ActionNetworkEventProps {
   rsvpLink: string
@@ -151,37 +147,42 @@ const EventSideImage = ({ imageUrl }: EventSideImageProps) => (
 const isVirtualEvent = (event: SerializedEvent): boolean =>
   event.attendance === "virtual" || event.attendance === "hybrid"
 
-// todo: derive from types
 interface UpcomingEventsProps {
   events: SerializedEvent[]
+  eventTypes?: EventType[]
   sideImageUrl?: string | null
   noRsvpMessage?: string | null
-  trailingCta?: { text: string; href: string } | null
 }
 
 export const UpcomingEvents = ({
   events,
+  eventTypes = [],
   sideImageUrl,
   noRsvpMessage,
-  trailingCta,
 }: UpcomingEventsProps) => {
   const [selectedEvent, setSelectedEvent] = useState<SerializedEvent | null>(
     null
   )
 
-  // Detail View
+  const labelForType = (slug: string | null): string | null => {
+    if (!slug) return null
+    const match = eventTypes.find((t) => t.value === slug)
+    return match?.label ?? slug
+  }
+
+  // Detail view
   if (selectedEvent) {
     const isVirtual = isVirtualEvent(selectedEvent)
 
     return (
       <div className="space-y-6">
         <Button
-          onClick={() => setSelectedEvent(null)}
           variant="link"
-          className="-ml-1 gap-1.5 p-0 text-foreground-soft no-underline! transition-colors hover:text-primary"
+          size="sm"
+          onClick={() => setSelectedEvent(null)}
+          className="mono-eyebrow-sm -ml-1 gap-1.5 p-0 text-foreground-soft hover:text-primary"
         >
-          <ArrowLeftIcon />
-          All Events
+          <ArrowLeftIcon className="mb-0.5" /> Back
         </Button>
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
@@ -252,87 +253,30 @@ export const UpcomingEvents = ({
     )
   }
 
-  // List View
+  // List view
   return (
     <div className="space-y-7">
-      <div
-        className={cn(
-          "grid border-t-2 border-l-2 border-foreground",
-          "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-          "max-sm:border-l-0"
-        )}
-      >
-        {events.map((event) => {
-          const { day, monthYear, weekday } = splitDateForCard(event.startISO)
-          const isVirtual = isVirtualEvent(event)
-
-          return (
-            <button
-              key={event.id}
-              type="button"
-              onClick={() => setSelectedEvent(event)}
-              className={cn(
-                "group/card flex flex-col gap-3 border-r-2 border-b-2 border-foreground bg-background p-6 pb-7 text-left",
-                "cursor-pointer transition-colors duration-150",
-                "hover:bg-foreground hover:text-background focus-visible:bg-foreground focus-visible:text-background focus-visible:outline-none",
-                "max-sm:border-r-0"
-              )}
-            >
-              {event.eventType && (
-                <span
-                  className={cn(
-                    "inline-block self-start rounded-sm bg-primary-soft px-2 py-1 font-mono text-[0.66rem] font-semibold tracking-[0.12em] text-primary-deep uppercase",
-                    "group-hover/card:bg-primary group-hover/card:text-white"
-                  )}
-                >
-                  {event.eventType}
-                </span>
-              )}
-              <div className="flex items-baseline gap-2.5 font-heading text-[2.4rem] leading-none font-extrabold text-primary">
-                {day}
-                <span className="font-mono text-[0.78rem] font-medium tracking-[0.06em] text-foreground-soft uppercase group-hover/card:text-white/70">
-                  {monthYear}
-                </span>
-              </div>
-              <div className="heading-display text-[1.35rem] leading-[1.05]">
-                {event.title}
-              </div>
-              <div className="font-mono text-[0.74rem] tracking-[0.06em] text-foreground-soft uppercase group-hover/card:text-white/75">
-                <span>
-                  {weekday}
-                  {!event.isAllDay && ` · ${formatEventTime(event.startISO)}`}
-                </span>
-                {event.location && (
-                  <>
-                    <br />
-                    <span className="inline-flex items-center gap-1.5 tracking-normal normal-case">
-                      {isVirtual ? (
-                        <MonitorIcon className="h-3 w-3" />
-                      ) : (
-                        <MapPinIcon className="h-3 w-3" />
-                      )}
-                      {event.location}
-                    </span>
-                  </>
-                )}
-              </div>
-            </button>
-          )
-        })}
+      <div className="grid grid-cols-1 gap-2 border-y border-foreground sm:grid-cols-2 sm:gap-0 sm:border-x lg:grid-cols-3">
+        {events.map((event) => (
+          <EventCard
+            key={event.id}
+            event={event}
+            eventTypeLabel={labelForType(event.eventType)}
+            onSelect={setSelectedEvent}
+          />
+        ))}
       </div>
 
-      {trailingCta && (
-        <div className="flex justify-end">
-          <Button
-            variant="outline"
-            className="rounded-lg border-2 border-foreground bg-transparent p-5 text-base font-bold transition-all hover:bg-foreground hover:text-background"
-            render={<a href={trailingCta.href} />}
-          >
-            {trailingCta.text}
-            <ArrowRightIcon className="size-5" />
-          </Button>
-        </div>
-      )}
+      <div className="flex justify-end">
+        <Button
+          variant="editorial"
+          size="default"
+          render={<a href="/events" />}
+        >
+          All Events
+          <ArrowRightIcon className="size-5" />
+        </Button>
+      </div>
     </div>
   )
 }

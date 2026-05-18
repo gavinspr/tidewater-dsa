@@ -40,7 +40,7 @@ export const ListView = ({
 
   if (visible.length === 0) {
     return (
-      <div className="rounded-lg border bg-card px-6 py-12 text-center text-sm text-muted-foreground">
+      <div className="border-2 border-foreground bg-background px-6 py-16 text-center text-sm text-foreground-soft">
         No events in {format(viewMonth, "MMMM yyyy")}.
       </div>
     )
@@ -55,26 +55,28 @@ export const ListView = ({
   }
 
   return (
-    <div className="divide-y rounded-lg border bg-card">
+    <div className="divide-y-2 divide-border border-2 border-foreground bg-background">
       {Array.from(groups.entries()).map(([key, pe]) => {
         const day = parseISO(key)
+        const today = isToday(day)
 
         return (
-          <div key={key} className="flex gap-4 px-4 py-3 sm:px-6">
-            <div className="w-14 shrink-0 text-center">
-              <div className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+          <div key={key} className="flex gap-5 px-5 py-5 sm:px-7">
+            <div className="w-16 shrink-0 text-left">
+              <div className="mono-eyebrow text-foreground-soft">
                 {format(day, "EEE")}
               </div>
               <div
                 className={cn(
-                  "text-2xl font-semibold tabular-nums",
-                  isToday(day) && "text-primary"
+                  "heading-display text-4xl leading-none tabular-nums",
+                  today && "text-primary"
                 )}
               >
                 {format(day, "d")}
               </div>
             </div>
-            <ul className="flex-1 space-y-1.5">
+
+            <ul className="flex-1 space-y-2">
               {pe.map((e) => {
                 const style = styleFor(e)
                 const past = isPast(e, now)
@@ -85,27 +87,25 @@ export const ListView = ({
                       type="button"
                       onClick={() => onSelect(e)}
                       className={cn(
-                        "flex w-full cursor-pointer items-start gap-3 rounded-md border-l-2 px-3 py-2 text-left text-sm transition-colors",
-                        style.bg,
-                        style.text,
-                        style.border,
+                        "flex w-full cursor-pointer items-start gap-3 rounded-sm px-3 py-2.5 text-left text-sm font-medium text-white transition-opacity",
+                        style.dot,
                         past && "opacity-60"
                       )}
                     >
-                      <span className="w-14 shrink-0 text-xs tabular-nums opacity-80">
+                      <span className="mono-eyebrow-sm w-16 shrink-0 text-white/85 tabular-nums">
                         {e.isAllDay ? "all day" : format(e.start, "h:mm a")}
                       </span>
                       <span className="flex-1">
                         <span
                           className={cn(
-                            "block font-medium",
+                            "block leading-tight",
                             past && "line-through decoration-current/60"
                           )}
                         >
                           {e.title}
                         </span>
                         {e.location && (
-                          <span className="mt-0.5 block text-xs opacity-80">
+                          <span className="mono-eyebrow-sm mt-1 block text-white/75">
                             {e.location}
                           </span>
                         )}

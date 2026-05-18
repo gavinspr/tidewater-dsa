@@ -29,8 +29,8 @@ interface InfoRowProps {
 }
 
 const InfoRow = ({ icon, children }: InfoRowProps) => (
-  <div className="flex items-start gap-3">
-    <span className="mt-0.5 text-muted-foreground">{icon}</span>
+  <div className="flex items-start gap-3 text-foreground">
+    <span className="mt-0.5 text-primary">{icon}</span>
     <div className="flex-1">{children}</div>
   </div>
 )
@@ -84,51 +84,49 @@ const EventDetails = ({
 
   return (
     <>
-      <DialogHeader>
-        <div className="flex flex-wrap items-center gap-2">
+      <DialogHeader className="gap-3">
+        <div className="flex flex-wrap items-center gap-1.5">
           {eventTypeLabel && (
-            <Badge variant="secondary" className="font-normal">
-              {eventTypeLabel}
-            </Badge>
+            <Badge variant="editorial-accent">{eventTypeLabel}</Badge>
           )}
           {attendanceLabel && (
-            <Badge variant="outline" className="gap-1 font-normal">
-              <UsersIcon />
+            <Badge variant="editorial">
+              <UsersIcon className="size-3" />
               {attendanceLabel}
             </Badge>
           )}
           {workingGroupLabel && (
-            <Badge variant="outline" className="gap-1 font-normal">
-              <WrenchIcon />
+            <Badge variant="editorial">
+              <WrenchIcon className="size-3" />
               {workingGroupLabel}
             </Badge>
           )}
         </div>
-        <DialogTitle className="pt-1 text-xl leading-snug">
+        <DialogTitle className="heading-display text-2xl tracking-tight text-balance">
           {event.title}
         </DialogTitle>
         {event.summary && (
-          <DialogDescription className="pt-1 text-sm leading-relaxed">
+          <DialogDescription className="text-base leading-relaxed text-foreground-soft">
             {event.summary}
           </DialogDescription>
         )}
       </DialogHeader>
 
-      <div className="space-y-3 pt-1 text-sm">
-        <InfoRow icon={<CalendarDaysIcon className="h-4 w-4" />}>
+      <div className="space-y-3 border-t-2 border-border pt-4 text-sm">
+        <InfoRow icon={<CalendarDaysIcon className="size-4" />}>
           {dateLine}
         </InfoRow>
-        <InfoRow icon={<ClockIcon className="h-4 w-4" />}>{timeLine}</InfoRow>
+        <InfoRow icon={<ClockIcon className="size-4" />}>{timeLine}</InfoRow>
         {event.location && (
-          <InfoRow icon={<MapPinIcon className="h-4 w-4" />}>
+          <InfoRow icon={<MapPinIcon className="size-4" />}>
             {event.location}
           </InfoRow>
         )}
         {event.topics.length > 0 && (
-          <InfoRow icon={<TagIcon className="h-4 w-4" />}>
-            <div className="flex flex-wrap gap-1">
+          <InfoRow icon={<TagIcon className="size-4" />}>
+            <div className="flex flex-wrap gap-1.5">
               {event.topics.map((t) => (
-                <Badge key={t} variant="secondary" className="font-normal">
+                <Badge key={t} variant="editorial">
                   {t}
                 </Badge>
               ))}
@@ -138,15 +136,15 @@ const EventDetails = ({
       </div>
 
       {event.description && !event.summary && (
-        <div className="max-h-56 overflow-y-auto rounded-md border bg-muted/30 p-3 text-sm leading-relaxed whitespace-pre-line text-muted-foreground">
+        <div className="max-h-56 overflow-y-auto border-l-2 border-primary bg-muted/40 px-4 py-3 text-sm leading-relaxed whitespace-pre-line text-foreground-soft">
           {event.description}
         </div>
       )}
 
-      <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
+      <DialogFooter className="flex-col gap-2 border-t-2 border-border pt-4 sm:flex-row sm:justify-between">
         <Button
-          variant="outline"
-          size="sm"
+          variant="editorial"
+          size="default"
           render={
             <a
               href={event.googleUrl}
@@ -160,7 +158,8 @@ const EventDetails = ({
         </Button>
         {event.rsvpLink && (
           <Button
-            size="sm"
+            variant="editorial-primary"
+            size="default"
             render={
               <a
                 href={event.rsvpLink}
@@ -204,7 +203,7 @@ export const EventDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100%-2rem)] sm:w-full sm:max-w-lg">
+      <DialogContent className="w-[calc(100%-2rem)] gap-5 rounded-none border-2 border-foreground bg-background p-6 shadow-none sm:w-full sm:max-w-lg sm:p-7">
         {current && (
           <EventDetails
             event={current}

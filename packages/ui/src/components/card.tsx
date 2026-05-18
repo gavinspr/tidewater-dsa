@@ -1,23 +1,58 @@
 import * as React from "react"
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
+import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@tidewater-dsa/ui/lib/utils"
+
+const cardVariants = cva(
+  "group/card flex flex-col gap-6 overflow-hidden bg-card py-6 text-sm text-card-foreground has-[>img:first-child]:pt-0 data-[size=sm]:gap-4 data-[size=sm]:py-4",
+  {
+    variants: {
+      variant: {
+        default:
+          "rounded-4xl shadow-md ring-1 ring-foreground/5 dark:ring-foreground/10 *:[img:first-child]:rounded-t-4xl *:[img:last-child]:rounded-b-4xl",
+        editorial:
+          "rounded-none border-2 border-foreground shadow-none transition-colors data-[interactive=true]:cursor-pointer data-[interactive=true]:hover:bg-foreground data-[interactive=true]:hover:text-background data-[interactive=true]:focus-visible:bg-foreground data-[interactive=true]:focus-visible:text-background data-[interactive=true]:focus-visible:outline-none",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+type CardOwnProps = {
+  size?: "default" | "sm"
+} & VariantProps<typeof cardVariants>
 
 function Card({
   className,
   size = "default",
+  variant = "default",
+  render,
   ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
-  return (
-    <div
-      data-slot="card"
-      data-size={size}
-      className={cn(
-        "group/card flex flex-col gap-6 overflow-hidden rounded-4xl bg-card py-6 text-sm text-card-foreground shadow-md ring-1 ring-foreground/5 has-[>img:first-child]:pt-0 data-[size=sm]:gap-4 data-[size=sm]:py-4 dark:ring-foreground/10 *:[img:first-child]:rounded-t-4xl *:[img:last-child]:rounded-b-4xl",
-        className
-      )}
-      {...props}
-    />
-  )
+}: useRender.ComponentProps<"div"> & CardOwnProps) {
+  const interactive = Boolean(render) || Boolean(props.onClick)
+
+  return useRender({
+    defaultTagName: "div",
+    props: mergeProps<"div">(
+      {
+        "data-slot": "card",
+        "data-size": size,
+        "data-interactive": interactive ? "true" : "false",
+        className: cn(cardVariants({ variant }), className),
+      } as React.HTMLAttributes<HTMLDivElement>,
+      props
+    ),
+    render,
+    state: {
+      slot: "card",
+      variant,
+      size,
+    },
+  })
 }
 
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
@@ -97,4 +132,5 @@ export {
   CardAction,
   CardDescription,
   CardContent,
+  cardVariants,
 }

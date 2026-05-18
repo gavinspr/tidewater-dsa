@@ -60,8 +60,8 @@ const FilterBody = ({
     ATTENDANCE_OPTIONS.find((o) => o.value === v)?.label ?? v
 
   return (
-    <div className="divide-y">
-      <div className="p-3">
+    <div className="divide-y-2 divide-border">
+      <div className="p-5">
         <FilterSectionHeading>Attendance</FilterSectionHeading>
         <CheckboxList
           idPrefix="event-attendance"
@@ -84,7 +84,7 @@ const FilterBody = ({
       </div>
 
       {workingGroupSlugs.length > 0 && (
-        <div className="p-3">
+        <div className="p-5">
           <FilterSectionHeading>Working Group</FilterSectionHeading>
           <CheckboxList
             idPrefix="event-wg"
@@ -105,7 +105,7 @@ const FilterBody = ({
       )}
 
       {topics.length > 0 && (
-        <div className="p-3">
+        <div className="p-5">
           <FilterSectionHeading>Topics</FilterSectionHeading>
           <CheckboxList
             idPrefix="event-topic"
@@ -173,20 +173,22 @@ export const CalendarFilters = ({
           <Popover>
             <PopoverTrigger>
               <Button
-                variant="outline"
-                size="sm"
-                className="shrink-0 gap-2"
+                variant="editorial"
+                size="default"
+                className="text-xs"
+                aria-pressed={popoverBadgeCount > 0}
                 aria-label={
                   popoverBadgeCount > 0
                     ? `Filters (${popoverBadgeCount} active)`
                     : "Filters"
                 }
               >
-                <SlidersHorizontalIcon className="h-4 w-4" />
+                <SlidersHorizontalIcon className="size-3.5" />
                 Filters
                 {popoverBadgeCount > 0 && (
                   <Badge
-                    className="h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums"
+                    variant="editorial-accent"
+                    className="h-4 min-w-4 px-1"
                   >
                     {popoverBadgeCount}
                   </Badge>
@@ -195,7 +197,7 @@ export const CalendarFilters = ({
             </PopoverTrigger>
             <PopoverContent
               align="end"
-              className="max-h-[70vh] w-80 overflow-y-auto p-0"
+              className="max-h-[70vh] w-80 overflow-y-auto rounded-none border-2 border-foreground bg-background p-0"
             >
               <FilterBody
                 value={value}
@@ -212,29 +214,35 @@ export const CalendarFilters = ({
           <Sheet>
             <SheetTrigger>
               <Button
-                variant="outline"
-                size="sm"
-                className="shrink-0 gap-2"
+                variant="editorial"
+                size="default"
+                aria-pressed={popoverBadgeCount > 0}
                 aria-label={
                   popoverBadgeCount > 0
                     ? `Filters (${popoverBadgeCount} active)`
                     : "Filters"
                 }
               >
-                <SlidersHorizontalIcon className="h-4 w-4" />
+                <SlidersHorizontalIcon />
                 <span className="sr-only sm:not-sr-only">Filters</span>
                 {popoverBadgeCount > 0 && (
                   <Badge
-                    className="h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums"
+                    variant="editorial-accent"
+                    className="h-4 min-w-4 px-1"
                   >
                     {popoverBadgeCount}
                   </Badge>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="flex h-[85vh] flex-col p-0">
-              <SheetHeader className="border-b px-4 py-3">
-                <SheetTitle>Filters</SheetTitle>
+            <SheetContent
+              side="bottom"
+              className="flex h-[85vh] flex-col rounded-none border-t-2 border-foreground bg-background p-0"
+            >
+              <SheetHeader className="border-b-2 border-foreground px-5 py-4">
+                <SheetTitle className="heading-display text-xl">
+                  Filters
+                </SheetTitle>
               </SheetHeader>
               <div className="min-h-0 flex-1 overflow-y-auto">
                 <FilterBody
@@ -251,7 +259,7 @@ export const CalendarFilters = ({
       </div>
 
       {eventTypes.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {eventTypes
             .filter((t): t is typeof t & { label: string; value: string } =>
               Boolean(t.label && t.value)
@@ -260,24 +268,20 @@ export const CalendarFilters = ({
               const isActive = value.eventTypes.includes(type.value)
               const style = getEventTypeStyle(type.color)
               return (
-                <button
+                <Button
                   key={type.value}
-                  type="button"
+                  variant="editorial-chip"
+                  size="sm"
+                  className="text-xs"
                   onClick={() => toggleEventType(type.value)}
                   aria-pressed={isActive}
-                  className={cn(
-                    "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
-                    isActive
-                      ? style.chipSelectedClass
-                      : "border-border bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                  )}
                 >
                   <span
-                    className={cn("h-1.5 w-1.5 rounded-full", style.dot)}
+                    className={cn("h-2 w-2 rounded-full", style.dot)}
                     aria-hidden
                   />
                   {type.label}
-                </button>
+                </Button>
               )
             })}
         </div>
@@ -286,21 +290,21 @@ export const CalendarFilters = ({
       {active && (
         <div className="ml-0.5 flex items-center justify-between">
           <p
-            className="text-xs text-muted-foreground"
+            className="mono-eyebrow text-foreground-soft"
             role="status"
             aria-live="polite"
           >
             {filteredCount === 0
-              ? "No events match your filters."
+              ? "No events match your filters"
               : `Showing ${filteredCount} of ${totalCount} events.`}
           </p>
           <Button
-            variant="ghost"
-            size="sm"
+            variant="link"
+            size="xs"
             onClick={clearAll}
-            className="h-auto px-2 py-1 text-xs text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline"
+            className="mono-eyebrow-sm text-foreground-soft hover:text-primary"
           >
-            Clear all filters
+            Clear all
           </Button>
         </div>
       )}
