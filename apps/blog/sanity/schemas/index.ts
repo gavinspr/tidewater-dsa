@@ -9,6 +9,8 @@ import { chapterPrioritiesPageType } from "./chapterPrioritiesPage"
 import { resourcesPageType } from "./resourcesPage"
 import { siteSettingsType } from "./siteSettings"
 import { workingGroupsType } from "./workingGroups"
+import { getInvolvedPageType } from "./getInvolvedPage"
+import { getInvolvedWayType } from "./way"
 
 /**
  * Registration order matters for Sanity's TypeGen
@@ -21,6 +23,7 @@ import { workingGroupsType } from "./workingGroups"
 export const schemaTypes = [
   // Object types (must come first)
   priorityType,
+  getInvolvedWayType,
 
   // Document types
   postType,
@@ -33,4 +36,5 @@ export const schemaTypes = [
   workingGroupsType,
   resourcesPageType,
   chapterPrioritiesPageType,
+  getInvolvedPageType,
 ]

@@ -1,0 +1,93 @@
+---
+import Layout from "@/layouts/main.astro"
+import PageHeading from "@/components/headings/PageHeading.astro"
+import SectionHeading from "@/components/headings/SectionHeading.astro"
+import RichText from "@/components/rich-text/RichText.astro"
+import { loadQuery } from "@/lib/load-query"
+import { GET_INVOLVED_PAGE_QUERY } from "@/sanity/queries"
+import type { GET_INVOLVED_PAGE_QUERY_RESULT } from "@/sanity/types"
+import { isExternalHref } from "@/lib/url"
+import { ArrowRightIcon } from "lucide-react"
+
+const { data } = await loadQuery<GET_INVOLVED_PAGE_QUERY_RESULT>({
+  query: GET_INVOLVED_PAGE_QUERY,
+})
+
+const pageData = data?.page
+
+// Page anchor
+const pageTitle = pageData?.title ?? "Get Involved"
+const eyebrow = pageData?.eyebrow ?? "Join Us"
+const headline = pageData?.headline ?? "Get *involved*"
+const intro = pageData?.intro ?? null
+
+// Ways section
+const waysEyebrow = pageData?.waysEyebrow ?? "Three ways to start"
+const waysHeadline = pageData?.waysHeadline ?? "Pick your *door*."
+const ways = pageData?.ways ?? []
+
+const showSignup = pageData?.showSignup !== false
+---
+
+<Layout title={pageTitle} showSignup={showSignup}>
+  <section class="layout-container">
+    <PageHeading eyebrow={eyebrow} headline={headline} />
+
+    {
+      intro && intro.length > 0 && (
+        <div class="mb-10 max-w-[68ch]">
+          <RichText value={intro} />
+        </div>
+      )
+    }
+
+    {
+      ways.length > 0 && (
+        <section aria-labelledby="ways-heading">
+          <SectionHeading eyebrow={waysEyebrow} headline={waysHeadline} />
+
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {ways.map((way, index) => {
+              const ctaExternal = way.ctaLink
+                ? isExternalHref(way.ctaLink)
+                : false
+              const showCta = Boolean(way.ctaText && way.ctaLink)
+
+              return (
+                <article class="flex flex-col border-2 border-foreground bg-background p-7">
+                  <div class="heading-display text-6xl leading-none text-primary">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+
+                  <h3 class="heading-display mt-3 text-xl tracking-tight text-balance">
+                    {way.headline}
+                  </h3>
+
+                  {way.description && (
+                    <p class="mt-2.5 text-base leading-relaxed text-foreground-soft">
+                      {way.description}
+                    </p>
+                  )}
+
+                  {showCta && way.ctaLink && (
+                    <div class="mt-auto pt-6">
+                      <a
+                        href={way.ctaLink}
+                        target={ctaExternal ? "_blank" : undefined}
+                        rel={ctaExternal ? "noreferrer" : undefined}
+                        class="mono-eyebrow inline-flex items-center gap-1.5 border-b-2 border-primary pb-1 font-semibold whitespace-nowrap text-primary transition-colors hover:border-primary-deep hover:text-primary-deep"
+                      >
+                        {way.ctaText}
+                        <ArrowRightIcon className="size-3" />
+                      </a>
+                    </div>
+                  )}
+                </article>
+              )
+            })}
+          </div>
+        </section>
+      )
+    }
+  </section>
+</Layout>
