@@ -180,7 +180,7 @@ export const EventCalendar = ({
           onPrev={goPrev}
           onNext={goNext}
           view={view}
-          onChangeView={changeView}
+          onViewChange={changeView}
         />
 
         <div

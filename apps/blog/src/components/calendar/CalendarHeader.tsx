@@ -11,7 +11,7 @@ interface CalendarHeaderProps {
   onPrev: () => void
   onNext: () => void
   view: ViewMode
-  onChangeView: (v: ViewMode) => void
+  onViewChange: (v: ViewMode) => void
 }
 
 export const CalendarHeader = ({
@@ -20,11 +20,11 @@ export const CalendarHeader = ({
   onPrev,
   onNext,
   view,
-  onChangeView,
+  onViewChange,
 }: CalendarHeaderProps) => (
   <div className="flex flex-wrap items-center gap-3">
     <div className="flex items-center gap-1.5">
-      <Button variant="editorial" size="default" onClick={onToday}>
+      <Button variant="editorial" onClick={onToday}>
         Today
       </Button>
       <Button
@@ -58,17 +58,16 @@ export const CalendarHeader = ({
         <Button
           key={mode}
           variant="editorial"
-          size="default"
-          onClick={() => onChangeView(mode)}
+          onClick={() => onViewChange(mode)}
           aria-pressed={view === mode}
           className={cn(
-            idx === 0 ? "rounded-r-none" : "rounded-l-none", 
+            idx === 0 ? "rounded-r-none" : "rounded-l-none",
             view === mode
               ? "bg-foreground text-background"
               : "bg-background text-foreground hover:bg-foreground/10 hover:text-foreground"
           )}
         >
-          {mode === "month" ? "Month" : "List"}
+          {mode}
         </Button>
       ))}
     </div>

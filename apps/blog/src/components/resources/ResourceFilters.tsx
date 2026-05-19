@@ -45,8 +45,8 @@ const FilterBody = ({
   cities,
   languages,
 }: FilterBodyProps) => (
-  <div className="divide-y">
-    <div className="p-3">
+  <div className="divide-y-2 divide-border">
+    <div className="p-5">
       <FilterSectionHeading>City</FilterSectionHeading>
       <CheckboxList
         idPrefix="resource-city"
@@ -62,7 +62,7 @@ const FilterBody = ({
       />
     </div>
 
-    <div className="p-3">
+    <div className="p-5">
       <FilterSectionHeading>Languages</FilterSectionHeading>
       <CheckboxList
         idPrefix="resource-lang"
@@ -125,16 +125,15 @@ export const ResourceFilters = ({
         />
 
         <Button
-          variant={filters.freeOnly ? "default" : "outline"}
-          size="sm"
+          variant="editorial"
           onClick={toggleFree}
           aria-pressed={filters.freeOnly}
           className={cn(
-            "shrink-0 gap-1.5 px-2 sm:px-3",
-            filters.freeOnly && "bg-emerald-600 text-white hover:bg-emerald-700"
+            "hover:border-foreground hover:bg-emerald-700",
+            filters.freeOnly && "bg-emerald-600! text-white!"
           )}
         >
-          <DollarSignIcon className="h-3.5 w-3.5" />
+          <DollarSignIcon />
           Free
         </Button>
 
@@ -142,19 +141,22 @@ export const ResourceFilters = ({
           <Popover>
             <PopoverTrigger>
               <Button
-                variant="outline"
-                size="sm"
-                className="shrink-0 gap-2"
+                variant="editorial"
+                className="text-xs"
+                aria-pressed={popoverBadgeCount > 0}
                 aria-label={
                   popoverBadgeCount > 0
                     ? `Filters (${popoverBadgeCount} active)`
                     : "Filters"
                 }
               >
-                <SlidersHorizontalIcon className="h-4 w-4" />
+                <SlidersHorizontalIcon className="size-3.5" />
                 Filters
                 {popoverBadgeCount > 0 && (
-                  <Badge className="h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums">
+                  <Badge
+                    variant="editorial-accent"
+                    className="h-4 min-w-4 px-1"
+                  >
                     {popoverBadgeCount}
                   </Badge>
                 )}
@@ -162,7 +164,7 @@ export const ResourceFilters = ({
             </PopoverTrigger>
             <PopoverContent
               align="end"
-              className="max-h-[70vh] w-80 overflow-y-auto p-0"
+              className="max-h-[70vh] w-80 overflow-y-auto rounded-none border-2 border-foreground bg-background p-0"
             >
               <FilterBody
                 filters={filters}
@@ -178,20 +180,20 @@ export const ResourceFilters = ({
           <Sheet>
             <SheetTrigger>
               <Button
-                variant="outline"
-                size="sm"
-                className="shrink-0 gap-2"
+                variant="editorial"
+                aria-pressed={popoverBadgeCount > 0}
                 aria-label={
                   popoverBadgeCount > 0
                     ? `Filters (${popoverBadgeCount} active)`
                     : "Filters"
                 }
               >
-                <SlidersHorizontalIcon className="h-4 w-4" />
+                <SlidersHorizontalIcon />
                 <span className="sr-only sm:not-sr-only">Filters</span>
                 {popoverBadgeCount > 0 && (
                   <Badge
-                    className="h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums"
+                    variant="editorial-accent"
+                    className="h-4 min-w-4 px-1"
                   >
                     {popoverBadgeCount}
                   </Badge>
@@ -200,10 +202,12 @@ export const ResourceFilters = ({
             </SheetTrigger>
             <SheetContent
               side="bottom"
-              className="flex h-[85vh] flex-col gap-0 p-0"
+              className="flex h-[85vh] flex-col gap-0 rounded-none border-t-2 border-foreground bg-background p-0"
             >
-              <SheetHeader className="border-b px-4 py-3">
-                <SheetTitle>Filters</SheetTitle>
+              <SheetHeader className="border-b-2 border-foreground px-5 py-4">
+                <SheetTitle className="heading-display text-xl">
+                  Filters
+                </SheetTitle>
               </SheetHeader>
               <div className="min-h-0 flex-1 overflow-y-auto">
                 <FilterBody
@@ -214,10 +218,10 @@ export const ResourceFilters = ({
                 />
               </div>
               {active && (
-                <div className="border-t p-3">
+                <div className="border-t-2 border-foreground p-4">
                   <Button
-                    variant="outline"
-                    size="sm"
+                    variant="editorial"
+                    size="lg"
                     className="w-full"
                     onClick={clearAll}
                   >
@@ -230,28 +234,25 @@ export const ResourceFilters = ({
         </div>
       </div>
 
-      {/* Category chips */}
       {categoryCounts.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {categoryCounts.map(({ group, count }) => {
             const theme = getCategoryTheme(group)
-            const Icon = theme.icon
             const isActive = filters.categories.includes(group)
 
             return (
-              <button
+              <Button
                 key={group}
-                type="button"
+                variant="editorial-chip"
+                size="sm"
+                className="text-xs"
                 onClick={() => toggleCategory(group)}
                 aria-pressed={isActive}
-                className={cn(
-                  "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
-                  isActive
-                    ? cn("border-transparent", theme.pillClass)
-                    : "border-border bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                )}
               >
-                <Icon className="h-3 w-3" aria-hidden />
+                <span
+                  className={cn("h-2 w-2 rounded-full", theme.accentClass)}
+                  aria-hidden
+                />
                 {getCategoryLabel(group)}
                 <span
                   className={cn(
@@ -261,17 +262,16 @@ export const ResourceFilters = ({
                 >
                   {count}
                 </span>
-              </button>
+              </Button>
             )
           })}
         </div>
       )}
 
-      {/* Result count + clear all */}
       {active && (
         <div className="ml-0.5 flex items-center justify-between">
           <p
-            className="text-xs text-muted-foreground"
+            className="mono-eyebrow-sm text-foreground-soft"
             role="status"
             aria-live="polite"
             aria-atomic="true"
@@ -281,12 +281,12 @@ export const ResourceFilters = ({
               : `Showing ${filteredCount} of ${resources.length} resources.`}
           </p>
           <Button
-            variant="ghost"
-            size="sm"
+            variant="link"
+            size="xs"
             onClick={clearAll}
-            className="h-auto gap-1 px-2 py-1 text-xs text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline"
+            className="mono-eyebrow-sm gap-1 text-foreground-soft hover:text-primary"
           >
-            <XIcon className="h-3 w-3" />
+            <XIcon />
             Clear all
           </Button>
         </div>

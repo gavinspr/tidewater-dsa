@@ -77,7 +77,7 @@ export const ResourceJumpNav = ({
   return (
     <nav aria-label="Jump to category" className="hidden lg:block">
       <div className="sticky space-y-1">
-        <p className="px-2 py-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        <p className="mono-eyebrow mb-1 px-2 font-semibold text-muted-foreground">
           Categories
         </p>
         {groups.map(({ group, items }) => {
@@ -89,19 +89,17 @@ export const ResourceJumpNav = ({
               type="button"
               onClick={() => handleClick(group)}
               className={cn(
-                "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors",
-                "hover:bg-muted"
+                "mono-eyebrow-sm flex w-full cursor-pointer items-center gap-2 px-2 py-2 text-left text-foreground-soft transition-colors",
+                "hover:bg-foreground/5 hover:text-foreground"
               )}
             >
               <Icon
                 aria-hidden
-                className="h-3.5 w-3.5 shrink-0"
+                className="size-3.5 shrink-0"
                 style={{ color: theme.pinColor }}
               />
               <span className="flex-1 truncate">{getCategoryLabel(group)}</span>
-              <span className="text-xs text-muted-foreground tabular-nums">
-                {items.length}
-              </span>
+              <span className="tabular-nums opacity-70">{items.length}</span>
             </button>
           )
         })}

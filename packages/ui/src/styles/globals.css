@@ -69,12 +69,15 @@
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+  --foreground-soft: oklch(0.41 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.6282 0.2575 29.21);
   --primary-foreground: oklch(0.985 0 0);
+  --primary-deep: oklch(0.555 0.235 28);
+  --primary-soft: color-mix(in oklab, var(--primary) 9%, transparent);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -101,9 +104,6 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --paper: oklch(0.975 0.008 75);
-  --foreground-soft: oklch(0.41 0 0);
-  --primary-deep: oklch(0.555 0.235 28);
-  --primary-soft: color-mix(in oklab, var(--primary) 9%, transparent);
 }
 
 .dark {

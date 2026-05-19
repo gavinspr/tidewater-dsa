@@ -16,7 +16,7 @@ export const eventsPageType = defineType({
       name: "title",
       title: "Page Title",
       type: "string",
-      description: "Used for internal routing and navigation menus",
+      description: "Used for internal routing and navigation menus.",
       group: "content",
       initialValue: "Events",
       validation: (Rule) => Rule.required(),

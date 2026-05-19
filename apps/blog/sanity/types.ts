@@ -100,6 +100,28 @@ export type ResourcesPage = {
   _updatedAt: string
   _rev: string
   title?: string
+  eyebrow?: string
+  headline?: string
+  intro?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: "span"
+      _key: string
+    }>
+    style?: "normal" | "h2" | "h3" | "blockquote"
+    listItem?: "bullet" | "number"
+    markDefs?: Array<{
+      href?: string
+      blank?: boolean
+      _type: "link"
+      _key: string
+    }>
+    level?: number
+    _type: "block"
+    _key: string
+  }>
+  memberEyebrow?: string
   memberHeadline?: string
   body?: Array<
     | {
@@ -133,12 +155,32 @@ export type ResourcesPage = {
         _key: string
       }
   >
+  communityEyebrow?: string
   communityHeadline?: string
-  communityIntro?: string
+  communityIntro?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: "span"
+      _key: string
+    }>
+    style?: "normal" | "h2" | "h3" | "blockquote"
+    listItem?: "bullet" | "number"
+    markDefs?: Array<{
+      href?: string
+      blank?: boolean
+      _type: "link"
+      _key: string
+    }>
+    level?: number
+    _type: "block"
+    _key: string
+  }>
   disclaimerText?: string
   printFooterText?: string
   googleSheetId?: string
   googleSheetRange?: string
+  showSignup?: boolean
 }
 
 export type WorkingGroups = {
@@ -864,11 +906,34 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
 
 // Source: sanity/queries/resourcesPage.ts
 // Variable: RESOURCES_PAGE_QUERY
-// Query: {  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {    _id,    title,    body,    memberHeadline,    communityHeadline,    communityIntro,    disclaimerText,    printFooterText,    googleSheetId,    googleSheetRange  },}
+// Query: {  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {    _id,    title,    eyebrow,    headline,    intro,    memberEyebrow,    memberHeadline,    body,    communityEyebrow,    communityHeadline,    communityIntro,    disclaimerText,    printFooterText,    googleSheetId,    googleSheetRange,    showSignup  },}
 export type RESOURCES_PAGE_QUERY_RESULT = {
   page: {
     _id: "resourcesPage"
     title: string | null
+    eyebrow: string | null
+    headline: string | null
+    intro: Array<{
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: "span"
+        _key: string
+      }>
+      style?: "blockquote" | "h2" | "h3" | "normal"
+      listItem?: "bullet" | "number"
+      markDefs?: Array<{
+        href?: string
+        blank?: boolean
+        _type: "link"
+        _key: string
+      }>
+      level?: number
+      _type: "block"
+      _key: string
+    }> | null
+    memberEyebrow: string | null
+    memberHeadline: string | null
     body: Array<
       | {
           children?: Array<{
@@ -901,13 +966,32 @@ export type RESOURCES_PAGE_QUERY_RESULT = {
           _key: string
         }
     > | null
-    memberHeadline: string | null
+    communityEyebrow: string | null
     communityHeadline: string | null
-    communityIntro: string | null
+    communityIntro: Array<{
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: "span"
+        _key: string
+      }>
+      style?: "blockquote" | "h2" | "h3" | "normal"
+      listItem?: "bullet" | "number"
+      markDefs?: Array<{
+        href?: string
+        blank?: boolean
+        _type: "link"
+        _key: string
+      }>
+      level?: number
+      _type: "block"
+      _key: string
+    }> | null
     disclaimerText: string | null
     printFooterText: string | null
     googleSheetId: string | null
     googleSheetRange: string | null
+    showSignup: boolean | null
   } | null
 }
 
@@ -994,7 +1078,7 @@ declare module "@sanity/client" {
     '{\n  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {\n    _id,\n    title,\n    eyebrow,\n    headline,\n    intro,\n    noFeaturedEventsMessage,\n    showSignup\n  },\n}': EVENTS_PAGE_QUERY_RESULT
     '\n  *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCta2Text,\n    heroCta2Link,\n    heroCtaPosition,\n    contentEyebrow,\n    contentHeadline,\n    body,\n    bodyImage,\n    eventsEyebrow,\n    eventsHeadline,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage,\n  }\n': HOME_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n}': PAGE_BY_SLUG_QUERY_RESULT
-    '{\n  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {\n    _id,\n    title,\n    body,\n    memberHeadline,\n    communityHeadline,\n    communityIntro,\n    disclaimerText,\n    printFooterText,\n    googleSheetId,\n    googleSheetRange\n  },\n}': RESOURCES_PAGE_QUERY_RESULT
+    '{\n  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {\n    _id,\n    title,\n    eyebrow,\n    headline,\n    intro,\n    memberEyebrow,\n    memberHeadline,\n    body,\n    communityEyebrow,\n    communityHeadline,\n    communityIntro,\n    disclaimerText,\n    printFooterText,\n    googleSheetId,\n    googleSheetRange,\n    showSignup\n  },\n}': RESOURCES_PAGE_QUERY_RESULT
     '*[_type == "siteSettings"][0] {\n  siteTitle,\n  siteShortName,\n  logo,\n  logoTagline,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->_type == "chapterPrioritiesPage" => "chapter-priorities",\n      @->slug.current\n    )\n  },\n  callToActionText,\n  callToActionLink,\n  showRibbon,\n  ribbonText,\n  nextMeetingLabel,\n  nextMeetingMatch,\n  nextMeetingTextOverride,\n  nextMeetingLinkOverride,\n  bannerWords,\n  signupLink,\n  signupEyebrow,\n  signupHeadline,\n  signupDescription,\n  socialLinks,\n  socialIconStyle,\n  contactEmail,\n  contactEmailSubject,\n  footerTagline,\n footerColumns[]{\n    _key,\n    title,\n    links[]{ _key, label, href }\n  }\n}': SITE_SETTINGS_QUERY_RESULT
     '\n  *[_type == "workingGroups" && _id == "workingGroups"][0].groups[]{\n    label,\n    "value": value.current,\n    description\n  }\n': WORKING_GROUPS_QUERY_RESULT
   }

@@ -268,11 +268,7 @@ export const UpcomingEvents = ({
       </div>
 
       <div className="flex justify-end">
-        <Button
-          variant="editorial"
-          size="default"
-          render={<a href="/events" />}
-        >
+        <Button variant="editorial" render={<a href="/events" />}>
           All Events
           <ArrowRightIcon className="size-5" />
         </Button>

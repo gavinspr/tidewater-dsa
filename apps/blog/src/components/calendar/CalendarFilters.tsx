@@ -174,7 +174,6 @@ export const CalendarFilters = ({
             <PopoverTrigger>
               <Button
                 variant="editorial"
-                size="default"
                 className="text-xs"
                 aria-pressed={popoverBadgeCount > 0}
                 aria-label={
@@ -215,7 +214,6 @@ export const CalendarFilters = ({
             <SheetTrigger>
               <Button
                 variant="editorial"
-                size="default"
                 aria-pressed={popoverBadgeCount > 0}
                 aria-label={
                   popoverBadgeCount > 0

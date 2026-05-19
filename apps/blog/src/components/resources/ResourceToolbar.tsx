@@ -14,20 +14,15 @@ import {
   DropdownMenuTrigger,
 } from "@tidewater-dsa/ui/components/dropdown-menu"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "@tidewater-dsa/ui/components/motion-tabs"
 
-export type ResourceView = "grid" | "map"
+export type ResourceView = "directory" | "map"
 
 interface ResourceToolbarProps {
   view: ResourceView
   onViewChange: (next: ResourceView) => void
   allExpanded: boolean
   onToggleExpandAll: () => void
-  /** Only relevant in grid view + when there's more than one category. */
+  /** Only relevant in directory view + when there's more than one category. */
   canToggleExpand: boolean
   onPrint: () => void
   onDownloadCsv: () => void
@@ -43,35 +38,40 @@ export const ResourceToolbar = ({
   onDownloadCsv,
 }: ResourceToolbarProps) => (
   <div className="flex flex-wrap items-center justify-between gap-3">
-    <Tabs
-      value={view}
-      onValueChange={(val) => onViewChange(val as ResourceView)}
+    <div
+      className="inline-flex items-stretch"
+      role="group"
+      aria-label="Resource view"
     >
-      <TabsList>
-        <TabsTrigger value="grid" className="gap-1.5">
-          <Grid3x3Icon className="h-4 w-4" />
-          Directory
-        </TabsTrigger>
-        <TabsTrigger value="map" className="gap-1.5">
-          <MapIcon className="h-4 w-4" />
-          Map
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
+      {(["directory", "map"] as const).map((mode, idx) => (
+        <Button
+          key={mode}
+          variant="editorial"
+          onClick={() => onViewChange(mode)}
+          aria-pressed={view === mode}
+          className={cn(
+            idx === 0 ? "rounded-r-none" : "rounded-l-none",
+            view === mode
+              ? "bg-foreground text-background"
+              : "bg-background text-foreground hover:bg-foreground/10 hover:text-foreground"
+          )}
+        >
+          {mode === "directory" ? <Grid3x3Icon /> : <MapIcon />}
+          {mode}
+        </Button>
+      ))}
+    </div>
 
-    <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto">
+    <div className="flex flex-wrap items-center gap-2">
       {canToggleExpand && (
         <Button
-          variant="ghost"
+          variant="link"
           size="sm"
           onClick={onToggleExpandAll}
-          className="gap-1.5 pt-1 text-xs"
+          className="mono-eyebrow-sm text-foreground-soft hover:text-foreground"
         >
           <ChevronUpIcon
-            className={cn(
-              "h-3.5 w-3.5 transition-transform",
-              allExpanded && "rotate-180"
-            )}
+            className={cn("transition-transform", allExpanded && "rotate-180")}
           />
           {allExpanded ? "Collapse all" : "Expand all"}
         </Button>
@@ -79,17 +79,26 @@ export const ResourceToolbar = ({
 
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <Button variant="outline" size="sm" className="gap-1.5">
-            <DownloadIcon className="h-4 w-4" />
+          <Button variant="editorial">
+            <DownloadIcon />
             Download
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={onPrint}>
-            <PrinterIcon className="mr-2 h-4 w-4" /> Print / Save as PDF
+        <DropdownMenuContent
+          align="end"
+          className="rounded-none border-2 border-foreground bg-background p-0 shadow-none"
+        >
+          <DropdownMenuItem
+            onClick={onPrint}
+            className="mono-eyebrow-sm cursor-pointer gap-2 rounded-none px-3 py-2 text-foreground hover:bg-foreground/10 focus:bg-foreground/10"
+          >
+            <PrinterIcon className="size-3.5" /> Print / Save as PDF
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onDownloadCsv}>
-            <FileSpreadsheetIcon className="mr-2 h-4 w-4" /> Download CSV
+          <DropdownMenuItem
+            onClick={onDownloadCsv}
+            className="mono-eyebrow-sm cursor-pointer gap-2 rounded-none border-t border-border px-3 py-2 text-foreground hover:bg-foreground/10 focus:bg-foreground/10"
+          >
+            <FileSpreadsheetIcon className="size-3.5" /> Download CSV
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

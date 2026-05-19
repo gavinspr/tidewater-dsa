@@ -23,6 +23,8 @@ const badgeVariants = cva(
           "mono-eyebrow-sm rounded-sm border-border bg-muted/40 px-2.5 text-foreground",
         "editorial-accent":
           "mono-eyebrow-sm rounded-sm border-primary bg-primary-soft px-2.5 text-primary-deep",
+        "editorial-success":
+          "mono-eyebrow-sm rounded-sm border-emerald-600 bg-emerald-50 px-2.5 text-emerald-700",
       },
     },
     defaultVariants: {

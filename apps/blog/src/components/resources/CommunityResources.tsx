@@ -21,7 +21,6 @@ import {
   resourceFiltersToSearchParams,
   type ResourceFilterState,
 } from "@/lib/resource-filters"
-import { formatRefreshedAt } from "@/lib/format"
 import { InlineError } from "@/components/feedback/InlineError"
 import { classifyResourceError } from "./resource-error-classifier"
 import { ResourceDialog } from "./ResourceDialog"
@@ -42,15 +41,17 @@ import {
 } from "@tidewater-dsa/ui/components/motion-tabs"
 
 const EmptyState = ({ onClear }: { onClear: () => void }) => (
-  <Card className="border-dashed bg-muted/20 p-12 text-center shadow-none">
+  <Card variant="editorial" className="gap-3 px-6 py-16 text-center">
     <CardHeader>
-      <CardTitle>No resources match your filters</CardTitle>
+      <CardTitle className="heading-display! text-xl leading-tight">
+        No resources match your filters
+      </CardTitle>
     </CardHeader>
     <CardContent>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <p className="text-sm text-foreground-soft">
         Try clearing filters or searching a broader term.
       </p>
-      <Button size="sm" className="mt-4" onClick={onClear}>
+      <Button variant="editorial" onClick={onClear} className="mx-auto mt-2">
         Clear all filters
       </Button>
     </CardContent>
@@ -69,7 +70,6 @@ interface CommunityResourcesProps {
 
 export const CommunityResources = ({
   resources,
-  meta,
   error,
   initialView,
   disclaimerText,
@@ -186,11 +186,7 @@ export const CommunityResources = ({
     URL.revokeObjectURL(url)
   }, [filtered])
 
-  const fetchedAtDisplay = meta?.fetchedAt
-    ? formatRefreshedAt(meta.fetchedAt)
-    : null
-
-  const showEmpty = view === "grid" && filtered.length === 0
+  const showEmpty = view === "directory" && filtered.length === 0
 
   return (
     <>
@@ -199,7 +195,7 @@ export const CommunityResources = ({
         onViewChange={setViewAndSync}
         allExpanded={allExpanded}
         onToggleExpandAll={toggleExpandAll}
-        canToggleExpand={view === "grid" && grouped.length > 1}
+        canToggleExpand={view === "directory" && grouped.length > 1}
         onPrint={handlePrint}
         onDownloadCsv={handleDownloadCsv}
       />
@@ -222,9 +218,8 @@ export const CommunityResources = ({
         />
       </div>
 
-      <p className="mt-3 text-xs text-muted-foreground italic">
+      <p className="mt-3 text-xs leading-relaxed text-foreground-soft italic">
         {disclaimerText}
-        {fetchedAtDisplay && <> Last refreshed {fetchedAtDisplay}.</>}
       </p>
 
       <div className="mt-4">
@@ -233,7 +228,7 @@ export const CommunityResources = ({
         ) : (
           <Tabs value={view} className="w-full">
             <TabsContents transition={{ duration: 0.5, ease: "easeInOut" }}>
-              <TabsContent value="grid">
+              <TabsContent value="directory">
                 <ResourceDirectory
                   groups={grouped}
                   openValues={openValues}

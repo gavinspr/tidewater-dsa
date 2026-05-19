@@ -37,7 +37,7 @@ export const ResourceCategoryAccordion = ({
     multiple
     value={openValues}
     onValueChange={onOpenChange}
-    className="divide-y divide-border rounded-lg"
+    className="divide-y divide-border rounded-lg border-2"
   >
     {groups.map(({ group, items }) => {
       const theme = getCategoryTheme(group)
@@ -50,23 +50,23 @@ export const ResourceCategoryAccordion = ({
           id={slug}
           className="scroll-mt-4"
         >
-          <AccordionTrigger className="group gap-3 py-4 hover:no-underline items-center">
+          <AccordionTrigger className="group/trigger items-center gap-3 py-4 hover:no-underline">
             <span
               aria-hidden
               className={cn(
-                "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white shadow-sm transition-transform group-hover:scale-105",
+                "flex size-9 shrink-0 items-center justify-center rounded-sm text-white transition-transform group-hover/trigger:scale-105",
                 theme.accentClass
               )}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="size-4" />
             </span>
-            <span className="flex flex-1 items-baseline gap-2 text-left">
-              <span className="text-base font-bold tracking-tight">
+            <span className="flex flex-1 gap-2.5 text-left">
+              <span className="heading-display text-lg leading-none font-bold tracking-tight">
                 {getCategoryLabel(group)}
               </span>
               <span
                 className={cn(
-                  "inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold tabular-nums",
+                  "mono-eyebrow-sm inline-flex h-5 min-w-5 items-center justify-center rounded-sm px-1.5 tabular-nums",
                   theme.pillClass
                 )}
               >
@@ -74,7 +74,7 @@ export const ResourceCategoryAccordion = ({
               </span>
             </span>
           </AccordionTrigger>
-          <AccordionContent className="pb-4">
+          <AccordionContent className="pb-5">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {items.map((r) => (
                 <ResourceCard key={r.id} resource={r} onOpen={onOpenResource} />

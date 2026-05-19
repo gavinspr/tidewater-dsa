@@ -1,57 +1,110 @@
 import { defineField, defineType } from "sanity"
 import { defineRichTextBody } from "./richTextFields"
+import { defineShowSignupField } from "./showSignupField"
 
 export const resourcesPageType = defineType({
   name: "resourcesPage",
   title: "Resources Page",
   type: "document",
   groups: [
-    { name: "member", title: "Member Resources", default: true },
+    { name: "header", title: "Page Header", default: true },
+    { name: "member", title: "Member Resources" },
     { name: "community", title: "Community Resources" },
     { name: "data", title: "Data Source" },
+    { name: "signup", title: "Signup Section" },
   ],
   fields: [
+    // Page Header
     defineField({
       name: "title",
       title: "Page Title",
       type: "string",
-      group: "member",
+      description: "Used for internal routing and navigation menus.",
+      group: "header",
       initialValue: "Resources",
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "eyebrow",
+      title: "Page Eyebrow",
+      type: "string",
+      description:
+        "Small mono label above the page headline (e.g. 'Local support').",
+      group: "header",
+      initialValue: "Local support",
+    }),
+    defineField({
+      name: "headline",
+      title: "Page Headline",
+      type: "string",
+      description:
+        "Page-level h1. Wrap a phrase in *asterisks* to render it in red (e.g. '*Resources*').",
+      group: "header",
+      initialValue: "Resources",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineRichTextBody({
+      name: "intro",
+      title: "Page Intro",
+      description: "Rich text content below the page headline.",
+      group: "header",
+      allowImages: false,
+    }),
+
+    // Member Section
+    defineField({
+      name: "memberEyebrow",
+      title: "Member Section Eyebrow",
+      type: "string",
+      description:
+        "Small mono label above the Member Resources section heading.",
+      group: "member",
+      initialValue: "For members",
     }),
     defineField({
       name: "memberHeadline",
       title: "Member Section Headline",
       type: "string",
+      description:
+        "Section h2 for the member resources block. Asterisk syntax supported (e.g. 'Member *resources*').",
       group: "member",
-      initialValue: "Member Resources",
+      initialValue: "Member *resources*",
       validation: (Rule) => Rule.required(),
     }),
     defineRichTextBody({
       title: "Member Resources Content",
       description:
-        "Rich text that appears above the Community Resources directory (e.g. Member Resources, Code of Conduct, Bylaws).",
+        "Rich text that appears in the Member Resources section (chapter constitution, working group handbooks, etc).",
       group: "member",
     }),
 
     // Community Resources Section
     defineField({
+      name: "communityEyebrow",
+      title: "Community Section Eyebrow",
+      type: "string",
+      description:
+        "Small mono label above the Community Resources section heading.",
+      group: "community",
+      initialValue: "For everyone",
+    }),
+    defineField({
       name: "communityHeadline",
       title: "Community Section Headline",
       type: "string",
+      description:
+        "Section h2 for the community resources directory. Asterisk syntax supported (e.g. 'Community *resources*').",
       group: "community",
-      initialValue: "Community Resources",
+      initialValue: "Community *resources*",
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
+    defineRichTextBody({
       name: "communityIntro",
       title: "Community Section Intro",
-      type: "text",
+      description:
+        "Short rich-text intro shown above the resource directory toolbar.",
       group: "community",
-      rows: 3,
-      description: "Short description shown above the resource directory.",
-      initialValue:
-        "A directory of mutual aid, shelter, food, health, and support resources across the 757. Search, filter, and download to share.",
+      allowImages: false,
     }),
     defineField({
       name: "disclaimerText",
@@ -93,6 +146,7 @@ export const resourcesPageType = defineType({
         "A1-notation range, e.g. 'Program Form Responses!A:X'. Defaults to 'A:X' if left blank.",
       initialValue: "Program Form Responses!A:X",
     }),
+    defineShowSignupField({ initialValue: false, group: "signup" }),
   ],
   preview: {
     prepare: () => ({ title: "Resources Page" }),
