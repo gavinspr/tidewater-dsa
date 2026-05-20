@@ -8,6 +8,7 @@ export const SINGLETON_IDS: Record<string, string> = {
   chapterPrioritiesPage: "chapterPrioritiesPage",
   resourcesPage: "resourcesPage",
   getInvolvedPage: "getInvolvedPage",
+  aboutPage: "aboutPage",
   siteSettings: "siteSettings",
   workingGroups: "workingGroups",
 }
@@ -48,6 +49,7 @@ export const structure: StructureResolver = (S) =>
               singletonItem(S, "eventsPage", "Events Page"),
               singletonItem(S, "resourcesPage", "Resources Page"),
               singletonItem(S, "getInvolvedPage", "Get Involved Page"),
+              singletonItem(S, "aboutPage", "About Page"),
               S.divider(),
               S.documentTypeListItem("page").title("Other Pages"),
             ])

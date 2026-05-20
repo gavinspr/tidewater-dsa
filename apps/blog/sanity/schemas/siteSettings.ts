@@ -61,6 +61,7 @@ export const siteSettingsType = defineType({
             { type: "chapterPrioritiesPage" },
             { type: "resourcesPage" },
             { type: "getInvolvedPage" },
+            { type: "aboutPage" },
           ],
         },
       ],

@@ -21,6 +21,104 @@ type ArrayOf<T> = Array<
 >
 
 // Source: sanity/schema.json
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: "reference"
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset"
+}
+
+export type AboutPage = {
+  _id: string
+  _type: "aboutPage"
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  eyebrow?: string
+  headline?: string
+  intro?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: "span"
+      _key: string
+    }>
+    style?: "normal" | "h2" | "h3" | "blockquote"
+    listItem?: "bullet" | "number"
+    markDefs?: Array<{
+      href?: string
+      blank?: boolean
+      _type: "link"
+      _key: string
+    }>
+    level?: number
+    _type: "block"
+    _key: string
+  }>
+  body?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: "span"
+          _key: string
+        }>
+        style?: "normal" | "h2" | "h3" | "blockquote"
+        listItem?: "bullet" | "number"
+        markDefs?: Array<{
+          href?: string
+          blank?: boolean
+          _type: "link"
+          _key: string
+        }>
+        level?: number
+        _type: "block"
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        displaySize?: "sm" | "md" | "lg" | "full"
+        _type: "image"
+        _key: string
+      }
+    | {
+        text?: string
+        _type: "quote"
+        _key: string
+      }
+  >
+  valuesEyebrow?: string
+  valuesHeadline?: string
+  values?: Array<
+    {
+      _key: string
+    } & AboutValue
+  >
+  showSignup?: boolean
+}
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop"
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+}
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot"
+  x?: number
+  y?: number
+  height?: number
+  width?: number
+}
+
 export type GetInvolvedPage = {
   _id: string
   _type: "getInvolvedPage"
@@ -57,13 +155,6 @@ export type GetInvolvedPage = {
     } & GetInvolvedWay
   >
   showSignup?: boolean
-}
-
-export type SanityImageAssetReference = {
-  _ref: string
-  _type: "reference"
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: "sanity.imageAsset"
 }
 
 export type ChapterPrioritiesPage = {
@@ -113,22 +204,6 @@ export type ChapterPrioritiesPage = {
     } & Priority
   >
   showSignup?: boolean
-}
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop"
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
-}
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot"
-  x?: number
-  y?: number
-  height?: number
-  width?: number
 }
 
 export type ResourcesPage = {
@@ -417,6 +492,13 @@ export type GetInvolvedPageReference = {
   [internalGroqTypeReferenceTo]?: "getInvolvedPage"
 }
 
+export type AboutPageReference = {
+  _ref: string
+  _type: "reference"
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: "aboutPage"
+}
+
 export type SiteSettings = {
   _id: string
   _type: "siteSettings"
@@ -439,6 +521,7 @@ export type SiteSettings = {
     | ChapterPrioritiesPageReference
     | ResourcesPageReference
     | GetInvolvedPageReference
+    | AboutPageReference
   >
   callToActionText?: string
   callToActionLink?: string
@@ -550,6 +633,12 @@ export type Post = {
     _type: "block"
     _key: string
   }>
+}
+
+export type AboutValue = {
+  _type: "aboutValue"
+  headline?: string
+  description?: string
 }
 
 export type GetInvolvedWay = {
@@ -692,11 +781,12 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
-  | GetInvolvedPage
   | SanityImageAssetReference
-  | ChapterPrioritiesPage
+  | AboutPage
   | SanityImageCrop
   | SanityImageHotspot
+  | GetInvolvedPage
+  | ChapterPrioritiesPage
   | ResourcesPage
   | WorkingGroups
   | Slug
@@ -709,9 +799,11 @@ export type AllSanitySchemaTypes =
   | ChapterPrioritiesPageReference
   | ResourcesPageReference
   | GetInvolvedPageReference
+  | AboutPageReference
   | SiteSettings
   | Page
   | Post
+  | AboutValue
   | GetInvolvedWay
   | Priority
   | SanityImagePaletteSwatch
@@ -722,6 +814,81 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint
+
+// Source: sanity/queries/aboutPage.ts
+// Variable: ABOUT_PAGE_QUERY
+// Query: {  "page": *[_type == "aboutPage" && _id == "aboutPage"][0] {    _id,    title,    eyebrow,    headline,    intro,    body,    valuesEyebrow,    valuesHeadline,    values[] {      headline,      description    },    showSignup  },}
+export type ABOUT_PAGE_QUERY_RESULT = {
+  page: {
+    _id: "aboutPage"
+    title: string | null
+    eyebrow: string | null
+    headline: string | null
+    intro: Array<{
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: "span"
+        _key: string
+      }>
+      style?: "blockquote" | "h2" | "h3" | "normal"
+      listItem?: "bullet" | "number"
+      markDefs?: Array<{
+        href?: string
+        blank?: boolean
+        _type: "link"
+        _key: string
+      }>
+      level?: number
+      _type: "block"
+      _key: string
+    }> | null
+    body: Array<
+      | {
+          children?: Array<{
+            marks?: Array<string>
+            text?: string
+            _type: "span"
+            _key: string
+          }>
+          style?: "blockquote" | "h2" | "h3" | "normal"
+          listItem?: "bullet" | "number"
+          markDefs?: Array<{
+            href?: string
+            blank?: boolean
+            _type: "link"
+            _key: string
+          }>
+          level?: number
+          _type: "block"
+          _key: string
+        }
+      | {
+          asset?: SanityImageAssetReference
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          alt?: string
+          caption?: string
+          displaySize?: "full" | "lg" | "md" | "sm"
+          _type: "image"
+          _key: string
+        }
+      | {
+          text?: string
+          _type: "quote"
+          _key: string
+        }
+    > | null
+    valuesEyebrow: string | null
+    valuesHeadline: string | null
+    values: Array<{
+      headline: string | null
+      description: string | null
+    }> | null
+    showSignup: boolean | null
+  } | null
+}
 
 // Source: sanity/queries/chapterPrioritiesPage.ts
 // Variable: CHAPTER_PRIORITIES_PAGE_QUERY
@@ -1121,6 +1288,11 @@ export type SITE_SETTINGS_QUERY_RESULT = {
     | {
         _key: null
         title: string | null
+        slug: null
+      }
+    | {
+        _key: null
+        title: string | null
         slug: "chapter-priorities"
       }
     | {
@@ -1190,6 +1362,7 @@ export type WORKING_GROUPS_QUERY_RESULT = Array<{
 import "@sanity/client"
 declare module "@sanity/client" {
   interface SanityQueries {
+    '{\n  "page": *[_type == "aboutPage" && _id == "aboutPage"][0] {\n    _id,\n    title,\n    eyebrow,\n    headline,\n    intro,\n    body,\n    valuesEyebrow,\n    valuesHeadline,\n    values[] {\n      headline,\n      description\n    },\n    showSignup\n  },\n}': ABOUT_PAGE_QUERY_RESULT
     '*[_type == "chapterPrioritiesPage" && _id == "chapterPrioritiesPage"][0] {\n  _id,\n  title,\n  eyebrow,\n  headline,\n  intro,\n  priorities[] {\n    _key,\n    category,\n    headline,\n    description,\n    image,\n    ctaText,\n    ctaLink\n  }\n}': CHAPTER_PRIORITIES_PAGE_QUERY_RESULT
     '\n  *[_type == "eventTypes" && _id == "eventTypes"][0].types[]{\n    label,\n    "value": value.current,\n    color,\n    description\n  }\n': EVENT_TYPES_QUERY_RESULT
     '\n  *[_type == "event" && defined(googleEventId)]{\n    _id,\n    googleEventId,\n    featured,\n    eventType,\n    attendance,\n    topics,\n    workingGroup,\n    rsvpLink,\n    summary\n  }\n': EVENT_CUSTOMIZATIONS_QUERY_RESULT

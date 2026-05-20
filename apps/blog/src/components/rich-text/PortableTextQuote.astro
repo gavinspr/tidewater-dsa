@@ -1,0 +1,32 @@
+---
+interface Props {
+  node: {
+    text?: string
+  }
+}
+
+const { node } = Astro.props
+const quote = node?.text?.trim()
+---
+
+{
+  quote && (
+    <figure class="not-prose relative my-14 border-y-2 border-foreground px-6 py-10 text-center md:mx-12 md:my-20">
+      {/* Red dots straddling the top + bottom rules. */}
+      <span
+        aria-hidden="true"
+        class="absolute top-0 left-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary"
+      />
+      <span
+        aria-hidden="true"
+        class="absolute bottom-0 left-1/2 size-3 -translate-x-1/2 translate-y-1/2 rounded-full bg-primary"
+      />
+      <blockquote
+        class="mx-auto max-w-[34ch] font-heading font-bold text-balance text-foreground uppercase"
+        style="font-size: clamp(1.6rem, 3.5vw, 2rem); line-height: 1.1;"
+      >
+        {quote}
+      </blockquote>
+    </figure>
+  )
+}

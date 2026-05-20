@@ -1,0 +1,76 @@
+---
+import Layout from "@/layouts/main.astro"
+import PageHeading from "@/components/headings/PageHeading.astro"
+import SectionHeading from "@/components/headings/SectionHeading.astro"
+import RichText from "@/components/rich-text/RichText.astro"
+import { loadQuery } from "@/lib/load-query"
+import { ABOUT_PAGE_QUERY } from "@/sanity/queries"
+import type { ABOUT_PAGE_QUERY_RESULT } from "@/sanity/types"
+
+const { data } = await loadQuery<ABOUT_PAGE_QUERY_RESULT>({
+  query: ABOUT_PAGE_QUERY,
+})
+
+const pageData = data?.page
+
+// Page header
+const pageTitle = pageData?.title ?? "About Us"
+const eyebrow = pageData?.eyebrow ?? "Our story"
+const headline = pageData?.headline ?? "About *Tidewater DSA*"
+const intro = pageData?.intro ?? null
+
+const body = pageData?.body ?? null
+
+// Values section
+const valuesEyebrow = pageData?.valuesEyebrow ?? "What we believe"
+const valuesHeadline = pageData?.valuesHeadline ?? "Our *values*"
+const values = pageData?.values ?? []
+
+const showSignup = pageData?.showSignup !== false
+---
+
+<Layout title={pageTitle} showSignup={showSignup}>
+  <section class="layout-container">
+    <PageHeading eyebrow={eyebrow} headline={headline} />
+
+    {
+      intro && intro.length > 0 && (
+        <div class="mb-10 max-w-[68ch]">
+          <RichText value={intro} />
+        </div>
+      )
+    }
+
+    {
+      body && body.length > 0 && (
+        <div class="mx-auto max-w-[68ch]">
+          <RichText value={body} />
+        </div>
+      )
+    }
+
+    {
+      values.length > 0 && (
+        <section aria-labelledby="values-heading" class="mt-20 md:mt-24">
+          <SectionHeading eyebrow={valuesEyebrow} headline={valuesHeadline} />
+
+          <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {values.map((value) => (
+              <div>
+                <div class="mb-3.5 h-0.5 w-9 bg-primary" aria-hidden="true" />
+                <h3 class="heading-display text-xl tracking-tight text-balance">
+                  {value.headline}
+                </h3>
+                {value.description && (
+                  <p class="mt-2 text-base leading-relaxed text-foreground-soft">
+                    {value.description}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </section>
+</Layout>

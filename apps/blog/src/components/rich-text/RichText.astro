@@ -2,6 +2,7 @@
 import { PortableText as PortableTextInternal } from "astro-portabletext"
 import PortableTextImage from "./PortableTextImage.astro"
 import PortableTextLink from "./PortableTextLink.astro"
+import PortableTextQuote from "./PortableTextQuote.astro"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import type { PortableTextBlock } from "sanity"
 
@@ -27,6 +28,7 @@ const { value, dropCap = false, class: className } = Astro.props
     components={{
       type: {
         image: PortableTextImage,
+        quote: PortableTextQuote,
       },
       mark: {
         link: PortableTextLink,

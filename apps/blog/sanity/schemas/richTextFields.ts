@@ -1,10 +1,5 @@
 import { defineField } from "sanity"
-import type {
-  ArrayRule,
-  FieldDefinition,
-  PortableTextBlock,
-  Rule,
-} from "sanity"
+import type { FieldDefinition, Rule } from "sanity"
 
 interface RichTextBodyOptions {
   name?: string
@@ -12,9 +7,7 @@ interface RichTextBodyOptions {
   description?: string
   group?: string
   allowImages?: boolean
-  validation?: (
-    rule: ArrayRule<PortableTextBlock>
-  ) => ArrayRule<PortableTextBlock> | ArrayRule<PortableTextBlock>[]
+  allowQuotes?: boolean
 }
 
 /**
@@ -30,7 +23,7 @@ export const defineRichTextBody = ({
   description,
   group,
   allowImages = true,
-  validation,
+  allowQuotes = false,
 }: RichTextBodyOptions = {}): FieldDefinition<"array"> => {
   const blockType = {
     type: "block" as const,
@@ -108,13 +101,42 @@ export const defineRichTextBody = ({
     ],
   }
 
+  const quoteType = {
+    type: "object" as const,
+    name: "quote",
+    title: "Quote",
+    fields: [
+      {
+        name: "text",
+        type: "text",
+        title: "Quote",
+        rows: 2,
+        description:
+          "A short, punchy line shown as a dramatic centered band in the flow of the text.",
+        validation: (rule: Rule) => rule.required().max(160),
+      },
+    ],
+    preview: {
+      select: { title: "text" },
+      prepare: ({ title }: { title?: string }) => ({
+        title: title || "Quote",
+        subtitle: "Quote",
+      }),
+    },
+  }
+
+  const members = [
+    blockType,
+    ...(allowImages ? [imageType] : []),
+    ...(allowQuotes ? [quoteType] : []),
+  ]
+
   return defineField({
     name,
     title,
     type: "array",
     description,
     ...(group ? { group } : {}),
-    validation,
-    of: allowImages ? [blockType, imageType] : [blockType],
+    of: members,
   })
 }
