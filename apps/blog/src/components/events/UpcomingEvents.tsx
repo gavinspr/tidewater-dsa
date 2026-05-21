@@ -23,7 +23,7 @@ import {
   ensureStylesLoaded,
   extractActionNetworkInfo,
 } from "@/lib/action-network"
-import { EventCard } from "./events/EventCard"
+import { EventCard } from "./EventCard"
 
 interface ActionNetworkEventProps {
   rsvpLink: string
