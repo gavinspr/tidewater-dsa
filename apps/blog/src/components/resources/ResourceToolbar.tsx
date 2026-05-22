@@ -78,16 +78,15 @@ export const ResourceToolbar = ({
       )}
 
       <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Button variant="editorial">
-            <DownloadIcon />
-            Download
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="editorial-panel rounded-none p-0 shadow-none"
-        >
+        <DropdownMenuTrigger
+          render={
+            <Button variant="editorial">
+              <DownloadIcon />
+              Download
+            </Button>
+          }
+        />
+        <DropdownMenuContent align="end" className="ed p-0 shadow-none">
           <DropdownMenuItem
             onClick={onPrint}
             className="mono-eyebrow-sm cursor-pointer gap-2 rounded-none px-3 py-2 text-foreground hover:bg-foreground/10 focus:bg-foreground/10"

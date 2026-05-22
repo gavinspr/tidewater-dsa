@@ -144,6 +144,7 @@ const EventDetails = ({
       <DialogFooter className="flex-col gap-2 border-t-2 border-border pt-4 sm:flex-row sm:justify-between">
         <Button
           variant="editorial"
+          nativeButton={false}
           render={
             <a
               href={event.googleUrl}
@@ -158,6 +159,7 @@ const EventDetails = ({
         {event.rsvpLink && (
           <Button
             variant="editorial-primary"
+            nativeButton={false}
             render={
               <a
                 href={event.rsvpLink}

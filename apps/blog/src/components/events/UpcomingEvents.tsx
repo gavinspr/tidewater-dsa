@@ -88,6 +88,7 @@ const ActionNetworkEvent = ({ rsvpLink }: ActionNetworkEventProps) => {
           <Button
             size="lg"
             className="w-full cursor-pointer gap-2 font-semibold sm:w-72"
+            nativeButton={false}
             render={<a href={rsvpLink} target="_blank" rel="noreferrer" />}
           >
             RSVP for this event
@@ -268,7 +269,11 @@ export const UpcomingEvents = ({
       </div>
 
       <div className="flex justify-end">
-        <Button variant="editorial" render={<a href="/events" />}>
+        <Button
+          variant="editorial"
+          nativeButton={false}
+          render={<a href="/events" />}
+        >
           All Events
           <ArrowRightIcon className="size-5" />
         </Button>

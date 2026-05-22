@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import type { Resource } from "@/types"
 import type { ResourceFilterState } from "@/lib/resource-filters"
@@ -17,9 +17,14 @@ export const PrintableResources = ({
   filters,
   footerText,
 }: PrintableResourcesProps) => {
-  const [canPortal] = useState(() => typeof document !== "undefined")
+  const [mounted, setMounted] = useState(false)
 
-  if (!canPortal) return null
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
 
   const today = format(new Date(), "MMMM d, yyyy")
 

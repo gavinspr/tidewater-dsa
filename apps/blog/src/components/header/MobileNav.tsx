@@ -25,16 +25,18 @@ export const MobileNav = ({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="cursor-pointer rounded-sm border border-border lg:hidden"
-        >
-          <MenuIcon className="size-5 text-foreground" />
-          <span className="sr-only">Toggle navigation menu</span>
-        </Button>
-      </SheetTrigger>
+      <SheetTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer rounded-sm border border-border lg:hidden"
+          >
+            <MenuIcon className="size-5 text-foreground" />
+            <span className="sr-only">Toggle navigation menu</span>
+          </Button>
+        }
+      />
 
       <SheetContent
         side="right"
@@ -62,6 +64,7 @@ export const MobileNav = ({
             <Button
               size="lg"
               className="mt-6 w-full cursor-pointer gap-1.5 rounded-md text-base font-bold text-foreground hover:bg-primary-deep"
+              nativeButton={false}
               render={
                 <a
                   href={callToActionLink}

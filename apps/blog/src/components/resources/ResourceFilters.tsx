@@ -139,29 +139,31 @@ export const ResourceFilters = ({
 
         <div className="hidden sm:block">
           <Popover>
-            <PopoverTrigger>
-              <Button
-                variant="editorial"
-                className="text-xs"
-                aria-pressed={popoverBadgeCount > 0}
-                aria-label={
-                  popoverBadgeCount > 0
-                    ? `Filters (${popoverBadgeCount} active)`
-                    : "Filters"
-                }
-              >
-                <SlidersHorizontalIcon className="size-3.5" />
-                Filters
-                {popoverBadgeCount > 0 && (
-                  <Badge
-                    variant="editorial-accent"
-                    className="h-4 min-w-4 px-1"
-                  >
-                    {popoverBadgeCount}
-                  </Badge>
-                )}
-              </Button>
-            </PopoverTrigger>
+            <PopoverTrigger
+              render={
+                <Button
+                  variant="editorial"
+                  className="text-xs"
+                  aria-pressed={popoverBadgeCount > 0}
+                  aria-label={
+                    popoverBadgeCount > 0
+                      ? `Filters (${popoverBadgeCount} active)`
+                      : "Filters"
+                  }
+                >
+                  <SlidersHorizontalIcon className="size-3.5" />
+                  Filters
+                  {popoverBadgeCount > 0 && (
+                    <Badge
+                      variant="editorial-accent"
+                      className="h-4 min-w-4 px-1"
+                    >
+                      {popoverBadgeCount}
+                    </Badge>
+                  )}
+                </Button>
+              }
+            />
             <PopoverContent
               align="end"
               className="editorial-panel max-h-[70vh] w-80 overflow-y-auto rounded-none p-0"
@@ -178,28 +180,30 @@ export const ResourceFilters = ({
 
         <div className="sm:hidden">
           <Sheet>
-            <SheetTrigger>
-              <Button
-                variant="editorial"
-                aria-pressed={popoverBadgeCount > 0}
-                aria-label={
-                  popoverBadgeCount > 0
-                    ? `Filters (${popoverBadgeCount} active)`
-                    : "Filters"
-                }
-              >
-                <SlidersHorizontalIcon />
-                <span className="sr-only sm:not-sr-only">Filters</span>
-                {popoverBadgeCount > 0 && (
-                  <Badge
-                    variant="editorial-accent"
-                    className="h-4 min-w-4 px-1"
-                  >
-                    {popoverBadgeCount}
-                  </Badge>
-                )}
-              </Button>
-            </SheetTrigger>
+            <SheetTrigger
+              render={
+                <Button
+                  variant="editorial"
+                  aria-pressed={popoverBadgeCount > 0}
+                  aria-label={
+                    popoverBadgeCount > 0
+                      ? `Filters (${popoverBadgeCount} active)`
+                      : "Filters"
+                  }
+                >
+                  <SlidersHorizontalIcon />
+                  <span className="sr-only sm:not-sr-only">Filters</span>
+                  {popoverBadgeCount > 0 && (
+                    <Badge
+                      variant="editorial-accent"
+                      className="h-4 min-w-4 px-1"
+                    >
+                      {popoverBadgeCount}
+                    </Badge>
+                  )}
+                </Button>
+              }
+            />
             <SheetContent
               side="bottom"
               className="flex h-[85vh] flex-col gap-0 rounded-none border-t-2 border-foreground bg-background p-0"
