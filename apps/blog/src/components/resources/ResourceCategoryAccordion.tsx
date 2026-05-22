@@ -61,7 +61,7 @@ export const ResourceCategoryAccordion = ({
               <Icon className="size-4" />
             </span>
             <span className="flex flex-1 gap-2.5 text-left">
-              <span className="heading-display text-lg leading-none font-bold tracking-tight">
+              <span className="heading-display text-lg leading-none">
                 {getCategoryLabel(group)}
               </span>
               <span

@@ -196,7 +196,7 @@ export const CalendarFilters = ({
             </PopoverTrigger>
             <PopoverContent
               align="end"
-              className="max-h-[70vh] w-80 overflow-y-auto rounded-none border-2 border-foreground bg-background p-0"
+              className="editorial-panel max-h-[70vh] w-80 overflow-y-auto rounded-none p-0"
             >
               <FilterBody
                 value={value}
@@ -300,7 +300,7 @@ export const CalendarFilters = ({
             variant="link"
             size="xs"
             onClick={clearAll}
-            className="mono-eyebrow-sm text-foreground-soft hover:text-primary"
+            className="mono-eyebrow-sm text-link-soft"
           >
             Clear all
           </Button>

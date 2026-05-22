@@ -58,34 +58,30 @@ const gridColsClass = gridLayouts[columnCount] || gridLayouts[2]
     <div>
       <div class="mb-4 flex items-center gap-3">
         {
-          logoUrl ? (
+          logoUrl && (
             <img
               src={logoUrl}
               alt={siteName}
               class="h-12 w-auto shrink-0 rounded-sm object-contain"
             />
-          ) : (
-            <div class="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary font-heading text-[1.4rem] leading-none font-black tracking-tighter text-primary-foreground">
-              TD
-            </div>
           )
         }
         <span
-          class="font-heading text-[1.2rem] leading-none font-extrabold tracking-tight uppercase"
+          class="font-heading text-xl leading-none font-extrabold tracking-tight uppercase"
         >
           {siteName}
         </span>
       </div>
       {
         footerTagline && (
-          <p class="max-w-[36ch] text-[0.9rem] leading-relaxed text-background/70">
+          <p class="max-w-[36ch] text-sm leading-relaxed text-background/70">
             {footerTagline}
           </p>
         )
       }
       {
         contactEmail && (
-          <div class="mt-4 text-[0.9rem] text-background/70">
+          <div class="mt-4 text-sm text-background/70">
             <EmailLink email={contactEmail} subject={contactEmailSubject} />
           </div>
         )
@@ -117,7 +113,7 @@ const gridColsClass = gridLayouts[columnCount] || gridLayouts[2]
                         rel={
                           isExternalHref(link.href) ? "noreferrer" : undefined
                         }
-                        class="text-[0.94rem] text-background/85 no-underline hover:text-primary"
+                        class="text-sm text-background/85 no-underline hover:text-primary"
                       >
                         {link.label}
                       </a>

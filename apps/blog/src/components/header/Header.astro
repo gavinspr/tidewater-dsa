@@ -56,13 +56,13 @@ const isCurrentLink = (slug: string): boolean =>
       }
       <div class="leading-none">
         <div
-          class="-ml-0.5 font-heading text-[1.35rem] leading-none font-extrabold tracking-tight uppercase"
+          class="-ml-0.75 font-heading text-2xl leading-none font-extrabold tracking-tight uppercase"
         >
           {siteName}
         </div>
         {
           logoTagline && (
-            <div class="mono-eyebrow mt-1 text-[0.62rem] tracking-widest text-foreground-soft">
+            <div class="mono-eyebrow mt-1 text-xs tracking-widest text-foreground-soft">
               {logoTagline}
             </div>
           )
@@ -78,7 +78,7 @@ const isCurrentLink = (slug: string): boolean =>
             <a
               href={`/${link.slug}`}
               aria-current={current ? "page" : undefined}
-              class="group relative py-1 text-[0.95rem] font-semibold whitespace-nowrap text-foreground"
+              class="group relative py-1 font-semibold whitespace-nowrap text-foreground"
             >
               {link.title}
               <span

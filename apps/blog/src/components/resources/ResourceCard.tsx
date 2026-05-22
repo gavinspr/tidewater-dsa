@@ -65,7 +65,7 @@ export const ResourceCard = ({ resource, onOpen }: ResourceCardProps) => {
         </div>
 
         <div>
-          <div className="heading-display text-base leading-tight tracking-tight">
+          <div className="heading-display text-base leading-tight">
             {resource.name}
           </div>
           {resource.organization && resource.organization !== resource.name && (

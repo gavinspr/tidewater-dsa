@@ -35,7 +35,7 @@ const showSignup = pageData?.showSignup !== false
 
     {
       intro && intro.length > 0 && (
-        <div class="mb-10 max-w-[68ch]">
+        <div class="max-w-readable mb-10">
           <RichText value={intro} />
         </div>
       )
@@ -43,7 +43,7 @@ const showSignup = pageData?.showSignup !== false
 
     {
       body && body.length > 0 && (
-        <div class="mx-auto max-w-[68ch]">
+        <div class="max-w-readable mx-auto">
           <RichText value={body} />
         </div>
       )
@@ -58,9 +58,7 @@ const showSignup = pageData?.showSignup !== false
             {values.map((value) => (
               <div>
                 <div class="mb-3.5 h-0.5 w-9 bg-primary" aria-hidden="true" />
-                <h3 class="heading-display text-xl tracking-tight text-balance">
-                  {value.headline}
-                </h3>
+                <h3 class="heading-display text-xl">{value.headline}</h3>
                 {value.description && (
                   <p class="mt-2 text-base leading-relaxed text-foreground-soft">
                     {value.description}

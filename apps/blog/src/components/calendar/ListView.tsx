@@ -40,7 +40,7 @@ export const ListView = ({
 
   if (visible.length === 0) {
     return (
-      <div className="border-2 border-foreground bg-background px-6 py-16 text-center text-sm text-foreground-soft">
+      <div className="editorial-panel px-6 py-16 text-center text-sm text-foreground-soft">
         No events in {format(viewMonth, "MMMM yyyy")}.
       </div>
     )
@@ -55,7 +55,7 @@ export const ListView = ({
   }
 
   return (
-    <div className="divide-y-2 divide-border border-2 border-foreground bg-background">
+    <div className="editorial-panel divide-y-2 divide-border">
       {Array.from(groups.entries()).map(([key, pe]) => {
         const day = parseISO(key)
         const today = isToday(day)

@@ -102,7 +102,7 @@ const EventDetails = ({
             </Badge>
           )}
         </div>
-        <DialogTitle className="heading-display text-2xl tracking-tight text-balance">
+        <DialogTitle className="heading-display text-2xl">
           {event.title}
         </DialogTitle>
         {event.summary && (
@@ -201,7 +201,7 @@ export const EventDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100%-2rem)] gap-5 rounded-none border-2 border-foreground bg-background p-6 shadow-none sm:w-full sm:max-w-lg sm:p-7">
+      <DialogContent className="editorial-panel w-[calc(100%-2rem)] gap-5 rounded-none p-6 shadow-none sm:w-full sm:max-w-lg sm:p-7">
         {current && (
           <EventDetails
             event={current}

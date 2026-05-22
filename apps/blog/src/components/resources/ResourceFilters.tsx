@@ -164,7 +164,7 @@ export const ResourceFilters = ({
             </PopoverTrigger>
             <PopoverContent
               align="end"
-              className="max-h-[70vh] w-80 overflow-y-auto rounded-none border-2 border-foreground bg-background p-0"
+              className="editorial-panel max-h-[70vh] w-80 overflow-y-auto rounded-none p-0"
             >
               <FilterBody
                 filters={filters}
@@ -284,7 +284,7 @@ export const ResourceFilters = ({
             variant="link"
             size="xs"
             onClick={clearAll}
-            className="mono-eyebrow-sm gap-1 text-foreground-soft hover:text-primary"
+            className="mono-eyebrow-sm text-link-soft gap-1"
           >
             <XIcon />
             Clear all

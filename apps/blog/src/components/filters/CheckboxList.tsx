@@ -55,7 +55,7 @@ export const CheckboxList = ({
               {item.renderLabel ? item.renderLabel(item.value) : item.value}
             </label>
             {typeof item.count === "number" && (
-              <span className="mono-eyebrow text-[0.66rem] text-foreground-soft tabular-nums">
+              <span className="mono-eyebrow text-xs text-foreground-soft tabular-nums">
                 {item.count}
               </span>
             )}

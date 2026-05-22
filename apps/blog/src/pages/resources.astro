@@ -115,7 +115,7 @@ const communityHeadlinePlain = communityHeadline.replace(/\*([^*]+)\*/g, "$1")
     <PageHeading eyebrow={eyebrow} headline={headline} />
     {
       intro && intro.length > 0 && (
-        <div class="mb-10 max-w-[68ch]">
+        <div class="max-w-readable mb-10">
           <RichText value={intro} />
         </div>
       )
@@ -129,7 +129,7 @@ const communityHeadlinePlain = communityHeadline.replace(/\*([^*]+)\*/g, "$1")
           class="mb-20 md:mb-24"
         >
           <SectionHeading eyebrow={memberEyebrow} headline={memberHeadline} />
-          <div class="max-w-[68ch]">
+          <div class="max-w-readable">
             <RichText value={pageBody} />
           </div>
         </section>
@@ -144,7 +144,7 @@ const communityHeadlinePlain = communityHeadline.replace(/\*([^*]+)\*/g, "$1")
 
       {
         communityIntro && communityIntro.length > 0 && (
-          <div class="mb-8 max-w-[68ch]">
+          <div class="max-w-readable mb-8">
             <RichText value={communityIntro} />
           </div>
         )

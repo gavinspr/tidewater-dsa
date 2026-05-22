@@ -63,7 +63,7 @@ export const EventCard = ({
           </span>
         </div>
 
-        <CardTitle className="heading-display text-xl tracking-tight">
+        <CardTitle className="heading-display text-xl">
           {event.title}
         </CardTitle>
       </CardHeader>

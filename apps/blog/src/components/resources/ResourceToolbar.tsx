@@ -86,7 +86,7 @@ export const ResourceToolbar = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="rounded-none border-2 border-foreground bg-background p-0 shadow-none"
+          className="editorial-panel rounded-none p-0 shadow-none"
         >
           <DropdownMenuItem
             onClick={onPrint}

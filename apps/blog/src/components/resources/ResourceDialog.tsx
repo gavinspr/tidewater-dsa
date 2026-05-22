@@ -61,7 +61,7 @@ const CopyButton = ({ value, label }: CopyButtonProps) => {
       size="xs"
       onClick={handleCopy}
       aria-label={`Copy ${label}`}
-      className="mono-eyebrow-sm gap-1 text-foreground-soft hover:text-primary"
+      className="mono-eyebrow-sm text-link-soft gap-1"
     >
       {copied ? (
         <>
@@ -113,7 +113,7 @@ export const ResourceDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100%-2rem)] gap-0 rounded-none border-2 border-foreground bg-background p-0 shadow-none sm:w-full sm:max-w-2xl">
+      <DialogContent className="editorial-panel w-[calc(100%-2rem)] gap-0 rounded-none p-0 shadow-none sm:w-full sm:max-w-2xl">
         <ScrollArea className="max-h-[80vh]">
           <div className="space-y-5 p-6 pr-4 sm:p-7 sm:pr-8">
             <DialogHeader className="gap-3 text-left">
@@ -137,7 +137,7 @@ export const ResourceDialog = ({
                   <Badge variant="editorial-success">Free</Badge>
                 )}
               </div>
-              <DialogTitle className="heading-display text-2xl tracking-tight text-balance">
+              <DialogTitle className="heading-display text-2xl">
                 {resource.name}
               </DialogTitle>
               {resource.organization &&
@@ -181,7 +181,7 @@ export const ResourceDialog = ({
                           rel="noopener noreferrer"
                           className={cn(
                             buttonVariants({ variant: "link", size: "xs" }),
-                            "mono-eyebrow-sm gap-1 text-foreground-soft hover:text-primary"
+                            "mono-eyebrow-sm text-link-soft gap-1"
                           )}
                         >
                           <ExternalLinkIcon /> Open in Maps

@@ -45,7 +45,7 @@ export const CalendarHeader = ({
       </Button>
     </div>
 
-    <h3 className="heading-display flex-1 text-center text-xl leading-none tracking-tight tabular-nums">
+    <h3 className="heading-display flex-1 text-center text-xl leading-none tabular-nums">
       {format(viewMonth, "MMMM yyyy")}
     </h3>
 

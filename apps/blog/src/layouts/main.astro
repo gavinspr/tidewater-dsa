@@ -155,7 +155,7 @@ const currentPath = Astro.url.pathname
                   <span>{word}</span>
                   {i < bannerWords.length - 1 && (
                     <span
-                      class="-translate-y-px text-[0.7em] text-primary"
+                      class="-translate-y-px text-primary"
                       aria-hidden="true"
                     >
                       ✦
@@ -165,10 +165,7 @@ const currentPath = Astro.url.pathname
               ))}
 
               <span class="contents max-md:hidden">
-                <span
-                  class="-translate-y-px text-[0.7em] text-primary"
-                  aria-hidden="true"
-                >
+                <span class="-translate-y-px text-primary" aria-hidden="true">
                   ✦
                 </span>
                 {bannerWords.map((word, i) => (
@@ -176,7 +173,7 @@ const currentPath = Astro.url.pathname
                     <span>{word}</span>
                     {i < bannerWords.length - 1 && (
                       <span
-                        class="-translate-y-px text-[0.7em] text-primary"
+                        class="-translate-y-px text-primary"
                         aria-hidden="true"
                       >
                         ✦
@@ -215,7 +212,7 @@ const currentPath = Astro.url.pathname
                   )}
                 </div>
                 {settings?.signupDescription && (
-                  <p class="mt-4 max-w-[44ch] text-[1.1rem] leading-relaxed text-white/95">
+                  <p class="mt-4 max-w-[44ch] leading-relaxed text-white/95">
                     {settings.signupDescription}
                   </p>
                 )}

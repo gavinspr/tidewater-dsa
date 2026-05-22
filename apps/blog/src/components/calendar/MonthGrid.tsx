@@ -166,7 +166,7 @@ export const MonthGrid = ({
   }
 
   return (
-    <div className="overflow-hidden border-2 border-foreground bg-background">
+    <div className="editorial-panel overflow-hidden">
       <div className="grid grid-cols-7 border-b-2 border-foreground bg-muted/40">
         {WEEKDAYS.map((d, idx) => (
           <div

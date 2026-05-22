@@ -180,7 +180,7 @@ export const UpcomingEvents = ({
           variant="link"
           size="sm"
           onClick={() => setSelectedEvent(null)}
-          className="mono-eyebrow-sm -ml-1 gap-1.5 p-0 text-foreground-soft hover:text-primary"
+          className="mono-eyebrow-sm text-link-soft -ml-1 gap-1.5 p-0"
         >
           <ArrowLeftIcon className="mb-0.5" /> Back
         </Button>

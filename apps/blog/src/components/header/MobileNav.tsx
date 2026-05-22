@@ -48,7 +48,7 @@ export const MobileNav = ({
               key={link.slug}
               href={`/${link.slug}`}
               className={cn(
-                "font-heading text-[1.6rem] leading-none font-extrabold tracking-tight uppercase",
+                "font-heading text-2xl leading-none font-extrabold tracking-tight uppercase",
                 "border-b border-border py-4 transition-colors hover:text-primary",
                 idx === 0 && "border-t border-border"
               )}
