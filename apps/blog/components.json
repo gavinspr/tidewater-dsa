@@ -13,7 +13,7 @@
   "aliases": {
     "components": "@/components",
     "hooks": "@/hooks",
-    "lib": "@/lib",
+    "lib": "@tidewater-dsa/ui/lib",
     "utils": "@tidewater-dsa/ui/lib/utils",
     "ui": "@tidewater-dsa/ui/components"
   },
