@@ -6,6 +6,12 @@
   "assets": {
     "directory": "./dist",
   },
+  "vars": {
+    "USE_MOCK_DATA": "true",
+    "PUBLIC_SANITY_VISUAL_EDITING_ENABLED": "true",
+    "PUBLIC_SANITY_PROJECT_ID": "r8316tsu",
+    "PUBLIC_SANITY_DATASET": "production"
+  },
   "kv_namespaces": [
     {
       "binding": "GEOCODE_CACHE",
