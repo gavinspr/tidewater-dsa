@@ -16,6 +16,7 @@ import { splitHighlight } from "@/lib/format-headline"
 import { Card, CardContent } from "@tidewater-dsa/ui/components/card"
 import { cn } from "@tidewater-dsa/ui/lib/utils"
 import RichText from "@/components/rich-text/RichText.astro"
+import { stegaClean } from "@sanity/client/stega"
 
 Astro.response.headers.set(
   "Cache-Control",
@@ -45,13 +46,7 @@ try {
   console.error("[index.astro] Failed to fetch events:", err)
 }
 
-// Sanity stega encoding embeds invisible characters in strings,
-// so strict equality (===) fails. Use includes() instead.
-const ctaPosition = home?.heroCtaPosition?.includes("center")
-  ? "center"
-  : home?.heroCtaPosition?.includes("bottom-right")
-    ? "bottom-right"
-    : "bottom-left"
+const ctaPosition = stegaClean(home?.heroCtaPosition) || "bottom-left"
 
 const ctaPositionClasses = {
   center: "items-center text-center",

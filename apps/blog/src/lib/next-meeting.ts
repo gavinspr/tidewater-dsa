@@ -1,8 +1,8 @@
 import { addDays } from "date-fns"
 import { getEvents } from "./events"
 import { formatEventMeta } from "./format"
-import { stripStega } from "./stega"
 import type { SerializedEvent } from "@/types"
+import { stegaClean } from "@sanity/client/stega"
 
 /** Look-ahead window for the ribbon's "next meeting" lookup. */
 const RIBBON_WINDOW_DAYS = 60
@@ -14,7 +14,7 @@ export interface RibbonMeeting {
 }
 
 const normalize = (s: string | null | undefined): string =>
-  s ? stripStega(s).toLowerCase().trim() : ""
+  s ? stegaClean(s).toLowerCase().trim() : ""
 
 export const getNextMeeting = async ({
   match,

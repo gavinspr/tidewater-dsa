@@ -12,6 +12,7 @@ import { urlFor } from "@/lib/sanity-image"
 import { extractActionNetworkInfo } from "@/lib/action-network"
 import { getNextMeeting } from "@/lib/next-meeting"
 import type { IconVariant, ValidNavLink } from "@/types"
+import { stegaClean } from "@sanity/client/stega"
 
 interface Props {
   title?: string
@@ -39,11 +40,8 @@ const logoUrl = settings?.logo?.asset
 const visualEditingEnabled =
   import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === "true"
 
-// Sanity stega encoding embeds invisible characters in strings,
-// so strict equality (===) fails. Use includes() instead.
-const iconVariant: IconVariant = settings?.socialIconStyle?.includes("filled")
-  ? "filled"
-  : "outline"
+const iconVariant: IconVariant =
+  stegaClean(settings?.socialIconStyle) === "filled" ? "filled" : "outline"
 
 const signupInfo = settings?.signupLink
   ? extractActionNetworkInfo(settings.signupLink)

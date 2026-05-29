@@ -10,7 +10,7 @@ import {
 import { LinkIcon } from "lucide-react"
 import type { ComponentType, SVGProps } from "react"
 import type { SocialPlatform } from "@/types"
-import { stripStega } from "./stega"
+import { stegaClean } from "@sanity/client/stega"
 
 export interface SocialIcon {
   icon: ComponentType<SVGProps<SVGSVGElement>>
@@ -74,7 +74,7 @@ export const getSocialIcon = (platform: SocialPlatform): SocialIcon =>
   ICONS_BY_PLATFORM[platform]
 
 export const detectSocialPlatform = (input: string): SocialPlatform => {
-  const cleaned = stripStega(input).trim()
+  const cleaned = stegaClean(input).trim()
   if (!cleaned) return "other"
 
   if (/^https?:\/\//i.test(cleaned)) {

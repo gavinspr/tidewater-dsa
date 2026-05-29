@@ -15,8 +15,8 @@ import {
   createMemoryGeocodeCache,
 } from "@/lib/geocode-cache"
 import type { Resource, ResourcesMeta } from "@/types"
-import { stripStega } from "@/lib/stega"
 import "@/styles/print-resources.css"
+import { stegaClean } from "@sanity/client/stega"
 
 Astro.response.headers.set(
   "Cache-Control",
@@ -52,8 +52,8 @@ const printFooterText =
   pageData?.printFooterText ??
   "Resources compiled by Tidewater DSA. Verify details before visiting. Data may change. Visit our website for the latest."
 
-const spreadsheetId = stripStega((pageData?.googleSheetId ?? "").trim())
-const range = stripStega((pageData?.googleSheetRange ?? "").trim()) || "A:X"
+const spreadsheetId = stegaClean((pageData?.googleSheetId ?? "").trim())
+const range = stegaClean((pageData?.googleSheetRange ?? "").trim()) || "A:X"
 const apiKey = import.meta.env.GOOGLE_SHEETS_API_KEY || ""
 const mapboxToken = import.meta.env.MAPBOX_GEOCODER_TOKEN || ""
 
