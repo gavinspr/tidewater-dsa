@@ -14,7 +14,7 @@
     "format": "turbo format",
     "format:check": "prettier --check \"**/*.{ts,tsx,astro,js,jsx,mjs,cjs,json,md,css}\" --ignore-path .gitignore",
     "typecheck": "turbo typecheck",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "typegen": "turbo run typegen"
   },
   "devDependencies": {
