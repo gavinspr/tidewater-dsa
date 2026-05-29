@@ -38,6 +38,45 @@ Running `git commit` automatically triggers two checks:
 - **Type generation:** It runs the Sanity type generator (`npm run typegen`). If this generates new types that haven't been staged, the commit is rejected so outdated types don't slip into the codebase.
 - **Linting:** It runs a global `npm run lint` across the monorepo. Turborepo's caching keeps this fast, only changed packages get re-evaluated. Commits with lint errors are rejected before they land.
 
+In addition, a `commit-msg` hook validates that your commit message follows the conventions below.
+
+### Commit message conventions
+
+Commits in this repo follow a lightweight version of the [Conventional Commits](https://www.conventionalcommits.org/) spec. The format is:
+
+```
+<type>(optional scope): <subject>
+```
+
+The `<type>` prefix is required and tells reviewers (and our future tooling — changelogs, release notes, etc.) what kind of change a commit introduces.
+
+| Prefix     | When to use it                                                                  |
+| ---------- | ------------------------------------------------------------------------------- |
+| `feat`     | A new user-facing feature or capability.                                        |
+| `fix`      | A bug fix.                                                                      |
+| `chore`    | Maintenance work that isn't a feature or fix — dep bumps, tooling, config, etc. |
+| `docs`     | Documentation-only changes (README, comments, in-repo guides).                  |
+| `refactor` | A code change that neither fixes a bug nor adds a feature.                      |
+| `style`    | Formatting, whitespace, or other non-semantic code changes.                     |
+| `test`     | Adding or updating tests.                                                       |
+| `perf`     | A change that improves performance.                                             |
+| `build`    | Changes to the build system or external dependencies.                           |
+| `ci`       | Changes to CI configuration or scripts.                                         |
+
+The scope in parentheses is optional and usually names the app or package the change affects (e.g. `blog`, `ui`). Use it when the touched area isn't obvious from the subject.
+
+Examples:
+
+```
+feat: add events calendar filter
+fix(blog): correct timezone on event card
+chore: bump turbo to 2.8.17
+docs: document commit message conventions
+refactor(ui): extract shared button variants
+```
+
+The `commit-msg` Husky hook rejects commits whose first line doesn't match this pattern. Merge, revert, and `fixup!`/`squash!` commits are passed through unchanged.
+
 ## Getting started
 
 Clone the repo and install dependencies from the root. npm workspaces will install dependencies for every app and package in a single pass.
