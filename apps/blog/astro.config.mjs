@@ -16,6 +16,14 @@ export default defineConfig({
   output: "server",
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      // React 19 + Cloudflare Workers: Vite resolves react-dom/server to the browser build, 
+      // which calls MessageChannel at init. Workers don't have MessageChannel. 
+      // Force the edge build, which is designed for this runtime.
+      alias: import.meta.env.PROD
+        ? { "react-dom/server": "react-dom/server.edge" }
+        : {},
+    },
     optimizeDeps: {
       include: [
         "react/compiler-runtime",
