@@ -1,4 +1,4 @@
-import { defineConfig } from "sanity"
+import { buildLegacyTheme, defineConfig } from "sanity"
 import { structureTool } from "sanity/structure"
 import { visionTool } from "@sanity/vision"
 import { presentationTool, defineLocations } from "sanity/presentation"
@@ -17,11 +17,21 @@ const dataset =
     ? process.env.PUBLIC_SANITY_DATASET
     : import.meta.env.PUBLIC_SANITY_DATASET
 
+const dsaRed = "#ec1f27"
+
+const dsaTheme = buildLegacyTheme({
+  "--brand-primary": dsaRed,
+  "--focus-color": dsaRed,
+  "--state-info-color": dsaRed,
+  "--default-button-primary-color": dsaRed,
+})
+
 export default defineConfig({
   name: "tidewater-dsa",
   title: "Tidewater DSA",
   projectId: projectId,
   dataset: dataset,
+  theme: dsaTheme,
   plugins: [
     structureTool({ structure }),
     presentationTool({
