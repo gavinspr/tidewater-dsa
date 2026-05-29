@@ -80,7 +80,7 @@ export const GET: APIRoute = async ({ url }) => {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Cache-Control": "private, max-age=60",
+        "Cache-Control": "public, max-age=60",
       },
     })
   } catch (err) {
