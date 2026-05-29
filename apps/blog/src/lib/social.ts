@@ -15,6 +15,7 @@ import { stegaClean } from "@sanity/client/stega"
 export interface SocialIcon {
   icon: ComponentType<SVGProps<SVGSVGElement>>
   color: string
+  filledColor?: string
   bg: string
   label: string
 }
@@ -32,12 +33,13 @@ const ICONS_BY_PLATFORM: Record<SocialPlatform, SocialIcon> = {
     bg: "bg-blue-600",
     label: "Facebook",
   },
-  twitter: {
-    icon: Twitter,
-    color: "text-foreground",
-    bg: "bg-foreground",
-    label: "X (Twitter)",
-  },
+twitter: {
+  icon: Twitter,
+  color: "text-primary-foreground",
+  bg: "bg-white",
+  filledColor: "text-black",
+  label: "X (Twitter)",
+},
   bluesky: {
     icon: Bluesky,
     color: "text-sky-500",

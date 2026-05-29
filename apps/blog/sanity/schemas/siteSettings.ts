@@ -301,6 +301,24 @@ export const siteSettingsType = defineType({
         "Tidewater DSA is the Hampton Roads chapter of the Democratic Socialists of America. Workers organizing across the 757.",
     }),
     defineField({
+      name: "footerNoteLeft",
+      title: "Footer Note (Left)",
+      type: "string",
+      description:
+        "Optional. Small text shown on the left side of the bottom footer bar. Leave blank to hide.",
+      group: "footer",
+      initialValue: "Tidewater DSA · Built by members",
+    }),
+    defineField({
+      name: "footerNoteRight",
+      title: "Footer Note (Right)",
+      type: "string",
+      description:
+        "Optional. Small text shown on the right side of the bottom footer bar. Leave blank to hide.",
+      group: "footer",
+      initialValue: "In Solidarity",
+    }),
+    defineField({
       name: "footerColumns",
       title: "Footer Link Columns",
       type: "array",

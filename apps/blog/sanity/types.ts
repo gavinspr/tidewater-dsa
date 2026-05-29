@@ -545,6 +545,8 @@ export type SiteSettings = {
   contactEmail?: string
   contactEmailSubject?: string
   footerTagline?: string
+  footerNoteLeft?: string
+  footerNoteRight?: string
   footerColumns?: Array<{
     title?: string
     links?: Array<{
@@ -1272,7 +1274,7 @@ export type RESOURCES_PAGE_QUERY_RESULT = {
 
 // Source: sanity/queries/siteSettings.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings"][0] {  siteTitle,  siteShortName,  logo,  logoTagline,  "navLinks": mainNav[]{    _key,    "title": @->title,    "slug": select(      @->_type == "eventsPage" => "events",      @->_type == "chapterPrioritiesPage" => "chapter-priorities",      @->_type == "resourcesPage" => "resources",      @->_type == "getInvolvedPage" => "get-involved",      @->_type == "aboutPage" => "about",      @->slug.current    )  },  callToActionText,  callToActionLink,  showRibbon,  ribbonText,  nextMeetingLabel,  nextMeetingMatch,  nextMeetingTextOverride,  nextMeetingLinkOverride,  bannerWords,  signupLink,  signupEyebrow,  signupHeadline,  signupDescription,  socialLinks,  socialIconStyle,  contactEmail,  contactEmailSubject,  footerTagline, footerColumns[]{    _key,    title,    links[]{ _key, label, href }  }}
+// Query: *[_type == "siteSettings"][0] {  siteTitle,  siteShortName,  logo,  logoTagline,  "navLinks": mainNav[]{    _key,    "title": @->title,    "slug": select(      @->_type == "eventsPage" => "events",      @->_type == "chapterPrioritiesPage" => "chapter-priorities",      @->_type == "resourcesPage" => "resources",      @->_type == "getInvolvedPage" => "get-involved",      @->_type == "aboutPage" => "about",      @->slug.current    )  },  callToActionText,  callToActionLink,  showRibbon,  ribbonText,  nextMeetingLabel,  nextMeetingMatch,  nextMeetingTextOverride,  nextMeetingLinkOverride,  bannerWords,  signupLink,  signupEyebrow,  signupHeadline,  signupDescription,  socialLinks,  socialIconStyle,  contactEmail,  contactEmailSubject,  footerTagline,  footerNoteLeft,  footerNoteRight,  footerColumns[]{    _key,    title,    links[]{ _key, label, href }  }}
 export type SITE_SETTINGS_QUERY_RESULT = {
   siteTitle: string | null
   siteShortName: string | null
@@ -1338,6 +1340,8 @@ export type SITE_SETTINGS_QUERY_RESULT = {
   contactEmail: string | null
   contactEmailSubject: string | null
   footerTagline: string | null
+  footerNoteLeft: string | null
+  footerNoteRight: string | null
   footerColumns: Array<{
     _key: string
     title: string | null
@@ -1371,7 +1375,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCta2Text,\n    heroCta2Link,\n    heroCtaPosition,\n    contentEyebrow,\n    contentHeadline,\n    body,\n    bodyImage,\n    eventsEyebrow,\n    eventsHeadline,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage,\n  }\n': HOME_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n}': PAGE_BY_SLUG_QUERY_RESULT
     '{\n  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {\n    _id,\n    title,\n    eyebrow,\n    headline,\n    intro,\n    memberEyebrow,\n    memberHeadline,\n    body,\n    communityEyebrow,\n    communityHeadline,\n    communityIntro,\n    disclaimerText,\n    printFooterText,\n    googleSheetId,\n    googleSheetRange,\n    showSignup\n  },\n}': RESOURCES_PAGE_QUERY_RESULT
-    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  siteShortName,\n  logo,\n  logoTagline,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->_type == "chapterPrioritiesPage" => "chapter-priorities",\n      @->_type == "resourcesPage" => "resources",\n      @->_type == "getInvolvedPage" => "get-involved",\n      @->_type == "aboutPage" => "about",\n      @->slug.current\n    )\n  },\n  callToActionText,\n  callToActionLink,\n  showRibbon,\n  ribbonText,\n  nextMeetingLabel,\n  nextMeetingMatch,\n  nextMeetingTextOverride,\n  nextMeetingLinkOverride,\n  bannerWords,\n  signupLink,\n  signupEyebrow,\n  signupHeadline,\n  signupDescription,\n  socialLinks,\n  socialIconStyle,\n  contactEmail,\n  contactEmailSubject,\n  footerTagline,\n footerColumns[]{\n    _key,\n    title,\n    links[]{ _key, label, href }\n  }\n}': SITE_SETTINGS_QUERY_RESULT
+    '*[_type == "siteSettings"][0] {\n  siteTitle,\n  siteShortName,\n  logo,\n  logoTagline,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->_type == "chapterPrioritiesPage" => "chapter-priorities",\n      @->_type == "resourcesPage" => "resources",\n      @->_type == "getInvolvedPage" => "get-involved",\n      @->_type == "aboutPage" => "about",\n      @->slug.current\n    )\n  },\n  callToActionText,\n  callToActionLink,\n  showRibbon,\n  ribbonText,\n  nextMeetingLabel,\n  nextMeetingMatch,\n  nextMeetingTextOverride,\n  nextMeetingLinkOverride,\n  bannerWords,\n  signupLink,\n  signupEyebrow,\n  signupHeadline,\n  signupDescription,\n  socialLinks,\n  socialIconStyle,\n  contactEmail,\n  contactEmailSubject,\n  footerTagline,\n  footerNoteLeft,\n  footerNoteRight,\n  footerColumns[]{\n    _key,\n    title,\n    links[]{ _key, label, href }\n  }\n}': SITE_SETTINGS_QUERY_RESULT
     '\n  *[_type == "workingGroups" && _id == "workingGroups"][0].groups[]{\n    label,\n    "value": value.current,\n    description\n  }\n': WORKING_GROUPS_QUERY_RESULT
   }
 }

@@ -35,7 +35,9 @@ export const SITE_SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0] {
   contactEmail,
   contactEmailSubject,
   footerTagline,
- footerColumns[]{
+  footerNoteLeft,
+  footerNoteRight,
+  footerColumns[]{
     _key,
     title,
     links[]{ _key, label, href }

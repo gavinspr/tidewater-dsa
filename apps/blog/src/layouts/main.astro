@@ -250,6 +250,8 @@ const currentPath = Astro.url.pathname
       siteName={siteShortName}
       footerTagline={settings?.footerTagline ?? null}
       footerColumns={settings?.footerColumns ?? []}
+      footerNoteLeft={settings?.footerNoteLeft ?? null}
+      footerNoteRight={settings?.footerNoteRight ?? null}
     />
     <VisualEditing enabled={visualEditingEnabled} zIndex={1000} />
   </body>
