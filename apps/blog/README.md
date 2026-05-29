@@ -38,6 +38,13 @@ apps/blog/
 ├── wrangler.jsonc         # Cloudflare Workers config (KV bindings, etc.)
 └── sanity.config.ts       # Embedded Studio config with Presentation tool
 ```
+## Typography
+
+The site's display typeface is **Manifold DSA**, the official DSA brand font. Seven weights (Light through Heavy, 300–900) are bundled as WOFF2 in `apps/blog/public/fonts/` and declared in `src/styles/app.css`. The `--font-heading` token in `packages/ui/src/styles/globals.css` resolves to `"Manifold DSA"` with an Inter Variable fallback, so any app that imports the shared globals gets the brand heading font automatically, provided that app also serves the font files at `/fonts/`.
+
+Body copy uses Inter Variable (loaded via `@fontsource-variable/inter`, declared in the shared UI package). The mono token resolves to JetBrains Mono with system fallbacks.
+
+If you add a new app to the monorepo and want the same heading look, copy the `apps/blog/public/fonts/` directory into the new app's public folder and re-declare the seven `@font-face` blocks. The Tailwind tokens are shared automatically.
 
 ## Environmental Setup
 
@@ -50,7 +57,8 @@ cp .env.example .env
 See the comments in `.env.example` for where to get each value. You'll need:
 
 - A Sanity viewer token (each dev generates their own)
-- An Action Network API key (shared across the team — ask an admin)
+- A site URL (`PUBLIC_SITE_URL`) — `http://localhost:4321` in development, the canonical production URL otherwise. Used for absolute URLs in social cards and any link that has to leave the relative-path context.
+- An Action Network API key (only required if /api/subscribe is in use; see the Action Network section)
 - Google Calendar credentials (optional in dev, the app uses mock events when missing; required in production)
 - Google Sheets API key
 - Mapbox geocoding token
@@ -91,17 +99,27 @@ The site runs at `http://localhost:4321`. The embedded Sanity Studio is at `http
 
 Content is managed through the embedded Sanity Studio at `/admin`. The document types currently defined:
 
-- **Site Settings** (singleton) — site title, logo, navigation, social links, newsletter signup URL, contact info
+- **Site Settings** (singleton) — site title, logo, navigation, social links, newsletter signup URL, contact info, footer, "next meeting" ribbon configuration
 - **Homepage** (singleton) — hero, CTA, section headings, events-section copy
 - **Events Page** (singleton) — heading, intro, and empty-state message for the `/events` calendar page
 - **Resources Page** (singleton) — Member Resources rich text, Community Resources directory headline/intro/print-footer, and Google Sheet data source config
+- **About Page** (singleton) — hero, mission statement, and a repeating list of chapter values (`aboutValue` object type)
+- **Get Involved Page** (singleton) — intro and a repeating list of ways to get involved (`way` object type)
+- **Chapter Priorities Page** (singleton) — intro rich text and a repeating list of priority entries (`priority` object type)
 - **Event Types** (singleton) — admin-defined taxonomy for categorizing events (e.g. "Training", "Action", "Meeting") with a color per type
 - **Working Groups** (singleton) — admin-defined taxonomy of the chapter's working groups and committees. Shown as a badge on event details and as a filter on the events page.
 - **Event Customization** — per-event editorial metadata (featured flag, event type, working group, RSVP override, summary) joined to Google Calendar events by ID. Managed through the **Customize Events** tool rather than as standalone documents — see the Events section below.
-- **Static Page** — for routes like `/about-us`, etc.
+- **Static Page** — for any non-singleton route that doesn't have a dedicated page document.
 - **Blog Post** — long-form content with Portable Text
 
-Singletons cannot be deleted or duplicated, and only one document of each type can exist. This is configured in `sanity.config.ts` so editors can't accidentally create a second homepage.
+Singletons cannot be deleted or duplicated, and only one document of each type can exist. The list of singleton types lives in `sanity/structure.ts` (`SINGLETON_IDS`), and `sanity.config.ts` reads that list to disable the "create new" and "delete" actions for matching document types. To add a new singleton, register it in `SINGLETON_IDS` and add a `singletonItem(...)` entry to the `structure` resolver. No separate config change is needed.
+
+If the new singleton backs a page that should appear in the site header, two more files need updating so editors can add it to the navbar via Site Settings → Main Navigation:
+
+1. **`sanity/schemas/siteSettings.ts`** — add the new singleton's document type to the `to: [...]` array on the `mainNav` field. Without this, the new type won't show up in the reference picker.
+2. **`sanity/queries/siteSettings.ts`** — add a clause to the `select(...)` projection in `navLinks` that maps the new `_type` to the route slug (e.g. `@->_type == "newSingletonPage" => "new-singleton"`). The fallback (`@->slug.current`) only fires for the generic `page` document type; named singletons need an explicit mapping.
+
+Once both are in place, editors can pick the new singleton in the navbar field on Site Settings and it'll render in the header at the mapped URL.
 
 ### Visual editing
 
@@ -203,6 +221,36 @@ In development without credentials, the app serves mock event data from `src/lib
 
 The `/events` page and homepage send `Cache-Control: public, max-age=300, stale-while-revalidate=600` — 5-minute edge caching with 10-minute stale revalidation. Keeps gcal API calls to a sane volume without events going stale. If you need faster propagation for a specific update, edit the customization in Studio (no cache invalidation needed — the Sanity customization fetch is part of the same cached render) or wait ≤5 minutes.
 
+## Action Network
+
+Tidewater DSA uses [Action Network](https://actionnetwork.org) as the source of truth for RSVPs and the email list. The site integrates with AN in four places:
+
+1. **Newsletter signup widget** — the red signup section above the footer (rendered by `main.astro` when `showSignup` is true). The Site Settings document holds a `signupLink` pointing at an AN form URL. `extractActionNetworkInfo` in `src/lib/action-network.ts` parses it into `{ type, slug }` and the layout injects AN's embed script, which hydrates the form in-place.
+2. **Event RSVP widgets** — when an event has an AN URL, the event detail dialog renders the live AN RSVP widget inline (`ActionNetworkEvent` in `UpcomingEvents.tsx`). Visitors RSVP without leaving the site.
+3. **Auto-extracted RSVP links from Google Calendar** — `findActionNetworkUrl` in `src/lib/action-network.ts` scans the gcal event description and location for an `actionnetwork.org/events/<slug>` or `/forms/<slug>` URL. If one is found, it becomes the event's RSVP link automatically. Organizers who already paste AN links into their gcal events don't need to do anything in Sanity. The Customize Events tool's `rsvpLink` override wins when both are present.
+4.4. **Direct API submission**: the `/api/subscribe` endpoint POSTs to the AN OSDI API at `actionnetwork.org/api/v2/forms/<form-slug>/submissions`. Currently unused by the live site, since the embedded widget handles all sign ups today. The endpoint is kept as a fallback for any future surface (custom form, native mobile shell, etc.) that needs to submit programmatically without loading AN's JS.
+
+### What lives where
+
+- `src/lib/action-network.ts` — URL parsing (`extractActionNetworkInfo`, `findActionNetworkUrl`) and the embed-stylesheet loader (`ensureStylesLoaded`).
+- `src/styles/action-network.css` — overrides for AN's whitelabel CSS (hides "Sponsored by," restyles form chrome to match the site).
+- `src/pages/api/subscribe.ts` — server endpoint, only used by code paths that need a programmatic submission rather than the widget.
+
+### `ACTION_NETWORK_API_KEY`
+
+Only the `/api/subscribe` endpoint reads `ACTION_NETWORK_API_KEY`. The embedded widgets (signup and event RSVP) load AN's public JS bundles and don't need the API key. In a deployment that only uses the widgets, this variable can be left unset.
+
+To get a key: sign in to Action Network, go to **Start Organizing → Details → API & Sync**, and copy the API key from the OSDI section. This key is shared across the team — ask an admin if you need it.
+
+### Supported URL shapes
+
+The parser accepts canonical AN page URLs only:
+
+- `https://actionnetwork.org/forms/<slug>` — for signup forms
+- `https://actionnetwork.org/events/<slug>` — for event RSVPs
+
+URLs with `www.`, trailing slashes, or trailing punctuation (common when extracting from prose descriptions) are tolerated. Pre-built embed/widget URLs are not supported as input — the site constructs the widget URL itself from `{type, slug}`. The same constraint is enforced in Site Settings → Signup Link with a Sanity validation rule.
+
 ## Community Resources
 
 The `/resources` page renders a directory of mutual-aid, shelter, food, health, and support resources across the 757. Resources are submitted via a Google Form, stored in a Google Sheet, and displayed on the site as cards (Directory view) and pins (Map view). The page also supports search, filtering, CSV export, and a print-friendly handout layout.
@@ -300,6 +348,24 @@ Geocode results in production are cached in a Cloudflare KV namespace bound to t
    These IDs are not secrets, they're just namespace identifiers and have no value without write access to the Cloudflare account. They're committed to the repo intentionally, alongside the worker config.
 6. Commit and deploy. The worker will start writing geocode results to the new namespace on its first request.
 
+### CSV export
+
+The "Export CSV" action on the resources toolbar generates a CSV of the currently-filtered resource list. The CSV column set is defined in `src/lib/resource-csv.ts` (`CSV_COLUMNS`) and is intentionally distinct from the sheet's source column names: the sheet uses verbose internal labels ("Hours of Operation/How to Access", "Last Verification Date") because volunteers fill it in, while the export uses tighter names ("Hours", "Last Verified") because it's a deliverable.
+
+To add or rename a column, edit the `CSV_COLUMNS` array. Each entry is `{ header, get }`, where `get` receives a `Resource` and returns a string. Newlines inside cells are collapsed to spaces, and commas or quotes trigger RFC-4180-style quoting (`escapeCsvCell`).
+
+### Print-friendly handout
+
+The "Print" action renders a print-only layout via `PrintableResources` in `src/components/resources/PrintableResources.tsx`, portaled into a top-level `<div id="printable-resources" aria-hidden>` so it doesn't interfere with the live page. Styling lives in `src/styles/print-resources.css` and is keyed entirely on `@media print` so the handout never shows in screen mode.
+
+The handout:
+
+- Honors the currently active filters (search, categories, cities, languages, free-only) and lists them in the header so the printed copy is self-describing.
+- Groups resources by primary category, using the first entry in the `Categories` column, matching the directory accordion grouping.
+- Prints the date stamp and resource count alongside the resources page headline from Sanity.
+- Includes the print footer text configured on the Resources Page singleton.
+
+Editorial changes (headline, footer) flow through Sanity. Layout changes (font sizes, column widths, page breaks) happen in the print stylesheet.
 
 ## Adding routes
 

@@ -1,6 +1,6 @@
 # @tidewater-dsa/ui
 
-Shared UI components for Tidewater DSA apps, built on [shadcn/ui](https://ui.shadcn.com) and [Base UI](https://base-ui.com). This package also exports the shared Tailwind theme and utility functions.
+Shared UI components for Tidewater DSA apps. The bulk of the components come from [shadcn/ui](https://ui.shadcn.com) (built on [Base UI](https://base-ui.com)), but the package also ships a few custom components that aren't in the shadcn catalog. The most notable additions are a MapLibre-based Map, two Motion-powered components, and a set of brand social icons. The package also exports the shared Tailwind theme tokens, the global stylesheet, and a cn helper
 
 ## Structure
 
@@ -13,6 +13,16 @@ packages/ui/
     └── styles/
         └── globals.css    # Tailwind theme tokens and base styles
 ```
+
+## What's in here
+
+Most components in this package come straight from shadcn/ui. They were added with the shadcn CLI, follow shadcn's conventions exactly, and don't need separate documentation here. The pieces below were not pulled from shadcn and need a brief note:
+
+- **`Map`** (`components/map.tsx`): a [MapLibre GL](https://maplibre.org) wrapper with a compound `Map` / `Map.Marker` / `Map.Popup` API, theme-aware basemap selection (light/dark via the `dark` class on `<html>`), built-in zoom/locate/fullscreen controls, and SSR safety. Used by the resources page; can be reused anywhere a map is needed.
+- **`motion-tabs`** and **`motion-highlight`** (`components/motion-*.tsx`): [Motion](https://motion.dev) (formerly Framer Motion) components that animate a highlight pill between focused items. `motion-tabs` is the public API (used on the resources page to switch between Directory and Map views); `motion-highlight` is the lower-level primitive it's built on.
+- **`icons.tsx`**: branded social icons that aren't in lucide-react: `Instagram`, `Facebook`, `Twitter`, `Bluesky`, `Linktree`, `Linkedin`, `Youtube`. Each is a flat SVG component that accepts the same props as a native `<svg>` element. They have no styling opinions of their own. Consuming apps decide how to color and frame them (the blog app, for instance, switches between an outlined and a filled-background look in `Footer.astro` based on a Site Settings field). For any non-brand icon, import from `lucide-react` directly.
+
+When adding new non-shadcn components, document them here so future maintainers don't have to grep the source to find out what's available.
 
 ## Importing from this package
 

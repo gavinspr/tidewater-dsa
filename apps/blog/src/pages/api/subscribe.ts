@@ -2,7 +2,7 @@ import type { APIRoute } from "astro"
 
 export const POST: APIRoute = async ({ request }) => {
   const body = await request.json()
-  const apiKey = import.meta.env.ACTION_NETWORK_API_KEY // todo: get key, also update readme
+  const apiKey = import.meta.env.ACTION_NETWORK_API_KEY
 
   const res = await fetch(
     "https://actionnetwork.org/api/v2/forms/join-tidewater-dsas-email-list/submissions",

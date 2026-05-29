@@ -103,6 +103,8 @@ npm run build        # Production build
 npm run lint         # Lint all packages
 npm run typecheck    # Type check all packages
 npm run format       # Format with Prettier
+npm run format:check # Check formatting without writing (useful in CI)
+npm run typegen      # Regenerate Sanity types (runs in every package that defines a `typegen` task)
 ```
 
 To run a command for a single package, use the npm workspace flag:
