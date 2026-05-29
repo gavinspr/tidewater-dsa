@@ -14,12 +14,14 @@ interface MobileNavProps {
   navLinks: ValidNavLink[]
   callToActionText: Settings["callToActionText"]
   callToActionLink: Settings["callToActionLink"]
+  pathname: string
 }
 
 export const MobileNav = ({
   navLinks = [],
   callToActionText,
   callToActionLink,
+  pathname,
 }: MobileNavProps) => {
   const [open, setOpen] = useState(false)
 
@@ -30,7 +32,7 @@ export const MobileNav = ({
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer rounded-sm border border-border lg:hidden"
+            className="rounded-sm border border-border"
           >
             <MenuIcon className="size-5 text-foreground" />
             <span className="sr-only">Toggle navigation menu</span>
@@ -40,30 +42,35 @@ export const MobileNav = ({
 
       <SheetContent
         side="right"
-        className="w-[88vw] bg-background p-6 pt-20 shadow-2xl sm:w-105"
+        className="w-[88vw] bg-background p-6 pt-20 shadow-2xl"
       >
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
         <nav className="flex flex-col">
-          {navLinks.map((link, idx) => (
-            <a
-              key={link.slug}
-              href={`/${link.slug}`}
-              className={cn(
-                "font-heading text-2xl leading-none font-extrabold tracking-tight uppercase",
-                "border-b border-border py-4 transition-colors hover:text-primary",
-                idx === 0 && "border-t border-border"
-              )}
-              onClick={() => setOpen(false)}
-            >
-              {link.title}
-            </a>
-          ))}
+          {navLinks.map((link, idx) => {
+            const isActive = pathname === `/${link.slug}`
+
+            return (
+              <a
+                key={link.slug}
+                href={`/${link.slug}`}
+                className={cn(
+                  "font-heading text-2xl leading-none font-extrabold tracking-tight uppercase",
+                  "border-b border-border py-4",
+                  idx === 0 && "border-t border-border",
+                  isActive ? "text-primary" : "text-foreground"
+                )}
+                onClick={() => setOpen(false)}
+              >
+                {link.title}
+              </a>
+            )
+          })}
 
           {callToActionLink && callToActionText && (
             <Button
               size="lg"
-              className="mt-6 w-full cursor-pointer gap-1.5 rounded-md text-base font-bold text-foreground hover:bg-primary-deep"
+              className="mt-6 w-full gap-1.5 rounded-md text-base font-bold text-foreground"
               nativeButton={false}
               render={
                 <a
