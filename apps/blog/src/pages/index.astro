@@ -37,7 +37,10 @@ const rangeEnd = addMonths(now, 3)
 
 let events: Awaited<ReturnType<typeof getEvents>> = []
 try {
-  const all = await getEvents({ rangeStart: now, rangeEnd })
+  const all = await getEvents(
+    { rangeStart: now, rangeEnd },
+    Astro.locals.runtime?.env
+  )
   events = all
     .filter((e) => new Date(e.endISO) >= now)
     .sort((a, b) => a.startISO.localeCompare(b.startISO))

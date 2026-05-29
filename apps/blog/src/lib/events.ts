@@ -24,12 +24,31 @@ import { findActionNetworkUrl } from "./action-network"
 import { fetchGoogleCalendarEvents } from "./google-calendar"
 import { getMockEvents } from "./mocks/events"
 
-export const getEvents = async ({
-  rangeStart,
-  rangeEnd,
-}: GetEventsOptions): Promise<SerializedEvent[]> => {
-  const calendarId = import.meta.env.GOOGLE_CALENDAR_ID as string | undefined
-  const apiKey = import.meta.env.GOOGLE_CALENDAR_API_KEY as string | undefined
+interface EventsEnv {
+  GOOGLE_CALENDAR_ID?: string
+  GOOGLE_CALENDAR_API_KEY?: string
+  USE_MOCK_DATA?: string
+}
+
+export const getEvents = async (
+  { rangeStart, rangeEnd }: GetEventsOptions,
+  runtimeEnv?: EventsEnv
+): Promise<SerializedEvent[]> => {
+  const useMockData =
+    (runtimeEnv?.USE_MOCK_DATA ?? import.meta.env.USE_MOCK_DATA) === "true"
+
+  // Demo / preview mode: return mocks unconditionally.
+  // Set USE_MOCK_DATA=true in the deployment environment to show a populated site without real API credentials.
+  if (useMockData) {
+    return getMockEvents(rangeStart, rangeEnd)
+  }
+
+  const calendarId =
+    runtimeEnv?.GOOGLE_CALENDAR_ID ??
+    (import.meta.env.GOOGLE_CALENDAR_ID as string | undefined)
+  const apiKey =
+    runtimeEnv?.GOOGLE_CALENDAR_API_KEY ??
+    (import.meta.env.GOOGLE_CALENDAR_API_KEY as string | undefined)
 
   if (!calendarId || !apiKey) {
     if (import.meta.env.DEV) {

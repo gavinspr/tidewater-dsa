@@ -14,9 +14,14 @@ const clampMonths = (raw: string | null, fallback: number): number => {
   return Math.max(1, Math.min(MAX_WINDOW_MONTHS, n))
 }
 
-export const GET: APIRoute = async ({ url }) => {
-  const calendarId = import.meta.env.GOOGLE_CALENDAR_ID as string | undefined
-  const apiKey = import.meta.env.GOOGLE_CALENDAR_API_KEY as string | undefined
+export const GET: APIRoute = async ({ url, locals }) => {
+  const runtimeEnv = locals.runtime?.env
+  const calendarId =
+    runtimeEnv?.GOOGLE_CALENDAR_ID ??
+    (import.meta.env.GOOGLE_CALENDAR_ID as string | undefined)
+  const apiKey =
+    runtimeEnv?.GOOGLE_CALENDAR_API_KEY ??
+    (import.meta.env.GOOGLE_CALENDAR_API_KEY as string | undefined)
 
   const monthsBack = clampMonths(url.searchParams.get("monthsBack"), 3)
   const monthsForward = clampMonths(url.searchParams.get("monthsForward"), 12)

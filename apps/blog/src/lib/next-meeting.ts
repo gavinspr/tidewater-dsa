@@ -7,6 +7,12 @@ import { stegaClean } from "@sanity/client/stega"
 /** Look-ahead window for the ribbon's "next meeting" lookup. */
 const RIBBON_WINDOW_DAYS = 60
 
+interface NextMeetingEnv {
+  GOOGLE_CALENDAR_ID?: string
+  GOOGLE_CALENDAR_API_KEY?: string
+  USE_MOCK_DATA?: string
+}
+
 export interface RibbonMeeting {
   text: string
   href: string
@@ -16,14 +22,17 @@ export interface RibbonMeeting {
 const normalize = (s: string | null | undefined): string =>
   s ? stegaClean(s).toLowerCase().trim() : ""
 
-export const getNextMeeting = async ({
-  match,
-  label,
-}: {
-  /** Free-text substring matched against an event's rsvpLink, eventType, and title (all normalized to lowercase, stega-stripped). */
-  match: string
-  label: string
-}): Promise<RibbonMeeting | null> => {
+export const getNextMeeting = async (
+  {
+    match,
+    label,
+  }: {
+    /** Free-text substring matched against an event's rsvpLink, eventType, and title (all normalized to lowercase, stega-stripped). */
+    match: string
+    label: string
+  },
+  runtimeEnv?: NextMeetingEnv
+): Promise<RibbonMeeting | null> => {
   const searchTerm = normalize(match)
   if (!searchTerm) return null
 
@@ -32,7 +41,7 @@ export const getNextMeeting = async ({
 
   let events: SerializedEvent[] = []
   try {
-    events = await getEvents({ rangeStart: now, rangeEnd })
+    events = await getEvents({ rangeStart: now, rangeEnd }, runtimeEnv)
   } catch (err) {
     console.error("[next-meeting] Failed to fetch events:", err)
     return null

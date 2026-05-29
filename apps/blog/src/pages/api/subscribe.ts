@@ -1,5 +1,8 @@
 import type { APIRoute } from "astro"
 
+// todo: harden before use
+// todo: update api key to use runtime before use
+
 export const POST: APIRoute = async ({ request }) => {
   const body = await request.json()
   const apiKey = import.meta.env.ACTION_NETWORK_API_KEY

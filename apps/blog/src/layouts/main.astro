@@ -71,10 +71,13 @@ const shouldFetchNextMeeting =
 
 const nextMeeting =
   shouldFetchNextMeeting && settings?.nextMeetingMatch
-    ? await getNextMeeting({
-        match: settings.nextMeetingMatch,
-        label: settings.nextMeetingLabel?.trim() || "Next general meeting",
-      })
+    ? await getNextMeeting(
+        {
+          match: settings.nextMeetingMatch,
+          label: settings.nextMeetingLabel?.trim() || "Next general meeting",
+        },
+        Astro.locals.runtime?.env
+      )
     : null
 
 // Resolve the final right-side text and link from the four possible sources.

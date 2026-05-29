@@ -37,7 +37,7 @@ let workingGroups: WORKING_GROUPS_QUERY_RESULT = []
 try {
   const [eventsResult, pageResult, typesResult, groupsResult] =
     await Promise.all([
-      getEvents({ rangeStart, rangeEnd }),
+      getEvents({ rangeStart, rangeEnd }, Astro.locals.runtime?.env),
       loadQuery<EVENTS_PAGE_QUERY_RESULT>({ query: EVENTS_PAGE_QUERY }),
       loadQuery<EVENT_TYPES_QUERY_RESULT>({ query: EVENT_TYPES_QUERY }),
       loadQuery<WORKING_GROUPS_QUERY_RESULT>({ query: WORKING_GROUPS_QUERY }),
