@@ -134,7 +134,7 @@ export const ResourceFilters = ({
           )}
         >
           <DollarSignIcon />
-          Free
+          <span className="-mb-0.5 max-[380px]:hidden">Free</span>
         </Button>
 
         <div className="hidden sm:block">

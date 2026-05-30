@@ -25,7 +25,7 @@ export const SearchInput = ({
   >
     <span
       aria-hidden
-      className="grid shrink-0 place-items-center px-3 text-foreground-soft"
+      className="grid shrink-0 place-items-center pl-2 pr-1 text-foreground-soft"
     >
       <SearchIcon className="size-4" />
     </span>
