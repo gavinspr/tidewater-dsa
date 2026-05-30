@@ -7,8 +7,8 @@
     "directory": "./dist",
   },
   "vars": {
-    "USE_MOCK_DATA": "true",
-    "PUBLIC_SANITY_VISUAL_EDITING_ENABLED": "true",
+    "USE_MOCK_DATA": "false",
+    "PUBLIC_SANITY_VISUAL_EDITING_ENABLED": "false",
     "PUBLIC_SANITY_PROJECT_ID": "r8316tsu",
     "PUBLIC_SANITY_DATASET": "production",
   },
@@ -20,22 +20,6 @@
     },
   ],
   "env": {
-    "production": {
-      "name": "tidewater-dsa-production",
-      "kv_namespaces": [
-        {
-          "binding": "GEOCODE_CACHE",
-          "id": "f1afa707f3b847f7ac2fd050bcaa2f45",
-          "preview_id": "0734be3a826849b090653fe756d802fa",
-        },
-      ],
-      "vars": {
-        "USE_MOCK_DATA": "false",
-        "PUBLIC_SANITY_VISUAL_EDITING_ENABLED": "false",
-        "PUBLIC_SANITY_PROJECT_ID": "r8316tsu",
-        "PUBLIC_SANITY_DATASET": "production",
-      },
-    },
     "staging": {
       "name": "tidewater-dsa-staging",
       "kv_namespaces": [
@@ -46,8 +30,8 @@
         },
       ],
       "vars": {
-        "USE_MOCK_DATA": "true",
         "PUBLIC_SANITY_VISUAL_EDITING_ENABLED": "true",
+        "USE_MOCK_DATA": "true",
         "PUBLIC_SANITY_PROJECT_ID": "r8316tsu",
         "PUBLIC_SANITY_DATASET": "production",
       },
