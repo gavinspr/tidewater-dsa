@@ -63,12 +63,10 @@ export const EventCard = ({
           </span>
         </div>
 
-        <CardTitle className="heading-display text-xl">
-          {event.title}
-        </CardTitle>
+        <CardTitle className="heading-display text-xl">{event.title}</CardTitle>
       </CardHeader>
 
-      <CardContent className="mono-eyebrow-sm text-left text-foreground-soft transition-colors group-hover/card:text-white/75">
+      <CardContent className="mono-eyebrow-sm mt-auto text-left text-foreground-soft transition-colors group-hover/card:text-white/75">
         <span>{timeLine}</span>
         {location && (
           <>
