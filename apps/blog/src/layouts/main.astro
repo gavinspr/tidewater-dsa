@@ -150,7 +150,7 @@ const currentPath = Astro.url.pathname
       {
         bannerWords && (
           <div class="bg-foreground py-5 text-background">
-            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4 font-heading text-[clamp(1.4rem,3vw,2.4rem)] leading-none font-extrabold tracking-wide uppercase">
+            <div class="text-[clamp(1rem,4.5vw,2.4rem)] flex min-w-0 flex-nowrap items-center justify-center gap-x-4 px-4 font-heading leading-none font-extrabold tracking-wide whitespace-nowrap uppercase sm:gap-x-6">
               {bannerWords.map((word, i) => (
                 <>
                   <span>{word}</span>
