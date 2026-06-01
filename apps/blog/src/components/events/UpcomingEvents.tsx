@@ -257,7 +257,7 @@ export const UpcomingEvents = ({
   // List view
   return (
     <div className="space-y-7">
-      <div className="grid grid-cols-1 gap-2 border-foreground lg:grid-cols-3 lg:border-y">
+      <div className="grid grid-cols-1 gap-2 border-foreground lg:gap-0 lg:border-x lg:grid-cols-3 lg:border-y">
         {events.map((event) => (
           <EventCard
             key={event.id}
