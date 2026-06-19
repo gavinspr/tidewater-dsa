@@ -14,6 +14,27 @@ const clampMonths = (raw: string | null, fallback: number): number => {
   return Math.max(1, Math.min(MAX_WINDOW_MONTHS, n))
 }
 
+const mocksResponse = (timeMin: Date, timeMax: Date): Response => {
+  const mocks = getMockEvents(timeMin, timeMax)
+  const trimmed = mocks.map((e) => ({
+    id: e.id,
+    title: e.title,
+    location: e.location,
+    startISO: e.startISO,
+    endISO: e.endISO,
+    isAllDay: e.isAllDay,
+    htmlLink: e.googleUrl,
+  }))
+
+  return new Response(JSON.stringify({ events: trimmed }), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  })
+}
+
 export const GET: APIRoute = async ({ url, locals }) => {
   const runtimeEnv = locals.runtime?.env
   const calendarId =
@@ -22,6 +43,8 @@ export const GET: APIRoute = async ({ url, locals }) => {
   const apiKey =
     runtimeEnv?.GOOGLE_CALENDAR_API_KEY ??
     (import.meta.env.GOOGLE_CALENDAR_API_KEY as string | undefined)
+  const useMockData =
+    (runtimeEnv?.USE_MOCK_DATA ?? import.meta.env.USE_MOCK_DATA) === "true"
 
   const monthsBack = clampMonths(url.searchParams.get("monthsBack"), 3)
   const monthsForward = clampMonths(url.searchParams.get("monthsForward"), 12)
@@ -30,27 +53,14 @@ export const GET: APIRoute = async ({ url, locals }) => {
   const timeMin = startOfMonth(subMonths(now, monthsBack))
   const timeMax = endOfMonth(addMonths(now, monthsForward))
 
+  if (useMockData) {
+    return mocksResponse(timeMin, timeMax)
+  }
+
   // Dev fallback, same mock dataset the events page uses
   if (!calendarId || !apiKey) {
     if (import.meta.env.DEV) {
-      const mocks = getMockEvents(timeMin, timeMax)
-      const trimmed = mocks.map((e) => ({
-        id: e.id,
-        title: e.title,
-        location: e.location,
-        startISO: e.startISO,
-        endISO: e.endISO,
-        isAllDay: e.isAllDay,
-        htmlLink: e.googleUrl,
-      }))
-
-      return new Response(JSON.stringify({ events: trimmed }), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      })
+      return mocksResponse(timeMin, timeMax)
     }
 
     return new Response(
