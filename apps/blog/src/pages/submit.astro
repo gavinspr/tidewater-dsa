@@ -1,0 +1,35 @@
+---
+import Layout from "@/layouts/main.astro"
+import PageHeading from "@/components/headings/PageHeading.astro"
+
+// Middleware guards this route, but guard defensively in case it's reached directly.
+const member = Astro.locals.member
+if (!member) {
+  return Astro.redirect("/auth/discord/login?returnTo=/submit")
+}
+---
+
+<Layout title="Submit Content">
+  <section class="mx-auto max-w-3xl px-5 py-16 sm:px-6">
+    <PageHeading eyebrow="Members" headline="Submit *Content*" />
+
+    <p class="text-lg">
+      Signed in as <strong>{member.username}</strong>
+      <span class="text-muted-foreground">via Discord.</span>
+    </p>
+
+    <p class="mt-4 text-muted-foreground">
+      The rich-text submission editor is coming in the next phase. This page
+      confirms the Discord membership gate is working.
+    </p>
+
+    <form method="POST" action="/auth/logout" class="mt-10">
+      <button
+        type="submit"
+        class="mono-eyebrow border-2 border-foreground px-5 py-2 transition-colors hover:bg-foreground hover:text-background"
+      >
+        Sign out
+      </button>
+    </form>
+  </section>
+</Layout>

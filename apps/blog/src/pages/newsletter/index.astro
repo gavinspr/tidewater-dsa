@@ -1,0 +1,69 @@
+---
+import Layout from "@/layouts/main.astro"
+import PageHeading from "@/components/headings/PageHeading.astro"
+import Cover from "@/components/blog/Cover.astro"
+import { loadQuery } from "@/lib/load-query"
+import { NEWSLETTER_INDEX_QUERY } from "@/sanity/queries"
+import type { NEWSLETTER_INDEX_QUERY_RESULT } from "@/sanity/types"
+import { formatDate } from "@/lib/blog"
+
+const { data } = await loadQuery<NEWSLETTER_INDEX_QUERY_RESULT>({
+  query: NEWSLETTER_INDEX_QUERY,
+})
+const issues = data?.issues ?? []
+---
+
+<Layout title="The Tide — Newsletter" showSignup={true}>
+  <div class="mx-auto max-w-7xl px-5 py-10 sm:px-6 md:py-16">
+    <PageHeading eyebrow="The Chapter Newsletter" headline="The Tide" />
+    <p class="max-w-[54ch] text-lg leading-relaxed text-foreground-soft">
+      Once a month, the organizing that doesn't fit in a feed: campaign updates,
+      event calendars, and a note from the co-chairs. Read the archive below, or
+      subscribe at the bottom of the page.
+    </p>
+
+    {
+      issues.length > 0 ? (
+        <div class="mt-12 grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          {issues.map((issue) => (
+            <article class="group flex flex-col">
+              <a
+                href={`/newsletter/${issue.slug}`}
+                class="block aspect-[4/3] overflow-hidden"
+                aria-label={`Read issue ${issue.issueNumber}: ${issue.title}`}
+              >
+                <div class="h-full w-full transition-transform duration-200 group-hover:scale-[1.015]">
+                  <Cover
+                    image={issue.coverImage}
+                    tag={`№ ${issue.issueNumber}`}
+                    variant="red"
+                    width={720}
+                    height={540}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                </div>
+              </a>
+              <div class="mt-4 border-t-2 border-foreground pt-4">
+                <span class="mono-eyebrow-sm text-primary tabular-nums">
+                  № {issue.issueNumber} · {formatDate(issue.publishedAt)}
+                </span>
+                <h2 class="heading-display mt-2 text-[1.5rem] leading-[1.1]">
+                  <a href={`/newsletter/${issue.slug}`} class="transition-colors hover:text-primary">
+                    {issue.title}
+                  </a>
+                </h2>
+                {issue.summary && (
+                  <p class="mt-2 text-foreground-soft">{issue.summary}</p>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="mt-12 text-foreground-soft">
+          No issues published yet. The first edition of The Tide is on its way.
+        </p>
+      )
+    }
+  </div>
+</Layout>

@@ -1,0 +1,64 @@
+---
+import { urlFor } from "@/lib/sanity-image"
+import PosterPlaceholder from "./PosterPlaceholder.astro"
+import { cn } from "@tidewater-dsa/ui/lib/utils"
+
+/**
+ * Renders a Sanity cover image, or a poster placeholder when none is set.
+ * Callers provide the aspect-ratio box; this fills it.
+ */
+interface CoverImageValue {
+  asset?: { _ref?: string } | null
+  alt?: string | null
+}
+interface Props {
+  image?: CoverImageValue | null
+  tag?: string | null
+  variant?: "ink" | "red"
+  width?: number
+  height?: number
+  sizes?: string
+  loading?: "eager" | "lazy"
+  class?: string
+}
+
+const {
+  image,
+  tag,
+  variant = "ink",
+  width = 900,
+  height,
+  sizes,
+  loading = "lazy",
+  class: className,
+} = Astro.props
+
+const hasImage = Boolean(image?.asset)
+
+let src: string | undefined
+if (hasImage) {
+  let builder = urlFor(image as Parameters<typeof urlFor>[0])
+    .width(width)
+    .auto("format")
+    .fit("crop")
+  if (height) builder = builder.height(height)
+  src = builder.url()
+}
+---
+
+{
+  hasImage ? (
+    <img
+      src={src}
+      alt={image?.alt ?? ""}
+      width={width}
+      height={height}
+      sizes={sizes}
+      loading={loading}
+      decoding="async"
+      class={cn("h-full w-full object-cover", className)}
+    />
+  ) : (
+    <PosterPlaceholder tag={tag} variant={variant} class={cn("h-full w-full", className)} />
+  )
+}

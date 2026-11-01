@@ -1,0 +1,195 @@
+---
+import Layout from "@/layouts/main.astro"
+import PageHeading from "@/components/headings/PageHeading.astro"
+import PostCard from "@/components/blog/PostCard.astro"
+import Cover from "@/components/blog/Cover.astro"
+import CategoryChip from "@/components/blog/CategoryChip.astro"
+import { loadQuery } from "@/lib/load-query"
+import {
+  POSTS_INDEX_QUERY,
+  CATEGORIES_QUERY,
+  NEWSLETTER_INDEX_QUERY,
+} from "@/sanity/queries"
+import type {
+  POSTS_INDEX_QUERY_RESULT,
+  CATEGORIES_QUERY_RESULT,
+  NEWSLETTER_INDEX_QUERY_RESULT,
+} from "@/sanity/types"
+import { formatDate, posterVariant } from "@/lib/blog"
+
+const [{ data: postsData }, { data: catData }, { data: newsletterData }] =
+  await Promise.all([
+    loadQuery<POSTS_INDEX_QUERY_RESULT>({ query: POSTS_INDEX_QUERY }),
+    loadQuery<CATEGORIES_QUERY_RESULT>({ query: CATEGORIES_QUERY }),
+    loadQuery<NEWSLETTER_INDEX_QUERY_RESULT>({ query: NEWSLETTER_INDEX_QUERY }),
+  ])
+
+const posts = postsData?.posts ?? []
+const categories = catData?.categories ?? []
+const recentIssues = (newsletterData?.issues ?? []).slice(0, 4)
+
+const selected = Astro.url.searchParams.get("category")
+const activeCategory = selected
+  ? categories.find((c) => c.slug === selected)
+  : null
+
+// Featured lead only shows on the unfiltered view.
+const featured = !selected ? posts.find((p) => p.featured) : null
+const visible = selected
+  ? posts.filter((p) => p.category?.slug === selected)
+  : posts
+const gridPosts = visible.filter((p) => p._id !== featured?._id)
+---
+
+<Layout title="Dispatches" showSignup={true}>
+  <div class="mx-auto max-w-7xl px-5 py-10 sm:px-6 md:py-16">
+    <PageHeading
+      eyebrow="Words · Analysis · Chapter News"
+      headline="Dispatches"
+    />
+    <p class="max-w-[54ch] text-lg leading-relaxed text-foreground-soft">
+      Reporting, analysis, and reportbacks from socialists organizing across
+      Hampton Roads — written by chapter members, from the shipyard gate to the
+      tenant meeting.
+    </p>
+
+    <!-- Featured lead -->
+    {
+      featured && (
+        <section class="mt-10 grid items-center gap-8 md:mt-14 md:grid-cols-[1.15fr_1fr] md:gap-12">
+          <a
+            href={`/blog/${featured.slug}`}
+            class="block aspect-[4/3] overflow-hidden"
+            aria-label={featured.title ?? "Read featured dispatch"}
+          >
+            <Cover
+              image={featured.coverImage}
+              tag={featured.category?.title}
+              variant={posterVariant(featured.category?.slug)}
+              width={1100}
+              height={825}
+              loading="eager"
+              sizes="(max-width: 860px) 100vw, 55vw"
+            />
+          </a>
+          <div>
+            <CategoryChip
+              title={featured.category?.title}
+              href={`/blog?category=${featured.category?.slug}`}
+              solid
+            />
+            <h2 class="heading-display mt-4 text-[clamp(1.9rem,4.6vw,3.1rem)]">
+              <a href={`/blog/${featured.slug}`} class="transition-colors hover:text-primary">
+                {featured.title}
+              </a>
+            </h2>
+            {featured.dek && (
+              <p class="mt-4 max-w-[46ch] text-lg text-foreground-soft">{featured.dek}</p>
+            )}
+            <p class="mono-eyebrow mt-5 text-muted-foreground">
+              <span class="text-foreground">By {featured.author}</span>
+              {featured.authorRole ? ` · ${featured.authorRole}` : ""} ·{" "}
+              {formatDate(featured.publishedAt)}
+            </p>
+            <a
+              href={`/blog/${featured.slug}`}
+              class="mono-eyebrow mt-6 inline-flex w-fit items-center gap-2 border-b-2 border-primary pb-1 text-foreground transition-colors hover:text-primary"
+            >
+              Read the story <span class="text-primary">→</span>
+            </a>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- Section header + filters -->
+    <div class="mt-14 flex flex-wrap items-baseline justify-between gap-4 border-t-2 border-foreground pt-4 md:mt-20">
+      <h3 class="heading-display text-[clamp(1.5rem,3.5vw,2.2rem)]">
+        {activeCategory ? activeCategory.title : "Recent Dispatches"}
+      </h3>
+      <span class="mono-eyebrow text-primary">
+        {gridPosts.length} {gridPosts.length === 1 ? "dispatch" : "dispatches"}
+      </span>
+    </div>
+
+    <div class="mt-5 flex flex-wrap gap-2">
+      <a
+        href="/blog"
+        class:list={[
+          "mono-eyebrow-sm border px-3 py-2 transition-colors",
+          !selected
+            ? "border-foreground bg-foreground text-background"
+            : "border-border text-foreground-soft hover:border-foreground hover:text-foreground",
+        ]}
+      >
+        All
+      </a>
+      {
+        categories.map((cat) => (
+          <a
+            href={`/blog?category=${cat.slug}`}
+            class:list={[
+              "mono-eyebrow-sm border px-3 py-2 transition-colors",
+              selected === cat.slug
+                ? "border-foreground bg-foreground text-background"
+                : "border-border text-foreground-soft hover:border-foreground hover:text-foreground",
+            ]}
+          >
+            {cat.title}
+          </a>
+        ))
+      }
+    </div>
+
+    <!-- Grid -->
+    {
+      gridPosts.length > 0 ? (
+        <div class="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+          {gridPosts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      ) : (
+        <p class="mt-10 text-foreground-soft">
+          No dispatches here yet
+          {activeCategory ? ` under ${activeCategory.title}` : ""}. Check back soon.
+        </p>
+      )
+    }
+
+    <!-- The Tide (newsletter archive strip) -->
+    <section class="mt-16 border-t-2 border-foreground pt-4 md:mt-24">
+      <div class="flex flex-wrap items-baseline justify-between gap-4">
+        <div>
+          <span class="mono-eyebrow text-primary">The Chapter Newsletter</span>
+          <h3 class="heading-display mt-1 text-[clamp(1.8rem,4.5vw,2.8rem)]">The Tide</h3>
+        </div>
+        <a
+          href="/newsletter"
+          class="mono-eyebrow inline-flex items-center gap-2 text-foreground transition-colors hover:text-primary"
+        >
+          All issues <span class="text-primary">→</span>
+        </a>
+      </div>
+      {
+        recentIssues.length > 0 && (
+          <ul class="mt-6 divide-y divide-border border-y border-border">
+            {recentIssues.map((issue) => (
+              <li>
+                <a
+                  href={`/newsletter/${issue.slug}`}
+                  class="flex items-baseline justify-between gap-4 py-3 transition-colors hover:text-primary"
+                >
+                  <span class="font-medium">{issue.title}</span>
+                  <span class="mono-eyebrow-sm whitespace-nowrap text-muted-foreground tabular-nums">
+                    № {issue.issueNumber} · {formatDate(issue.publishedAt)}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </section>
+  </div>
+</Layout>

@@ -1,0 +1,26 @@
+---
+import Layout from "@/layouts/main.astro"
+import PageHeading from "@/components/headings/PageHeading.astro"
+---
+
+<Layout title="Access Restricted">
+  <section class="mx-auto max-w-3xl px-5 py-16 sm:px-6">
+    <PageHeading eyebrow="Members only" headline="You're *not in* the server" />
+
+    <p class="text-lg">
+      Content submission is open to members of the Tidewater DSA Discord server.
+    </p>
+
+    <p class="mt-4 text-muted-foreground">
+      If you believe this is a mistake, make sure you've joined the server with
+      the same Discord account, then try again.
+    </p>
+
+    <a
+      href="/auth/discord/login"
+      class="mono-eyebrow mt-10 inline-block border-2 border-foreground px-5 py-2 transition-colors hover:bg-foreground hover:text-background"
+    >
+      Try again
+    </a>
+  </section>
+</Layout>

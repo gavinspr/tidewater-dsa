@@ -19,6 +19,24 @@
       "preview_id": "0734be3a826849b090653fe756d802fa",
     },
   ],
+  // Content submission flow (see docs/submission-flow.md). Local dev works with the
+  // placeholder database_id (miniflare simulates D1 locally); replace with the real id
+  // from `wrangler d1 create` before deploying.
+  "d1_databases": [
+    {
+      "binding": "SUBMISSIONS_DB",
+      "database_name": "tidewater-submissions",
+      "database_id": "REPLACE_WITH_D1_ID",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "SUBMISSION_IMAGES",
+      "bucket_name": "tidewater-submission-images",
+      "preview_bucket_name": "tidewater-submission-images-preview",
+    },
+  ],
   "env": {
     "staging": {
       "name": "tidewater-dsa-staging",
@@ -33,6 +51,21 @@
           "binding": "GEOCODE_CACHE",
           "id": "f1afa707f3b847f7ac2fd050bcaa2f45",
           "preview_id": "0734be3a826849b090653fe756d802fa",
+        },
+      ],
+      "d1_databases": [
+        {
+          "binding": "SUBMISSIONS_DB",
+          "database_name": "tidewater-submissions-staging",
+          "database_id": "REPLACE_WITH_STAGING_D1_ID",
+          "migrations_dir": "migrations",
+        },
+      ],
+      "r2_buckets": [
+        {
+          "binding": "SUBMISSION_IMAGES",
+          "bucket_name": "tidewater-submission-images-staging",
+          "preview_bucket_name": "tidewater-submission-images-preview",
         },
       ],
       "vars": {

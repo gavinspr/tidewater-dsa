@@ -3,6 +3,8 @@ import { eventsPageType } from "./eventsPage"
 import { eventTypesType } from "./eventTypes"
 import { homePageType } from "./homePage"
 import { pageType } from "./page"
+import { categoryType } from "./category"
+import { newsletterIssueType } from "./newsletterIssue"
 import { postType } from "./post"
 import { priorityType } from "./priority"
 import { chapterPrioritiesPageType } from "./chapterPrioritiesPage"
@@ -29,7 +31,9 @@ export const schemaTypes = [
   aboutValueType,
 
   // Document types
+  categoryType,
   postType,
+  newsletterIssueType,
   pageType,
   siteSettingsType,
   homePageType,

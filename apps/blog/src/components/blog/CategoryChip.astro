@@ -1,0 +1,32 @@
+---
+import { cn } from "@tidewater-dsa/ui/lib/utils"
+
+interface Props {
+  title?: string | null
+  href?: string
+  /** Filled red chip vs outline. */
+  solid?: boolean
+  class?: string
+}
+
+const { title, href, solid = false, class: className } = Astro.props
+
+const classes = cn(
+  "mono-eyebrow-sm inline-block border px-2 py-1 transition-colors",
+  solid
+    ? "border-primary bg-primary text-primary-foreground"
+    : "border-primary text-primary hover:bg-primary hover:text-primary-foreground",
+  className
+)
+---
+
+{
+  title &&
+    (href ? (
+      <a href={href} class={classes}>
+        {title}
+      </a>
+    ) : (
+      <span class={classes}>{title}</span>
+    ))
+}

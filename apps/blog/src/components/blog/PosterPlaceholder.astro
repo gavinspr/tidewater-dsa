@@ -1,0 +1,45 @@
+---
+import { cn } from "@tidewater-dsa/ui/lib/utils"
+
+/**
+ * Riso/halftone "poster" tile used as a cover fallback when a post or issue has no
+ * image. Mirrors the Dispatches design language (see blog layout mockups).
+ */
+interface Props {
+  /** Small label, usually the category. */
+  tag?: string | null
+  /** Colorway. Defaults to ink; derive from category for variety. */
+  variant?: "ink" | "red"
+  /** Large faint motif glyph in the corner. */
+  motif?: string
+  class?: string
+}
+
+const { tag, variant = "ink", motif = "✦", class: className } = Astro.props
+const isRed = variant === "red"
+---
+
+<div
+  class={cn(
+    "relative flex flex-col justify-between overflow-hidden p-4",
+    isRed ? "bg-primary text-primary-foreground" : "bg-foreground text-background",
+    className
+  )}
+>
+  <div
+    class="pointer-events-none absolute inset-0 opacity-50 mix-blend-soft-light"
+    style="background-image: radial-gradient(currentColor 1.2px, transparent 1.4px); background-size: 8px 8px;"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative z-10 flex items-start justify-between gap-2">
+    {tag && <span class="mono-eyebrow-sm">{tag}</span>}
+    <span aria-hidden="true" class="text-lg leading-none opacity-90">✦</span>
+  </div>
+
+  <span
+    class="heading-display pointer-events-none absolute right-[-0.1em] bottom-[-0.18em] z-0 text-[8rem] leading-none opacity-15 select-none"
+    aria-hidden="true">{motif}</span
+  >
+</div>

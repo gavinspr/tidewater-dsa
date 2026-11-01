@@ -1,0 +1,59 @@
+---
+import Cover from "./Cover.astro"
+import CategoryChip from "./CategoryChip.astro"
+import { formatDate, posterVariant } from "@/lib/blog"
+
+/**
+ * Dispatch card for the index + related-posts grids. Accepts any post-shaped object
+ * (both the index query and the related sub-query satisfy this).
+ */
+interface CardPost {
+  title: string | null
+  slug: string | null
+  dek: string | null
+  author: string | null
+  publishedAt: string | null
+  coverImage?: { asset?: { _ref?: string } | null; alt?: string | null } | null
+  category: { title: string | null; slug: string | null } | null
+}
+
+const { post } = Astro.props as { post: CardPost }
+
+const href = `/blog/${post.slug}`
+const categoryTitle = post.category?.title
+const variant = posterVariant(post.category?.slug)
+---
+
+<article class="group flex flex-col">
+  <a
+    href={href}
+    class="block aspect-[16/10] overflow-hidden"
+    aria-label={post.title ?? "Read dispatch"}
+  >
+    <div class="h-full w-full transition-transform duration-200 group-hover:scale-[1.015]">
+      <Cover
+        image={post.coverImage}
+        tag={categoryTitle}
+        variant={variant}
+        width={720}
+        height={450}
+        sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
+      />
+    </div>
+  </a>
+
+  <div class="mt-4 border-t-2 border-foreground pt-4">
+    {
+      categoryTitle && (
+        <CategoryChip title={categoryTitle} href={`/blog?category=${post.category?.slug}`} />
+      )
+    }
+    <h3 class="heading-display mt-3 text-[1.35rem] leading-[1.1]">
+      <a href={href} class="transition-colors hover:text-primary">{post.title}</a>
+    </h3>
+    {post.dek && <p class="mt-2 text-foreground-soft">{post.dek}</p>}
+    <p class="mono-eyebrow-sm mt-3 text-muted-foreground">
+      <span class="text-foreground">{post.author}</span> · {formatDate(post.publishedAt)}
+    </p>
+  </div>
+</article>

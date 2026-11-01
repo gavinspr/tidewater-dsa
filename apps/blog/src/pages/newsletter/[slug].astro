@@ -1,0 +1,92 @@
+---
+import Layout from "@/layouts/main.astro"
+import RichText from "@/components/rich-text/RichText.astro"
+import Cover from "@/components/blog/Cover.astro"
+import { loadQuery } from "@/lib/load-query"
+import { NEWSLETTER_BY_SLUG_QUERY } from "@/sanity/queries"
+import type { NEWSLETTER_BY_SLUG_QUERY_RESULT } from "@/sanity/types"
+import { formatDate } from "@/lib/blog"
+
+const { slug } = Astro.params
+if (!slug) return new Response(null, { status: 404 })
+
+const { data } = await loadQuery<NEWSLETTER_BY_SLUG_QUERY_RESULT>({
+  query: NEWSLETTER_BY_SLUG_QUERY,
+  params: { slug },
+})
+
+const issue = data?.issue
+if (!issue) return new Response(null, { status: 404 })
+
+const hasBody = Boolean(issue.body && issue.body.length > 0)
+---
+
+<Layout title={issue.title ?? "The Tide"} showSignup={true}>
+  <article class="mx-auto max-w-7xl px-5 py-8 sm:px-6 md:py-12">
+    <div class="mono-eyebrow-sm flex items-center gap-2 text-muted-foreground">
+      <a href="/newsletter" class="transition-colors hover:text-primary">← The Tide</a>
+      <span>/</span>
+      <span class="tabular-nums">№ {issue.issueNumber}</span>
+    </div>
+
+    <header class="mt-4 border-t-2 border-foreground pt-6">
+      <span class="mono-eyebrow text-primary tabular-nums">
+        Issue № {issue.issueNumber} · {formatDate(issue.publishedAt)}
+      </span>
+      <h1 class="heading-display mt-3 max-w-[22ch] text-[clamp(2.4rem,6.6vw,5rem)]">
+        {issue.title}
+      </h1>
+      {
+        issue.summary && (
+          <p class="mt-5 max-w-[52ch] text-[clamp(1.15rem,2.6vw,1.4rem)] leading-snug text-foreground-soft">
+            {issue.summary}
+          </p>
+        )
+      }
+      {
+        issue.externalUrl && (
+          <a
+            href={issue.externalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mono-eyebrow mt-6 inline-flex w-fit items-center gap-2 bg-primary px-4 py-2 text-primary-foreground transition-colors hover:opacity-90"
+          >
+            Read the full issue <span aria-hidden="true">→</span>
+          </a>
+        )
+      }
+    </header>
+
+    {
+      issue.coverImage?.asset && (
+        <figure class="mt-8 md:mt-10">
+          <div class="aspect-[21/9] overflow-hidden">
+            <Cover
+              image={issue.coverImage}
+              tag={`№ ${issue.issueNumber}`}
+              variant="red"
+              width={1600}
+              height={686}
+              loading="eager"
+              sizes="(max-width: 1220px) 100vw, 1220px"
+            />
+          </div>
+        </figure>
+      )
+    }
+
+    {
+      hasBody ? (
+        <div class="mx-auto mt-10 max-w-readable md:mt-14">
+          <RichText value={issue.body ?? []} dropCap />
+        </div>
+      ) : (
+        !issue.externalUrl && (
+          <p class="mx-auto mt-10 max-w-readable text-foreground-soft">
+            This issue's full text isn't posted here yet.
+          </p>
+        )
+      )
+    }
+  </article>
+</Layout>

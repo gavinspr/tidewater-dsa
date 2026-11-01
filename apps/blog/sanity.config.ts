@@ -64,7 +64,18 @@ export default defineConfig({
               locations: [
                 {
                   title: doc?.title || "Untitled",
-                  href: `/posts/${doc?.slug}`,
+                  href: `/blog/${doc?.slug}`,
+                },
+              ],
+            }),
+          }),
+          newsletterIssue: defineLocations({
+            select: { title: "title", slug: "slug.current" },
+            resolve: (doc) => ({
+              locations: [
+                {
+                  title: doc?.title || "Untitled issue",
+                  href: `/newsletter/${doc?.slug}`,
                 },
               ],
             }),

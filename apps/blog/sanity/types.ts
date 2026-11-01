@@ -602,6 +602,72 @@ export type Page = {
   >
 }
 
+export type NewsletterIssue = {
+  _id: string
+  _type: "newsletterIssue"
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  issueNumber?: number
+  title?: string
+  slug?: Slug
+  publishedAt?: string
+  summary?: string
+  coverImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: "image"
+  }
+  externalUrl?: string
+  body?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: "span"
+          _key: string
+        }>
+        style?: "normal" | "h2" | "h3" | "blockquote"
+        listItem?: "bullet" | "number"
+        markDefs?: Array<{
+          href?: string
+          blank?: boolean
+          _type: "link"
+          _key: string
+        }>
+        level?: number
+        _type: "block"
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        displaySize?: "sm" | "md" | "lg" | "full"
+        _type: "image"
+        _key: string
+      }
+    | {
+        text?: string
+        _type: "quote"
+        _key: string
+      }
+  >
+}
+
+export type CategoryReference = {
+  _ref: string
+  _type: "reference"
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: "category"
+}
+
 export type Post = {
   _id: string
   _type: "post"
@@ -610,31 +676,71 @@ export type Post = {
   _rev: string
   title?: string
   slug?: Slug
-  mainImage?: {
+  category?: CategoryReference
+  dek?: string
+  coverImage?: {
     asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
+    alt?: string
+    caption?: string
+    credit?: string
     _type: "image"
   }
-  body?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: "span"
-      _key: string
-    }>
-    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote"
-    listItem?: "bullet" | "number"
-    markDefs?: Array<{
-      href?: string
-      _type: "link"
-      _key: string
-    }>
-    level?: number
-    _type: "block"
-    _key: string
-  }>
+  body?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: "span"
+          _key: string
+        }>
+        style?: "normal" | "h2" | "h3" | "blockquote"
+        listItem?: "bullet" | "number"
+        markDefs?: Array<{
+          href?: string
+          blank?: boolean
+          _type: "link"
+          _key: string
+        }>
+        level?: number
+        _type: "block"
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        displaySize?: "sm" | "md" | "lg" | "full"
+        _type: "image"
+        _key: string
+      }
+    | {
+        text?: string
+        _type: "quote"
+        _key: string
+      }
+  >
+  author?: string
+  authorRole?: string
+  publishedAt?: string
+  featured?: boolean
+  tags?: Array<string>
+}
+
+export type Category = {
+  _id: string
+  _type: "category"
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  description?: string
 }
 
 export type AboutValue = {
@@ -804,7 +910,10 @@ export type AllSanitySchemaTypes =
   | AboutPageReference
   | SiteSettings
   | Page
+  | NewsletterIssue
+  | CategoryReference
   | Post
+  | Category
   | AboutValue
   | GetInvolvedWay
   | Priority
@@ -890,6 +999,18 @@ export type ABOUT_PAGE_QUERY_RESULT = {
     }> | null
     showSignup: boolean | null
   } | null
+}
+
+// Source: sanity/queries/categories.ts
+// Variable: CATEGORIES_QUERY
+// Query: {  "categories": *[_type == "category" && defined(slug.current)] | order(title asc) {    _id,    title,    "slug": slug.current,    description  }}
+export type CATEGORIES_QUERY_RESULT = {
+  categories: Array<{
+    _id: string
+    title: string | null
+    slug: string | null
+    description: string | null
+  }>
 }
 
 // Source: sanity/queries/chapterPrioritiesPage.ts
@@ -1138,6 +1259,88 @@ export type HOME_PAGE_QUERY_RESULT = {
   noRsvpMessage: string | null
 } | null
 
+// Source: sanity/queries/newsletter.ts
+// Variable: NEWSLETTER_INDEX_QUERY
+// Query: {  "issues": *[_type == "newsletterIssue" && defined(slug.current)] | order(issueNumber desc) {    _id,    title,    "slug": slug.current,    issueNumber,    publishedAt,    summary,    coverImage  }}
+export type NEWSLETTER_INDEX_QUERY_RESULT = {
+  issues: Array<{
+    _id: string
+    title: string | null
+    slug: string | null
+    issueNumber: number | null
+    publishedAt: string | null
+    summary: string | null
+    coverImage: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      _type: "image"
+    } | null
+  }>
+}
+
+// Source: sanity/queries/newsletter.ts
+// Variable: NEWSLETTER_BY_SLUG_QUERY
+// Query: {  "issue": *[_type == "newsletterIssue" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    issueNumber,    publishedAt,    summary,    body,    externalUrl,    coverImage  }}
+export type NEWSLETTER_BY_SLUG_QUERY_RESULT = {
+  issue: {
+    _id: string
+    title: string | null
+    slug: string | null
+    issueNumber: number | null
+    publishedAt: string | null
+    summary: string | null
+    body: Array<
+      | {
+          children?: Array<{
+            marks?: Array<string>
+            text?: string
+            _type: "span"
+            _key: string
+          }>
+          style?: "blockquote" | "h2" | "h3" | "normal"
+          listItem?: "bullet" | "number"
+          markDefs?: Array<{
+            href?: string
+            blank?: boolean
+            _type: "link"
+            _key: string
+          }>
+          level?: number
+          _type: "block"
+          _key: string
+        }
+      | {
+          asset?: SanityImageAssetReference
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          alt?: string
+          caption?: string
+          displaySize?: "full" | "lg" | "md" | "sm"
+          _type: "image"
+          _key: string
+        }
+      | {
+          text?: string
+          _type: "quote"
+          _key: string
+        }
+    > | null
+    externalUrl: string | null
+    coverImage: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      _type: "image"
+    } | null
+  } | null
+}
+
 // Source: sanity/queries/page.ts
 // Variable: PAGE_BY_SLUG_QUERY
 // Query: {  "page": *[_type == "page" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    body  },}
@@ -1178,6 +1381,126 @@ export type PAGE_BY_SLUG_QUERY_RESULT = {
           _key: string
         }
     > | null
+  } | null
+}
+
+// Source: sanity/queries/posts.ts
+// Variable: POSTS_INDEX_QUERY
+// Query: {  "posts": *[_type == "post" && defined(slug.current)] | order(publishedAt desc) {    _id,    title,    "slug": slug.current,    dek,    featured,    publishedAt,    author,    authorRole,    tags,    coverImage,    "category": category->{ title, "slug": slug.current }  }}
+export type POSTS_INDEX_QUERY_RESULT = {
+  posts: Array<{
+    _id: string
+    title: string | null
+    slug: string | null
+    dek: string | null
+    featured: boolean | null
+    publishedAt: string | null
+    author: string | null
+    authorRole: string | null
+    tags: Array<string> | null
+    coverImage: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      caption?: string
+      credit?: string
+      _type: "image"
+    } | null
+    category: {
+      title: string | null
+      slug: string | null
+    } | null
+  }>
+}
+
+// Source: sanity/queries/posts.ts
+// Variable: POST_BY_SLUG_QUERY
+// Query: {  "post": *[_type == "post" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    dek,    body,    publishedAt,    author,    authorRole,    tags,    coverImage,    "category": category->{ title, "slug": slug.current },    "related": *[_type == "post" && slug.current != $slug && category._ref == ^.category._ref]      | order(publishedAt desc)[0...3] {        _id,        title,        "slug": slug.current,        dek,        publishedAt,        author,        coverImage,        "category": category->{ title, "slug": slug.current }      }  }}
+export type POST_BY_SLUG_QUERY_RESULT = {
+  post: {
+    _id: string
+    title: string | null
+    slug: string | null
+    dek: string | null
+    body: Array<
+      | {
+          children?: Array<{
+            marks?: Array<string>
+            text?: string
+            _type: "span"
+            _key: string
+          }>
+          style?: "blockquote" | "h2" | "h3" | "normal"
+          listItem?: "bullet" | "number"
+          markDefs?: Array<{
+            href?: string
+            blank?: boolean
+            _type: "link"
+            _key: string
+          }>
+          level?: number
+          _type: "block"
+          _key: string
+        }
+      | {
+          asset?: SanityImageAssetReference
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          alt?: string
+          caption?: string
+          displaySize?: "full" | "lg" | "md" | "sm"
+          _type: "image"
+          _key: string
+        }
+      | {
+          text?: string
+          _type: "quote"
+          _key: string
+        }
+    > | null
+    publishedAt: string | null
+    author: string | null
+    authorRole: string | null
+    tags: Array<string> | null
+    coverImage: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      caption?: string
+      credit?: string
+      _type: "image"
+    } | null
+    category: {
+      title: string | null
+      slug: string | null
+    } | null
+    related: Array<{
+      _id: string
+      title: string | null
+      slug: string | null
+      dek: string | null
+      publishedAt: string | null
+      author: string | null
+      coverImage: {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        credit?: string
+        _type: "image"
+      } | null
+      category: {
+        title: string | null
+        slug: string | null
+      } | null
+    }>
   } | null
 }
 
@@ -1367,13 +1690,18 @@ import "@sanity/client"
 declare module "@sanity/client" {
   interface SanityQueries {
     '{\n  "page": *[_type == "aboutPage" && _id == "aboutPage"][0] {\n    _id,\n    title,\n    eyebrow,\n    headline,\n    intro,\n    body,\n    valuesEyebrow,\n    valuesHeadline,\n    values[] {\n      headline,\n      description\n    },\n    showSignup\n  },\n}': ABOUT_PAGE_QUERY_RESULT
+    '{\n  "categories": *[_type == "category" && defined(slug.current)] | order(title asc) {\n    _id,\n    title,\n    "slug": slug.current,\n    description\n  }\n}': CATEGORIES_QUERY_RESULT
     '*[_type == "chapterPrioritiesPage" && _id == "chapterPrioritiesPage"][0] {\n  _id,\n  title,\n  eyebrow,\n  headline,\n  intro,\n  priorities[] {\n    _key,\n    category,\n    headline,\n    description,\n    image,\n    ctaText,\n    ctaLink\n  }\n}': CHAPTER_PRIORITIES_PAGE_QUERY_RESULT
     '\n  *[_type == "eventTypes" && _id == "eventTypes"][0].types[]{\n    label,\n    "value": value.current,\n    color,\n    description\n  }\n': EVENT_TYPES_QUERY_RESULT
     '\n  *[_type == "event" && defined(googleEventId)]{\n    _id,\n    googleEventId,\n    featured,\n    eventType,\n    attendance,\n    topics,\n    workingGroup,\n    rsvpLink,\n    summary\n  }\n': EVENT_CUSTOMIZATIONS_QUERY_RESULT
     '{\n  "page": *[_type == "eventsPage" && _id == "eventsPage"][0] {\n    _id,\n    title,\n    eyebrow,\n    headline,\n    intro,\n    noFeaturedEventsMessage,\n    showSignup\n  },\n}': EVENTS_PAGE_QUERY_RESULT
     '{\n  "page": *[_type == "getInvolvedPage" && _id == "getInvolvedPage"][0] {\n    _id,\n    title,\n    eyebrow,\n    headline,\n    intro,\n    waysEyebrow,\n    waysHeadline,\n    ways[] {\n      headline,\n      description,\n      ctaText,\n      ctaLink\n    },\n    showSignup\n  },\n}': GET_INVOLVED_PAGE_QUERY_RESULT
     '\n  *[_type == "homePage" && _id == "homePage"][0] {\n    heroHeadline,\n    heroSubheadline,\n    heroImage,\n    heroCtaText,\n    heroCtaLink,\n    heroCta2Text,\n    heroCta2Link,\n    heroCtaPosition,\n    contentEyebrow,\n    contentHeadline,\n    body,\n    bodyImage,\n    eventsEyebrow,\n    eventsHeadline,\n    eventsImage,\n    noEventsHeadline,\n    noEventsBody,\n    noRsvpMessage,\n  }\n': HOME_PAGE_QUERY_RESULT
+    '{\n  "issues": *[_type == "newsletterIssue" && defined(slug.current)] | order(issueNumber desc) {\n    _id,\n    title,\n    "slug": slug.current,\n    issueNumber,\n    publishedAt,\n    summary,\n    coverImage\n  }\n}': NEWSLETTER_INDEX_QUERY_RESULT
+    '{\n  "issue": *[_type == "newsletterIssue" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    issueNumber,\n    publishedAt,\n    summary,\n    body,\n    externalUrl,\n    coverImage\n  }\n}': NEWSLETTER_BY_SLUG_QUERY_RESULT
     '{\n  "page": *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    body\n  },\n}': PAGE_BY_SLUG_QUERY_RESULT
+    '{\n  "posts": *[_type == "post" && defined(slug.current)] | order(publishedAt desc) {\n    _id,\n    title,\n    "slug": slug.current,\n    dek,\n    featured,\n    publishedAt,\n    author,\n    authorRole,\n    tags,\n    coverImage,\n    "category": category->{ title, "slug": slug.current }\n  }\n}': POSTS_INDEX_QUERY_RESULT
+    '{\n  "post": *[_type == "post" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    dek,\n    body,\n    publishedAt,\n    author,\n    authorRole,\n    tags,\n    coverImage,\n    "category": category->{ title, "slug": slug.current },\n    "related": *[_type == "post" && slug.current != $slug && category._ref == ^.category._ref]\n      | order(publishedAt desc)[0...3] {\n        _id,\n        title,\n        "slug": slug.current,\n        dek,\n        publishedAt,\n        author,\n        coverImage,\n        "category": category->{ title, "slug": slug.current }\n      }\n  }\n}': POST_BY_SLUG_QUERY_RESULT
     '{\n  "page": *[_type == "resourcesPage" && _id == "resourcesPage"][0] {\n    _id,\n    title,\n    eyebrow,\n    headline,\n    intro,\n    memberEyebrow,\n    memberHeadline,\n    body,\n    communityEyebrow,\n    communityHeadline,\n    communityIntro,\n    disclaimerText,\n    printFooterText,\n    googleSheetId,\n    googleSheetRange,\n    showSignup\n  },\n}': RESOURCES_PAGE_QUERY_RESULT
     '*[_type == "siteSettings"][0] {\n  siteTitle,\n  siteShortName,\n  logo,\n  logoTagline,\n  "navLinks": mainNav[]{\n    _key,\n    "title": @->title,\n    "slug": select(\n      @->_type == "eventsPage" => "events",\n      @->_type == "chapterPrioritiesPage" => "chapter-priorities",\n      @->_type == "resourcesPage" => "resources",\n      @->_type == "getInvolvedPage" => "get-involved",\n      @->_type == "aboutPage" => "about",\n      @->slug.current\n    )\n  },\n  callToActionText,\n  callToActionLink,\n  showRibbon,\n  ribbonText,\n  nextMeetingLabel,\n  nextMeetingMatch,\n  nextMeetingTextOverride,\n  nextMeetingLinkOverride,\n  bannerWords,\n  signupLink,\n  signupEyebrow,\n  signupHeadline,\n  signupDescription,\n  socialLinks,\n  socialIconStyle,\n  contactEmail,\n  contactEmailSubject,\n  footerTagline,\n  footerNoteLeft,\n  footerNoteRight,\n  footerColumns[]{\n    _key,\n    title,\n    links[]{ _key, label, href }\n  }\n}': SITE_SETTINGS_QUERY_RESULT
     '\n  *[_type == "workingGroups" && _id == "workingGroups"][0].groups[]{\n    label,\n    "value": value.current,\n    description\n  }\n': WORKING_GROUPS_QUERY_RESULT

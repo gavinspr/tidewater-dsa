@@ -55,7 +55,9 @@ export const structure: StructureResolver = (S) =>
             ])
         ),
 
-      S.documentTypeListItem("post").title("Posts"),
+      S.documentTypeListItem("post").title("Dispatches (Posts)"),
+      S.documentTypeListItem("newsletterIssue").title("Newsletter Issues"),
+      S.documentTypeListItem("category").title("Categories"),
 
       S.divider(),
 
